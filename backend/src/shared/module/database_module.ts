@@ -4,6 +4,6 @@ import { dbConfiguration } from '../connection/db_configuration';
 
 @Module({
   imports: [TypeOrmModule.forRoot(dbConfiguration())],
-  exports: [TypeOrmModule], 
+  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

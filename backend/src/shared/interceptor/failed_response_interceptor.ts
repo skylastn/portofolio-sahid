@@ -39,7 +39,7 @@ export class FailedResponseInterceptor implements ExceptionFilter {
         }
       }
     }
-    var result: { status: boolean; message: string; error?: string } = {
+    const result: { status: boolean; message: string; error?: string } = {
       status: false,
       message: message,
     };

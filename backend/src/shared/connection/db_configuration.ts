@@ -15,7 +15,7 @@ export function dbConfiguration(): DataSourceOptions {
     entities: [UserEntity],
     migrations: [
       isProd
-        ? path.join(__dirname, '../dist/migrations/*.{js}')   // production: .js di dist
+        ? path.join(__dirname, '../dist/migrations/*.{js}') // production: .js di dist
         : path.join(__dirname, '../../core/migrations/*.{ts,js}'), // development: .ts + .js
     ],
     synchronize: false,

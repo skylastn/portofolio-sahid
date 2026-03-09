@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from './user_service';
 import { EncryptExt } from '../../../shared/utils/extension/encrypt_ext';
 import { RegisterUserRequest } from '../domain/model/request/register_user_request';
-import { UserEntity } from '../domain/model/entities/user_entity';
 import { UserResponse } from '../domain/model/response/user_response';
 import { jwtConstants } from '../../../shared/constant/variable';
 
@@ -34,7 +33,7 @@ export class AuthService {
     return {
       access_token: await this.jwtService.signAsync(user.toMap, {
         secret: jwtConstants.secret,
-        // expiresIn: '1h',
+        expiresIn: '1d',
       }),
       user: user,
     };
@@ -54,7 +53,7 @@ export class AuthService {
     return {
       access_token: await this.jwtService.signAsync(user.toMap, {
         secret: jwtConstants.secret,
-        // expiresIn: '1h',
+        expiresIn: '1d',
       }),
       user: user,
     };

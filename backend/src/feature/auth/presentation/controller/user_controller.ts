@@ -49,7 +49,7 @@ export class UserController {
     if (!user || !user.id) {
       throw new Error('User not found');
     }
-    const result = await this.userService.update(user!.id!, {
+    const result = await this.userService.update(user.id, {
       name: signInDto.name,
       username: signInDto.username,
       password: signInDto.password,
