@@ -19,7 +19,7 @@ RUN npm install
 # dist untuk start:prod
 COPY --from=build /app/dist ./dist
 
-# src untuk migrate/seed (karena migrate pakai -d src/core/data_source.ts dan seed pakai ts-node src/...)
+# src untuk migrate/seed (karena migrate pakai -d src/system/data_source.ts dan seed pakai ts-node src/...)
 COPY --from=build /app/src ./src
 COPY --from=build /app/tsconfig*.json ./
 # kalau ada file config lain yang dipakai runtime, copy juga (optional):

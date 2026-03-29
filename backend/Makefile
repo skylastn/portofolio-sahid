@@ -1,6 +1,6 @@
 # Path ke data-source
-DATA_SOURCE=src/core/data_source.ts
-MIGRATION_DIR=./src/core/migrations
+DATA_SOURCE=src/system/data_source.ts
+MIGRATION_DIR=./src/system/migrations
 
 # Generate migration
 migration:
@@ -14,9 +14,17 @@ migration:
 migrate:
 	npm run typeorm -- migration:run -d $(DATA_SOURCE)
 
+
 # Revert last migration
 migrate-revert:
 	npm run typeorm -- migration:revert -d $(DATA_SOURCE)
 
 deploy:
 	docker-compose down && docker-compose build && docker-compose up -d
+
+startSeeder:
+	npm run seed
+
+freshInstall:
+	rm -rf node_modules package-lock.json
+	npm install

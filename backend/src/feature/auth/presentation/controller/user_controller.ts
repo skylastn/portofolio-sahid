@@ -10,9 +10,9 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../../application/user_service';
 import { UserResponse } from '../../domain/model/response/user_response';
-import { AuthGuard } from '../guard/auth_guard';
+import { AuthGuards } from '../guard/auth_guards';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuards)
 @Controller('api/user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -24,7 +24,7 @@ export class UserController {
   }
   @Get(':id')
   async getProfileById(@Param('id') id: string) {
-    return await this.userService.findById(parseInt(id, 10));
+    return await this.userService.findByIdResponse(id);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -33,7 +33,7 @@ export class UserController {
     @Param('id') id: string,
     @Body() signInDto: Record<string, any>,
   ) {
-    const result = await this.userService.update(parseInt(id, 10), {
+    const result = await this.userService.updateUser(id, {
       name: signInDto.name,
       username: signInDto.username,
       password: signInDto.password,
@@ -49,7 +49,7 @@ export class UserController {
     if (!user || !user.id) {
       throw new Error('User not found');
     }
-    const result = await this.userService.update(user.id, {
+    const result = await this.userService.updateUser(user.id, {
       name: signInDto.name,
       username: signInDto.username,
       password: signInDto.password,

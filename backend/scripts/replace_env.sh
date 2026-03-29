@@ -8,11 +8,9 @@ env=$1
 # fi
 
 case "$1" in
+"local") INPUT=".env.local"
+;;
 "dev") INPUT=".env.development"
-;;
-"uat") INPUT=".env.uat"
-;;
-"ujicoba") INPUT=".env.ujicoba"
 ;;
 "prod") INPUT=".env.production"
 ;;
@@ -24,3 +22,5 @@ esac
 
 cp "$INPUT" ".env" 
 echo "Copied '$INPUT' to '.env'"
+make migrate
+make startSeeder

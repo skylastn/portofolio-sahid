@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Run Backend Local",
+      "request": "launch",
+      "command": "npm run start:dev",
+      "cwd": "${workspaceFolder}/backend",
+      "preLaunchTask": "replace-env-local-backend"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run Backend Prod",
+      "request": "launch",
+      "command": "npm run start:prod",
+      "cwd": "${workspaceFolder}/backend",
+      "preLaunchTask": "replace-env-production-backend"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Run FrontEnd Prod",
+      "request": "launch",
+      "command": "npm run start:prod",
+      "cwd": "${workspaceFolder}/frontend"
+    }
+  ]
+}

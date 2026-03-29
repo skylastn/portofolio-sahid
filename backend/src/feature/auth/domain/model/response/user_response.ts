@@ -1,59 +1,61 @@
 import { UserEntity } from '../entities/user_entity';
 import { UserRole } from '../enum/user_role';
 
+type UserResponseProps = {
+  id: string;
+  name: string;
+  username: string;
+  password: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+};
+
 export class UserResponse {
-  id: number | null;
-  name: string | null;
-  username: string | null;
-  password: string | null;
-  role: UserRole | null;
-  isActive: boolean | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
+  id: string;
+  name: string;
+  username: string;
+  password: string;
+  role: UserRole;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
   deletedAt: Date | null;
 
-  constructor(
-    id: number | null,
-    name: string | null,
-    username: string | null,
-    password: string | null,
-    role: UserRole | null,
-    isActive: boolean | null,
-    createdAt: Date | null,
-    updatedAt: Date | null,
-    deletedAt: Date | null,
-  ) {
-    this.id = id;
-    this.name = name;
-    this.username = username;
-    this.password = password;
-    this.role = role;
-    this.isActive = isActive;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.deletedAt = deletedAt;
+  constructor(content: UserResponseProps) {
+    this.id = content.id;
+    this.name = content.name;
+    this.username = content.username;
+    this.password = content.password;
+    this.role = content.role;
+    this.isActive = content.isActive;
+    this.createdAt = content.createdAt;
+    this.updatedAt = content.updatedAt;
+    this.deletedAt = content.deletedAt;
   }
 
   static convertFromEntity(user: UserEntity | null): UserResponse | null {
     if (!user) return null;
-    return new UserResponse(
-      user.id,
-      user.name,
-      user.username,
-      user.password,
-      UserRole.fromString(user.role),
-      user.isActive,
-      user.createdAt,
-      user.updatedAt,
-      user.deletedAt,
-    );
+    return new UserResponse({
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      password: user.password,
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      deletedAt: user.deletedAt,
+    });
   }
 
   static convertListFromEntities(users: UserEntity[]): UserResponse[] {
     return users.map((user) => this.convertFromEntity(user)!);
   }
 
-  get toMap(): Record<string, any> {
+  get toMap(): UserResponseProps {
     return {
       id: this.id,
       name: this.name,
@@ -67,17 +69,7 @@ export class UserResponse {
     };
   }
 
-  static fromMap(user: any): UserResponse {
-    return new UserResponse(
-      user.id,
-      user.name,
-      user.username,
-      user.password,
-      UserRole.fromString(user.role),
-      user.isActive,
-      user.createdAt,
-      user.updatedAt,
-      user.deletedAt,
-    );
+  static fromMap(user: UserResponseProps): UserResponse {
+    return new UserResponse(user);
   }
 }

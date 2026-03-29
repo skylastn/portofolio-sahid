@@ -7,12 +7,12 @@ import {
 } from '@nestjs/common';
 import { UserEntity } from '../../domain/model/entities/user_entity';
 import { UserRepository } from '../../domain/repository/user_repository';
-import { RegisterUserRequest } from '../../domain/model/request/register_user_request';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../../domain/model/enum/user_role';
-import { getEntityManager } from '../../../../shared/provider/transaction_provider';
-import { CurrentUserProvider } from '../../../../shared/provider/current_user_provider';
+import { getEntityManager } from '../../../../shared/core/provider/transaction_provider';
+import { CurrentUserProvider } from '../../../../shared/core/provider/current_user_provider';
 import { UserResponse } from '../../domain/model/response/user_response';
+import { RegisterUserRequest } from '../../domain/model/request/user/register_user_request';
 
 @Injectable()
 export class UserRepositoryImpl implements UserRepository {
@@ -32,12 +32,16 @@ export class UserRepositoryImpl implements UserRepository {
     return this.currentUser.user;
   }
 
-  async findById(id: number): Promise<UserEntity | null> {
+  async findById(id: string): Promise<UserEntity | null> {
     return this.repo.findOneBy({ id });
   }
 
   async findByUsername(username: string): Promise<UserEntity | null> {
     return this.repo.findOne({ where: { username } });
+  }
+
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    return await this.repo.findOne({ where: { email: email } });
   }
 
   async findAll(): Promise<UserEntity[]> {
@@ -53,7 +57,7 @@ export class UserRepositoryImpl implements UserRepository {
     });
   }
 
-  async update(data: RegisterUserRequest, id: number): Promise<UserEntity> {
+  async update(data: RegisterUserRequest, id: string): Promise<UserEntity> {
     const user = await this.findById(id);
     if (!user) throw new NotFoundException('User not found');
 
