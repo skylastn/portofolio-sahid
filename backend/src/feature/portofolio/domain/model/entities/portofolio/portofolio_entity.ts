@@ -9,6 +9,6 @@ export class PortofolioEntity extends DefaultEntity {
   @Column({ type: 'text' })
   description: string;
 
-  // @Column({ type: 'text',  })
-  // imagePath: string;
+  @Column({ type: 'text', name: 'thumbnail_path', nullable: true })
+  thumbnailPath: string;
 }

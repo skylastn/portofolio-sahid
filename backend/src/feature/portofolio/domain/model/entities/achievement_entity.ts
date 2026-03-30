@@ -12,6 +12,6 @@ export class AchievementEntity extends DefaultEntity {
   @Column({ name: 'date', type: 'timestamp' })
   date: Date;
 
-  @Column({ name: 'image_path', type: 'text' })
-  imagePath: string;
+  @Column({ name: 'image_path', type: 'text', nullable: true })
+  imagePath: string | null;
 }

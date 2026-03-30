@@ -24,10 +24,7 @@ export class CategoryResponse {
     this.deletedAt = deletedAt;
   }
 
-  static convertFromEntity(
-    content: CategoryEntity | null,
-  ): CategoryResponse | null {
-    if (!content) return null;
+  static convertFromEntity(content: CategoryEntity): CategoryResponse {
     return new CategoryResponse(
       content.id,
       content.title,

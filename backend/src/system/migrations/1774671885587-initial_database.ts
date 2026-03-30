@@ -17,17 +17,6 @@ export class InitialDatabase1774671885587 implements MigrationInterface {
         PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`apps_sources\` (
-        \`id\` varchar(36) NOT NULL,
-        \`portofolio_id\` varchar(255) NOT NULL, 
-        \`url\` text NOT NULL, 
-        \`type\` enum ('web', 'android', 'ios', 'windows', 'mac', 'linux', 'github', 'other') NOT NULL DEFAULT 'web', 
-        \`created_at\` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), 
-        \`updated_at\` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), 
-        \`deleted_at\` timestamp(6) NULL,
-        PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
-    );
-    await queryRunner.query(
       `CREATE TABLE \`categories\` (
         \`id\` varchar(36) NOT NULL,
         \`title\` varchar(255) NOT NULL, 
@@ -143,7 +132,6 @@ export class InitialDatabase1774671885587 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE \`frameworks\``);
     await queryRunner.query(`DROP TABLE \`code_languages\``);
     await queryRunner.query(`DROP TABLE \`categories\``);
-    await queryRunner.query(`DROP TABLE \`apps_sources\``);
     await queryRunner.query(`DROP TABLE \`achievements\``);
   }
 }

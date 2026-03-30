@@ -8,6 +8,7 @@ import { CategoryRequest } from '../domain/model/request/category/category_reque
 import { CategoryResponse } from '../domain/model/response/category_response';
 import { PaginationResponse } from '../../../shared/core/model/response/pagination_response';
 import { CreateCategoryRequest } from '../domain/model/request/category/create_category_request';
+import { FormatHelper } from '../../../shared/utils/utility/format_helper';
 
 @Injectable()
 export class CategoryService {
@@ -22,7 +23,7 @@ export class CategoryService {
     const paginationEntity = await this.repo.findAllPagination(request);
     return PaginationResponse.map(
       paginationEntity,
-      (u) => CategoryResponse.convertFromEntity(u)!,
+      async (u) => CategoryResponse.convertFromEntity(u)!,
     );
   }
 
@@ -36,6 +37,9 @@ export class CategoryService {
 
   async findOneByIdResponse(id: string): Promise<CategoryResponse | null> {
     const category = await this.repo.findOneById(id);
+    if (!FormatHelper.isPresent(category)) {
+      throw new Error('Category not found');
+    }
     return CategoryResponse.convertFromEntity(category);
   }
 

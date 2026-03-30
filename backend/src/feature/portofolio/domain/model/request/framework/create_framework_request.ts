@@ -26,9 +26,9 @@ export class CreateFrameworkRequest {
     entity.codeLanguageId = this.code_language_id;
     entity.title = this.title;
     entity.description = this.description;
-    entity.imagePath = FormatHelper.isNotEmpty(this.image_path)
-      ? this.image_path
-      : null;
+    if (FormatHelper.isPresent(this.image_path)) {
+      entity.imagePath = this.image_path;
+    }
     return entity;
   }
 }

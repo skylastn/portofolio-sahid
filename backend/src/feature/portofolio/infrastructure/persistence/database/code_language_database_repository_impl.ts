@@ -27,11 +27,11 @@ export class CodeLanguageDatabaseRepositoryImpl
     return manager.getRepository(CodeLanguageEntity);
   }
 
-  findAllPagination(
+  async findAllPagination(
     request: CodeLanguageRequest,
   ): Promise<PaginationResponse<CodeLanguageEntity>> {
     const search = request.search?.trim();
-    return paginateRepo(
+    return await paginateRepo(
       this.db,
       {
         page: request.page,

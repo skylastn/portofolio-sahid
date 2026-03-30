@@ -1,0 +1,99 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { PaginationResponse } from '../../../shared/core/model/response/pagination_response';
+import { FileUtility } from '../../../shared/utils/utility/file_utility';
+import { FormatHelper } from '../../../shared/utils/utility/format_helper';
+import { MinioService } from '../../support/application/minio_service';
+import { MinioResponse } from '../../support/domain/model/response/minio_response';
+import { FrameworkEntity } from '../domain/model/entities/framework_entity';
+import { CreateFrameworkRequest } from '../domain/model/request/framework/create_framework_request';
+import {
+  FRAMEWORK_DATABASE_REPOSITORY,
+  FrameworkDatabaseRepository,
+} from '../domain/repository/database/framework_database_repository';
+import { FrameworkRequest } from '../domain/model/request/framework/framework_request';
+import { FrameworkResponse } from '../domain/model/response/framework_response';
+
+@Injectable()
+export class FrameworkService {
+  constructor(
+    @Inject(FRAMEWORK_DATABASE_REPOSITORY)
+    private repo: FrameworkDatabaseRepository,
+    private minioService: MinioService,
+  ) {}
+  folderPath = 'framework';
+
+  async findAllPagination(
+    request: FrameworkRequest,
+  ): Promise<PaginationResponse<FrameworkResponse>> {
+    const paginationEntity = await this.repo.findAllPagination(request);
+    return PaginationResponse.map(
+      paginationEntity,
+      async (u) =>
+        await FrameworkResponse.convertFromEntity(u, this.minioService),
+    );
+  }
+
+  async findAllByListIds(ids: string[]): Promise<FrameworkEntity[]> {
+    return await this.repo.findAllByListIds(ids);
+  }
+
+  async findOneById(id: string): Promise<FrameworkEntity | null> {
+    return await this.repo.findOneById(id);
+  }
+
+  async findOneByIdResponse(id: string): Promise<FrameworkResponse | null> {
+    const content = await this.findOneById(id);
+    if (!FormatHelper.isPresent(content)) {
+      throw new Error('Framework not found');
+    }
+    return FrameworkResponse.convertFromEntity(content, this.minioService);
+  }
+
+  async createOrUpdate(data: FrameworkEntity): Promise<FrameworkEntity | null> {
+    return await this.repo.createOrUpdate(data);
+  }
+
+  async removeById(id: string): Promise<void> {
+    const find = await this.findOneById(id);
+    if (!FormatHelper.isPresent(find)) {
+      throw new Error('Framework not found');
+    }
+    await this.repo.removeById(id);
+    if (FormatHelper.isPresent(find.imagePath)) {
+      this.minioService.removeObject(find.imagePath);
+    }
+  }
+
+  async createUploadSignature(imageName: string): Promise<MinioResponse> {
+    return await this.minioService.getPresignedUploadUrl(
+      this.folderPath + `/${FileUtility.generateFileName(imageName)}`,
+    );
+  }
+
+  async createFramework(
+    data: CreateFrameworkRequest,
+  ): Promise<FrameworkEntity | null> {
+    return await this.createOrUpdate(data.convertToEntity());
+  }
+
+  async updateFramework(
+    id: string,
+    data: CreateFrameworkRequest,
+  ): Promise<FrameworkEntity | null> {
+    const find = await this.findOneById(id);
+    if (!FormatHelper.isPresent(find)) {
+      throw new Error('Framework not found');
+    }
+    const oldImagePath = find.imagePath;
+    Object.assign(find, data.convertToEntity());
+    const result = await this.createOrUpdate(find);
+    if (
+      result &&
+      FormatHelper.isPresent(data.image_path) &&
+      FormatHelper.isPresent(oldImagePath)
+    ) {
+      this.minioService.removeObject(oldImagePath);
+    }
+    return result;
+  }
+}

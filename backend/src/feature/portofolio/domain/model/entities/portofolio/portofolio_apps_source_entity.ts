@@ -2,8 +2,8 @@ import { Entity, Column } from 'typeorm';
 import { AppSourceType } from '../../enum/apps_source_type';
 import { DefaultEntity } from '../../../../../../shared/core/model/default_entity';
 
-@Entity('apps_sources')
-export class AppsSourceEntity extends DefaultEntity {
+@Entity('portofolio_apps_sources')
+export class PortofolioAppsSourceEntity extends DefaultEntity {
   @Column({ name: 'portofolio_id', type: 'uuid' })
   portofolioId: string;
 

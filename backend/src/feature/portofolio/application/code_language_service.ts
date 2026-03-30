@@ -28,13 +28,13 @@ export class CodeLanguageService {
     const paginationEntity = await this.repo.findAllPagination(request);
     return PaginationResponse.map(
       paginationEntity,
-      (u) => CodeLanguageResponse.convertFromEntity(u)!,
+      async (u) =>
+        await CodeLanguageResponse.convertFromEntity(u, this.minioService),
     );
   }
 
-  async findAllByListIds(ids: string[]): Promise<CodeLanguageResponse[]> {
-    const contents = await this.repo.findAllByListIds(ids);
-    return CodeLanguageResponse.convertListFromEntities(contents);
+  async findAllByListIds(ids: string[]): Promise<CodeLanguageEntity[]> {
+    return await this.repo.findAllByListIds(ids);
   }
 
   async findOneById(id: string): Promise<CodeLanguageEntity | null> {
@@ -43,7 +43,10 @@ export class CodeLanguageService {
 
   async findOneByIdResponse(id: string): Promise<CodeLanguageResponse | null> {
     const content = await this.findOneById(id);
-    return CodeLanguageResponse.convertFromEntity(content);
+    if (!FormatHelper.isPresent(content)) {
+      throw new Error('CodeLanguage not found');
+    }
+    return CodeLanguageResponse.convertFromEntity(content, this.minioService);
   }
 
   async createOrUpdate(
@@ -53,17 +56,20 @@ export class CodeLanguageService {
   }
 
   async removeById(id: string): Promise<void> {
+    const find = await this.findOneById(id);
+    if (!FormatHelper.isPresent(find)) {
+      throw new Error('CodeLanguage not found');
+    }
     await this.repo.removeById(id);
+    if (FormatHelper.isPresent(find.imagePath)) {
+      this.minioService.removeObject(find.imagePath);
+    }
   }
 
   async createUploadSignature(imageName: string): Promise<MinioResponse> {
     return await this.minioService.getPresignedUploadUrl(
       this.folderPath + `/${FileUtility.generateFileName(imageName)}`,
     );
-  }
-
-  async deleteMinioObject(filePath: string): Promise<void> {
-    await this.minioService.removeObject(filePath);
   }
 
   async createCodeLanguage(
@@ -80,14 +86,15 @@ export class CodeLanguageService {
     if (!FormatHelper.isPresent(find)) {
       throw new Error('CodeLanguage not found');
     }
+    const oldImagePath = find.imagePath;
     Object.assign(find, data);
     const result = await this.createOrUpdate(find);
     if (
       result &&
       FormatHelper.isPresent(data.image_path) &&
-      FormatHelper.isPresent(find.imagePath)
+      FormatHelper.isPresent(oldImagePath)
     ) {
-      this.deleteMinioObject(find.imagePath);
+      this.minioService.removeObject(oldImagePath);
     }
     return result;
   }

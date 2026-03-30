@@ -1,3 +1,5 @@
+import { FormatHelper } from '../../../../../shared/utils/utility/format_helper';
+import { MinioService } from '../../../../support/application/minio_service';
 import { CodeLanguageEntity } from '../entities/code_language_entity';
 
 export class CodeLanguageResponse {
@@ -5,6 +7,7 @@ export class CodeLanguageResponse {
   title: string;
   description: string;
   imagePath: string | null;
+  imageUrl: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
   deletedAt: Date | null;
@@ -14,6 +17,7 @@ export class CodeLanguageResponse {
     title: string,
     description: string,
     imagePath: string | null,
+    imageUrl: string | null,
     createdAt: Date | null,
     updatedAt: Date | null,
     deletedAt: Date | null,
@@ -22,30 +26,40 @@ export class CodeLanguageResponse {
     this.title = title;
     this.description = description;
     this.imagePath = imagePath;
+    this.imageUrl = imageUrl;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
   }
 
-  static convertFromEntity(
-    content: CodeLanguageEntity | null,
-  ): CodeLanguageResponse | null {
-    if (!content) return null;
+  static async convertFromEntity(
+    content: CodeLanguageEntity,
+    minioService: MinioService | null = null,
+  ): Promise<CodeLanguageResponse> {
     return new CodeLanguageResponse(
       content.id,
       content.title,
       content.description,
       content.imagePath,
+      FormatHelper.isPresent(minioService) &&
+        FormatHelper.isPresent(content.imagePath)
+        ? (await minioService.getPresignedViewUrl(content.imagePath)).url
+        : null,
       content.createdAt,
       content.updatedAt,
       content.deletedAt,
     );
   }
 
-  static convertListFromEntities(
+  static async convertListFromEntities(
     contents: CodeLanguageEntity[],
-  ): CodeLanguageResponse[] {
-    return contents.map((content) => this.convertFromEntity(content)!);
+    minioService: MinioService | null = null,
+  ): Promise<CodeLanguageResponse[]> {
+    return Promise.all(
+      contents.map(async (content) =>
+        this.convertFromEntity(content, minioService),
+      ),
+    ).then((results) => results.filter(Boolean) as CodeLanguageResponse[]);
   }
 
   get toMap(): Record<string, any> {
@@ -54,6 +68,7 @@ export class CodeLanguageResponse {
       title: this.title,
       description: this.description,
       image_path: this.imagePath,
+      image_url: this.imageUrl,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
       deleted_at: this.deletedAt,
@@ -66,6 +81,7 @@ export class CodeLanguageResponse {
       content.title,
       content.description,
       content.image_path,
+      content.image_url,
       content.created_at,
       content.updated_at,
       content.deleted_at,

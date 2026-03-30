@@ -15,6 +15,9 @@ import { LoggerMiddleware } from '../middleware/logger_middleware';
 import { GeneralModule } from '../../../feature/portofolio/presentation/module/general_module';
 import { CodeLanguageModule } from '../../../feature/portofolio/presentation/module/code_language_module';
 import { MinioModule } from '../../../feature/support/presentation/module/minio_module';
+import { FrameworkModule } from '../../../feature/portofolio/presentation/module/framework_module';
+import { AchievementModule } from '../../../feature/portofolio/presentation/module/achievement_module';
+import { PortofolioModule } from '../../../feature/portofolio/presentation/module/portofolio/portofolio_module';
 @Module({
   imports: [
     DatabaseModule,
@@ -24,6 +27,9 @@ import { MinioModule } from '../../../feature/support/presentation/module/minio_
     CategoryModule,
     GeneralModule,
     CodeLanguageModule,
+    FrameworkModule,
+    AchievementModule,
+    PortofolioModule,
   ],
   providers: [
     {

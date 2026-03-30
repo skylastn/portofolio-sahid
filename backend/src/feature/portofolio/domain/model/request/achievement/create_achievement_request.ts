@@ -1,0 +1,35 @@
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { AchievementEntity } from '../../entities/achievement_entity';
+import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
+
+export class CreateAchievementRequest {
+  @IsString()
+  title: string;
+
+  @IsString()
+  description: string;
+
+  @Type(() => Date)
+  @IsDate()
+  date: Date;
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => {
+    if (!FormatHelper.isNotEmpty(value)) return null;
+    return String(value);
+  })
+  image_path: string | null;
+
+  convertToEntity(): AchievementEntity {
+    const entity = new AchievementEntity();
+    entity.title = this.title;
+    entity.description = this.description;
+    entity.date = this.date;
+    if (FormatHelper.isPresent(this.image_path)) {
+      entity.imagePath = this.image_path;
+    }
+    return entity;
+  }
+}

@@ -23,9 +23,9 @@ export class CreateCodeLanguageRequest {
     const entity = new CodeLanguageEntity();
     entity.title = this.title;
     entity.description = this.description;
-    entity.imagePath = FormatHelper.isNotEmpty(this.image_path)
-      ? this.image_path
-      : null;
+    if(FormatHelper.isPresent(this.image_path)){
+      entity.imagePath = this.image_path;
+    }
     return entity;
   }
 }

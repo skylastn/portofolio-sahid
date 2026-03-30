@@ -2,7 +2,7 @@ import { DataSourceOptions } from 'typeorm';
 import { UserEntity } from '../../feature/auth/domain/model/entities/user_entity';
 import path from 'path';
 import { AchievementEntity } from '../../feature/portofolio/domain/model/entities/achievement_entity';
-import { AppsSourceEntity } from '../../feature/portofolio/domain/model/entities/apps/apps_source_entity';
+import { PortofolioAppsSourceEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_apps_source_entity';
 import { CategoryEntity } from '../../feature/portofolio/domain/model/entities/category_entity';
 import { CodeLanguageEntity } from '../../feature/portofolio/domain/model/entities/code_language_entity';
 import { FrameworkEntity } from '../../feature/portofolio/domain/model/entities/framework_entity';
@@ -12,6 +12,7 @@ import { PortofolioEntity } from '../../feature/portofolio/domain/model/entities
 import { PortofolioFrameworkMappingEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_framework_mapping_entity';
 import { WorkEntity } from '../../feature/portofolio/domain/model/entities/work/work_entity';
 import { WorkPortofolioMappingEntity } from '../../feature/portofolio/domain/model/entities/work/work_portofolio_mapping_entity';
+import { PortofolioImageEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_image_entity';
 
 export function dbConfiguration(): DataSourceOptions {
   const isProd = process.env.NODE_ENV === 'production';
@@ -25,7 +26,7 @@ export function dbConfiguration(): DataSourceOptions {
     entities: [
       UserEntity,
       GeneralEntity,
-      AppsSourceEntity,
+      PortofolioAppsSourceEntity,
       PortofolioEntity,
       WorkEntity,
       AchievementEntity,
@@ -35,6 +36,7 @@ export function dbConfiguration(): DataSourceOptions {
       PortofolioCategoryMappingEntity,
       PortofolioFrameworkMappingEntity,
       WorkPortofolioMappingEntity,
+      PortofolioImageEntity,
     ],
     migrations: [
       isProd

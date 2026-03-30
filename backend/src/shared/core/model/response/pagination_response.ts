@@ -10,18 +10,22 @@ export class PaginationResponse<T> {
   ) {}
 
   // map dari PaginationResponse<E> -> PaginationResponse<R>
-  static map<E, R>(
+  static async map<E, R>(
     paginationEntity: PaginationResponse<E>,
-    mapper: (item: E) => R,
-  ): PaginationResponse<R> {
-    return new PaginationResponse<R>(
-      paginationEntity.status,
-      paginationEntity.message,
-      paginationEntity.currentPage,
-      paginationEntity.perPage,
-      paginationEntity.total,
-      paginationEntity.data.map(mapper),
-      paginationEntity.meta,
-    );
+    mapper: (item: E) => Promise<R>,
+  ): Promise<PaginationResponse<R>> {
+    return await Promise.all(
+      paginationEntity.data.map(async (item: E) => await mapper(item)),
+    ).then((mappedData: R[]) => {
+      return new PaginationResponse<R>(
+        paginationEntity.status,
+        paginationEntity.message,
+        paginationEntity.currentPage,
+        paginationEntity.perPage,
+        paginationEntity.total,
+        mappedData,
+        paginationEntity.meta,
+      );
+    });
   }
 }
