@@ -1,10 +1,24 @@
 import { Transform, Type } from 'class-transformer';
-import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  IsUUID,
+} from 'class-validator';
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
 import { PortofolioEntity } from '../../entities/portofolio/portofolio_entity';
 import { CreatePortofolioAppsSourceRequest } from './apps_source/create_portofolio_apps_source_request';
 
 export class CreatePortofolioRequest {
+  @IsOptional()
+  @IsUUID()
+  @Transform(({ value }) => {
+    if (!FormatHelper.isNotEmpty(value)) return null;
+    return String(value);
+  })
+  work_id: string | null;
+
   @IsString()
   title: string;
 
@@ -44,7 +58,7 @@ export class CreatePortofolioRequest {
   @IsArray()
   @IsOptional()
   deleted_category_ids: string[];
-  
+
   @IsArray()
   @IsOptional()
   framework_ids: string[];
@@ -55,6 +69,9 @@ export class CreatePortofolioRequest {
 
   convertToEntity(): PortofolioEntity {
     const entity = new PortofolioEntity();
+    if (FormatHelper.isPresent(this.work_id)) {
+      entity.workId = this.work_id;
+    }
     entity.title = this.title;
     entity.description = this.description;
     if (FormatHelper.isPresent(this.thumbnail_path)) {

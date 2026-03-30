@@ -26,11 +26,11 @@ export class AchievementDatabaseRepositoryImpl
     super();
   }
 
-  findAllPagination(
+  async findAllPagination(
     request: AchievementRequest,
   ): Promise<PaginationResponse<AchievementEntity>> {
     const search = request.search?.trim();
-    return paginateRepo(
+    return await paginateRepo(
       this.db,
       {
         page: request.page,

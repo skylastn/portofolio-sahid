@@ -110,20 +110,9 @@ export class InitialDatabase1774671885587 implements MigrationInterface {
         \`deleted_at\` timestamp(6) NULL,
         PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
-    await queryRunner.query(
-      `CREATE TABLE \`work_portofolio_mapping\` (
-        \`id\` varchar(36) NOT NULL,
-        \`work_id\` varchar(255) NOT NULL, 
-        \`portofolio_id\` varchar(255) NOT NULL,
-        \`created_at\` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), 
-        \`updated_at\` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), 
-        \`deleted_at\` timestamp(6) NULL,
-        PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE \`work_portofolio_mapping\``);
     await queryRunner.query(`DROP TABLE \`works\``);
     await queryRunner.query(`DROP TABLE \`portofolio_framework_mapping\``);
     await queryRunner.query(`DROP TABLE \`portofolios\``);

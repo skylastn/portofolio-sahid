@@ -19,6 +19,7 @@ export class PortofolioDatabaseRepositoryImpl
     const manager = getEntityManager(this.repo.manager);
     return manager.getRepository(PortofolioEntity);
   }
+  relations = ['work'];
   constructor(
     @InjectRepository(PortofolioEntity)
     private readonly repo: Repository<PortofolioEntity>,
@@ -41,15 +42,25 @@ export class PortofolioDatabaseRepositoryImpl
           ...(FormatHelper.isPresent(search) && {
             title: search,
           }),
+          ...(FormatHelper.isPresent(request.work_id) && {
+            workId: request.work_id,
+          }),
         },
+        relations: this.relations,
       },
     );
   }
   async findAllByListIds(ids: string[]): Promise<PortofolioEntity[]> {
-    return await this.db.findBy({ id: In(ids) });
+    return await this.db.find({
+      where: { id: In(ids) },
+      relations: this.relations,
+    });
   }
   async findOneById(id: string): Promise<PortofolioEntity | null> {
-    return await this.db.findOne({ where: { id: id } });
+    return await this.db.findOne({
+      where: { id: id },
+      relations: this.relations,
+    });
   }
   async createOrUpdate(
     data: PortofolioEntity,

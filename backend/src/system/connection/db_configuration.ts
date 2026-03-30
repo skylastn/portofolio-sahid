@@ -11,7 +11,6 @@ import { PortofolioCategoryMappingEntity } from '../../feature/portofolio/domain
 import { PortofolioEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_entity';
 import { PortofolioFrameworkMappingEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_framework_mapping_entity';
 import { WorkEntity } from '../../feature/portofolio/domain/model/entities/work/work_entity';
-import { WorkPortofolioMappingEntity } from '../../feature/portofolio/domain/model/entities/work/work_portofolio_mapping_entity';
 import { PortofolioImageEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_image_entity';
 
 export function dbConfiguration(): DataSourceOptions {
@@ -35,7 +34,6 @@ export function dbConfiguration(): DataSourceOptions {
       FrameworkEntity,
       PortofolioCategoryMappingEntity,
       PortofolioFrameworkMappingEntity,
-      WorkPortofolioMappingEntity,
       PortofolioImageEntity,
     ],
     migrations: [

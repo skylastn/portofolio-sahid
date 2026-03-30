@@ -5,6 +5,8 @@ import { PortofolioCategoryMappingEntity } from '../../entities/portofolio/porto
 import { PortofolioEntity } from '../../entities/portofolio/portofolio_entity';
 import { PortofolioFrameworkMappingEntity } from '../../entities/portofolio/portofolio_framework_mapping_entity';
 import { PortofolioImageEntity } from '../../entities/portofolio/portofolio_image_entity';
+import { WorkEntity } from '../../entities/work/work_entity';
+import { WorkResponse } from '../work/work_response';
 import { PortofolioAppsSourceResponse } from './portofolio_apps_source_response';
 import { PortofolioCategoryMappingResponse } from './portofolio_category_mapping_response';
 import { PortofolioFrameworkMappingResponse } from './portofolio_framework_mapping_response';
@@ -12,10 +14,12 @@ import { PortofolioImageResponse } from './portofolio_image_response';
 
 export class PortofolioResponse {
   id: string;
+  workId: string | null;
   title: string;
   description: string;
   thumbnailPath: string | null;
   thumbnailUrl: string | null;
+  work: WorkResponse | null;
   appsSources: PortofolioAppsSourceResponse[];
   images: PortofolioImageResponse[];
   category_mappings: PortofolioCategoryMappingResponse[];
@@ -26,10 +30,12 @@ export class PortofolioResponse {
 
   constructor(
     id: string,
+    workId: string | null,
     title: string,
     description: string,
     thumbnailPath: string | null,
     thumbnailUrl: string | null,
+    work: WorkResponse | null,
     appsSources: PortofolioAppsSourceResponse[],
     images: PortofolioImageResponse[],
     category_mappings: PortofolioCategoryMappingResponse[],
@@ -39,10 +45,12 @@ export class PortofolioResponse {
     deletedAt: Date | null,
   ) {
     this.id = id;
+    this.workId = workId;
     this.title = title;
     this.description = description;
     this.thumbnailPath = thumbnailPath;
     this.thumbnailUrl = thumbnailUrl;
+    this.work = work;
     this.appsSources = appsSources;
     this.images = images;
     this.category_mappings = category_mappings;
@@ -62,6 +70,7 @@ export class PortofolioResponse {
   ): Promise<PortofolioResponse> {
     return new PortofolioResponse(
       content.id,
+      content.workId,
       content.title,
       content.description,
       content.thumbnailPath,
@@ -69,6 +78,9 @@ export class PortofolioResponse {
         FormatHelper.isPresent(content.thumbnailPath)
         ? (await minioService.getPresignedViewUrl(content.thumbnailPath)).url
         : null,
+      !FormatHelper.isPresent(content.work)
+        ? null
+        : await WorkResponse.convertFromEntity(content.work, minioService),
       PortofolioAppsSourceResponse.convertListFromEntities(appsSources),
       await PortofolioImageResponse.convertListFromEntities(
         images,
@@ -101,10 +113,12 @@ export class PortofolioResponse {
   get toMap(): Record<string, any> {
     return {
       id: this.id,
+      work_id: this.workId,
       title: this.title,
       description: this.description,
-      image_path: this.thumbnailPath,
-      image_url: this.thumbnailUrl,
+      thumbnail_path: this.thumbnailPath,
+      thumbnail_url: this.thumbnailUrl,
+      work: this.work?.toMap ?? null,
       apps_sources: (this.appsSources ?? []).map((item) => item.toMap),
       images: (this.images ?? []).map((item) => item.toMap),
       category_mappings: (this.category_mappings ?? []).map(
@@ -122,10 +136,12 @@ export class PortofolioResponse {
   static fromMap(content: any): PortofolioResponse {
     return new PortofolioResponse(
       content.id,
+      content.work_id,
       content.title,
       content.description,
-      content.image_path,
-      content.image_url,
+      content.thumbnail_path,
+      content.thumbnail_url,
+      WorkResponse.fromMap(content.work),
       (content.apps_sources ?? []).map((item: any) =>
         PortofolioAppsSourceResponse.fromMap(item),
       ),

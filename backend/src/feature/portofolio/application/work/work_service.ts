@@ -1,0 +1,92 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { MinioService } from '../../../support/application/minio_service';
+import {
+  WORK_DATABASE_REPOSITORY,
+  WorkDatabaseRepository,
+} from '../../domain/repository/database/work/work_database_repository';
+import { PaginationResponse } from '../../../../shared/core/model/response/pagination_response';
+import { WorkEntity } from '../../domain/model/entities/work/work_entity';
+import { WorkRequest } from '../../domain/model/request/work/work_request';
+import { WorkResponse } from '../../domain/model/response/work/work_response';
+import { FormatHelper } from '../../../../shared/utils/utility/format_helper';
+import { FileUtility } from '../../../../shared/utils/utility/file_utility';
+import { MinioResponse } from '../../../support/domain/model/response/minio_response';
+import { CreateWorkRequest } from '../../domain/model/request/work/create_work_request';
+
+@Injectable()
+export class WorkService {
+  constructor(
+    @Inject(WORK_DATABASE_REPOSITORY)
+    private repo: WorkDatabaseRepository,
+    private minioService: MinioService,
+  ) {}
+  folderPath = 'work';
+
+  async findAllPagination(
+    request: WorkRequest,
+  ): Promise<PaginationResponse<WorkResponse>> {
+    const paginationEntity = await this.repo.findAllPagination(request);
+    return await PaginationResponse.map(
+      paginationEntity,
+      async (u) => await WorkResponse.convertFromEntity(u, this.minioService),
+    );
+  }
+
+  async findOneById(id: string): Promise<WorkEntity | null> {
+    return await this.repo.findOneById(id);
+  }
+
+  async findOneByIdResponse(id: string): Promise<WorkResponse | null> {
+    const work = await this.findOneById(id);
+    if (!FormatHelper.isPresent(work)) {
+      throw new Error('Work not found');
+    }
+    return await WorkResponse.convertFromEntity(work, this.minioService);
+  }
+
+  async createOrUpdate(data: WorkEntity): Promise<WorkEntity | null> {
+    return await this.repo.createOrUpdate(data);
+  }
+
+  async removeById(id: string): Promise<void> {
+    const find = await this.findOneById(id);
+    if (!FormatHelper.isPresent(find)) {
+      throw new Error('Work not found');
+    }
+    await this.repo.removeById(id);
+    if (FormatHelper.isPresent(find.imagePath)) {
+      this.minioService.removeObject(find.imagePath);
+    }
+  }
+
+  async createUploadSignature(imageName: string): Promise<MinioResponse> {
+    return await this.minioService.getPresignedUploadUrl(
+      this.folderPath + `/${FileUtility.generateFileName(imageName)}`,
+    );
+  }
+
+  async createWork(data: CreateWorkRequest): Promise<WorkEntity | null> {
+    return await this.repo.createOrUpdate(data.convertToEntity());
+  }
+
+  async updateWork(
+    id: string,
+    data: CreateWorkRequest,
+  ): Promise<WorkEntity | null> {
+    const find = await this.findOneById(id);
+    if (!FormatHelper.isPresent(find)) {
+      throw new Error('Work not found');
+    }
+    const oldImagePath = find.imagePath;
+    Object.assign(find, data.convertToEntity());
+    const result = await this.createOrUpdate(find);
+    if (
+      result &&
+      FormatHelper.isPresent(data.image_path) &&
+      FormatHelper.isPresent(oldImagePath)
+    ) {
+      this.minioService.removeObject(oldImagePath);
+    }
+    return result;
+  }
+}

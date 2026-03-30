@@ -10,6 +10,7 @@ import { PortofolioAppsSourceModule } from './portofolio_apps_source_module';
 import { PortofolioCategoryMappingModule } from './portofolio_category_mapping_module';
 import { PortofolioFrameworkMappingModule } from './portofolio_framework_mapping_module';
 import { PortofolioController } from '../../controller/portofolio/portofolio_controller';
+import { WorkModule } from '../work_module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PortofolioController } from '../../controller/portofolio/portofolio_con
     PortofolioImageModule,
     PortofolioCategoryMappingModule,
     PortofolioFrameworkMappingModule,
+    WorkModule,
   ],
   providers: [
     PortofolioService,

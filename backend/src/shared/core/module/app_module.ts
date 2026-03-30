@@ -18,6 +18,7 @@ import { MinioModule } from '../../../feature/support/presentation/module/minio_
 import { FrameworkModule } from '../../../feature/portofolio/presentation/module/framework_module';
 import { AchievementModule } from '../../../feature/portofolio/presentation/module/achievement_module';
 import { PortofolioModule } from '../../../feature/portofolio/presentation/module/portofolio/portofolio_module';
+import { WorkModule } from '../../../feature/portofolio/presentation/module/work_module';
 @Module({
   imports: [
     DatabaseModule,
@@ -29,6 +30,7 @@ import { PortofolioModule } from '../../../feature/portofolio/presentation/modul
     CodeLanguageModule,
     FrameworkModule,
     AchievementModule,
+    WorkModule,
     PortofolioModule,
   ],
   providers: [

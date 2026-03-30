@@ -16,6 +16,7 @@ import { FormatHelper } from '../../../../shared/utils/utility/format_helper';
 import { CreatePortofolioRequest } from '../../domain/model/request/portofolio/create_portofolio_request';
 import { FileUtility } from '../../../../shared/utils/utility/file_utility';
 import { MinioResponse } from '../../../support/domain/model/response/minio_response';
+import { WorkService } from '../work/work_service';
 
 @Injectable()
 export class PortofolioService {
@@ -23,6 +24,7 @@ export class PortofolioService {
     @Inject(PORTOFOLIO_DATABASE_REPOSITORY)
     private repo: PortofolioDatabaseRepository,
     private minioService: MinioService,
+    private workService: WorkService,
     private portofolioImageService: PortofolioImageService,
     private portofolioAppsSourceService: PortofolioAppsSourceService,
     private portofolioFrameworkMappingService: PortofolioFrameworkMappingService,
@@ -55,7 +57,7 @@ export class PortofolioService {
   }
 
   async findOneByIdResponse(id: string): Promise<PortofolioResponse | null> {
-    const portofolio = await this.repo.findOneById(id);
+    const portofolio = await this.findOneById(id);
     if (!FormatHelper.isPresent(portofolio)) {
       throw new Error('Portofolio not found');
     }
@@ -95,6 +97,12 @@ export class PortofolioService {
   async createPortofolio(
     request: CreatePortofolioRequest,
   ): Promise<PortofolioEntity | null> {
+    if (FormatHelper.isPresent(request.work_id)) {
+      const work = await this.workService.findOneById(request.work_id);
+      if (!FormatHelper.isPresent(work)) {
+        throw new Error('Work not found');
+      }
+    }
     const entity = request.convertToEntity();
     const result = await this.repo.createOrUpdate(entity);
     if (FormatHelper.isPresent(result)) {
@@ -129,6 +137,12 @@ export class PortofolioService {
     const find = await this.findOneById(id);
     if (!FormatHelper.isPresent(find)) {
       throw new Error('Portofolio not found');
+    }
+    if (FormatHelper.isPresent(request.work_id)) {
+      const work = await this.workService.findOneById(request.work_id);
+      if (!FormatHelper.isPresent(work)) {
+        throw new Error('Work not found');
+      }
     }
     const oldThumbnailPath = find.thumbnailPath;
     Object.assign(find, request.convertToEntity());
