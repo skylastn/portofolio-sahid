@@ -1,9 +1,9 @@
-import { CategoryEntity } from '../entities/category_entity';
+import type { CategoryEntity } from '../entities/category_entity';
 
 export class CategoryResponse {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
   deletedAt: Date | null;
@@ -11,7 +11,7 @@ export class CategoryResponse {
   constructor(
     id: string,
     title: string,
-    description: string,
+    description: string | null,
     createdAt: Date | null,
     updatedAt: Date | null,
     deletedAt: Date | null,
@@ -28,10 +28,10 @@ export class CategoryResponse {
     return new CategoryResponse(
       content.id,
       content.title,
-      content.description,
+      content.description ?? null,
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

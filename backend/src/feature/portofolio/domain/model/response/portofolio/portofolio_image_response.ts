@@ -1,6 +1,6 @@
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
 import { MinioService } from '../../../../../support/application/minio_service';
-import { PortofolioImageEntity } from '../../entities/portofolio/portofolio_image_entity';
+import type { PortofolioImageEntity } from '../../entities/portofolio/portofolio_image_entity';
 
 export class PortofolioImageResponse {
   id: string;
@@ -36,14 +36,14 @@ export class PortofolioImageResponse {
     return new PortofolioImageResponse(
       content.id,
       content.portofolioId,
-      content.imagePath,
+      content.imagePath ?? null,
       FormatHelper.isPresent(minioService) &&
         FormatHelper.isPresent(content.imagePath)
         ? (await minioService.getPresignedViewUrl(content.imagePath)).url
         : null,
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

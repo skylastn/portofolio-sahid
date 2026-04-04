@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import {
   CODE_LANGUAGE_DATABASE_REPOSITORY,
-  CodeLanguageDatabaseRepository,
 } from '../domain/repository/database/code_language_database_repository';
+import type { CodeLanguageDatabaseRepository } from '../domain/repository/database/code_language_database_repository';
 import { CodeLanguageRequest } from '../domain/model/request/code_language/code_language_request';
 import { CodeLanguageResponse } from '../domain/model/response/code_language_response';
 import { PaginationResponse } from '../../../shared/core/model/response/pagination_response';

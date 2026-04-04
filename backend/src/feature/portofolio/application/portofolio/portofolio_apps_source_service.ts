@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import {
   PORTOFOLIO_APPS_SOURCE_DATABASE_REPOSITORY,
-  PortofolioAppsSourceDatabaseRepository,
 } from '../../domain/repository/database/portofolio/portofolio_apps_source_database_repository';
+import type { PortofolioAppsSourceDatabaseRepository } from '../../domain/repository/database/portofolio/portofolio_apps_source_database_repository';
 import { PortofolioAppsSourceEntity } from '../../domain/model/entities/portofolio/portofolio_apps_source_entity';
 import { PortofolioAppsSourceResponse } from '../../domain/model/response/portofolio/portofolio_apps_source_response';
 import { FormatHelper } from '../../../../shared/utils/utility/format_helper';

@@ -1,11 +1,10 @@
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
 import { MinioService } from '../../../../../support/application/minio_service';
-import { PortofolioAppsSourceEntity } from '../../entities/portofolio/portofolio_apps_source_entity';
-import { PortofolioCategoryMappingEntity } from '../../entities/portofolio/portofolio_category_mapping_entity';
-import { PortofolioEntity } from '../../entities/portofolio/portofolio_entity';
-import { PortofolioFrameworkMappingEntity } from '../../entities/portofolio/portofolio_framework_mapping_entity';
-import { PortofolioImageEntity } from '../../entities/portofolio/portofolio_image_entity';
-import { WorkEntity } from '../../entities/work/work_entity';
+import type { PortofolioAppsSourceEntity } from '../../entities/portofolio/portofolio_apps_source_entity';
+import type { PortofolioCategoryMappingEntity } from '../../entities/portofolio/portofolio_category_mapping_entity';
+import type { PortofolioEntity } from '../../entities/portofolio/portofolio_entity';
+import type { PortofolioFrameworkMappingEntity } from '../../entities/portofolio/portofolio_framework_mapping_entity';
+import type { PortofolioImageEntity } from '../../entities/portofolio/portofolio_image_entity';
 import { WorkResponse } from '../work/work_response';
 import { PortofolioAppsSourceResponse } from './portofolio_apps_source_response';
 import { PortofolioCategoryMappingResponse } from './portofolio_category_mapping_response';
@@ -36,12 +35,12 @@ export class PortofolioResponse {
     thumbnailPath: string | null,
     thumbnailUrl: string | null,
     work: WorkResponse | null,
-    appsSources: PortofolioAppsSourceResponse[],
+      appsSources: PortofolioAppsSourceResponse[],
     images: PortofolioImageResponse[],
     category_mappings: PortofolioCategoryMappingResponse[],
-    framework_mappings: PortofolioFrameworkMappingResponse[],
-    createdAt: Date | null,
-    updatedAt: Date | null,
+      framework_mappings: PortofolioFrameworkMappingResponse[],
+      createdAt: Date | null,
+      updatedAt: Date | null,
     deletedAt: Date | null,
   ) {
     this.id = id;
@@ -70,10 +69,10 @@ export class PortofolioResponse {
   ): Promise<PortofolioResponse> {
     return new PortofolioResponse(
       content.id,
-      content.workId,
+      content.workId ?? null,
       content.title,
       content.description,
-      content.thumbnailPath,
+      content.thumbnailPath ?? null,
       FormatHelper.isPresent(minioService) &&
         FormatHelper.isPresent(content.thumbnailPath)
         ? (await minioService.getPresignedViewUrl(content.thumbnailPath)).url
@@ -95,7 +94,7 @@ export class PortofolioResponse {
       ),
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

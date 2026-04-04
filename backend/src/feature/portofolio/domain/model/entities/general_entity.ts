@@ -4,26 +4,26 @@ import { DefaultEntity } from '../../../../../shared/core/model/default_entity';
 @Entity('generals')
 export class GeneralEntity extends DefaultEntity {
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ name: 'description', type: 'text' })
-  description: string;
+  description!: string;
 
   @Column({ name: 'email' })
-  email: string;
+  email!: string;
 
   @Column({ name: 'github_url', type: 'text' })
-  githubUrl: string;
+  githubUrl!: string;
 
   @Column({ name: 'gitlab_url', type: 'text' })
-  gitlabUrl: string;
+  gitlabUrl!: string;
 
   @Column({ name: 'linkedin_url', type: 'text' })
-  linkedinUrl: string;
+  linkedinUrl!: string;
 
   @Column({ name: 'thread_url', type: 'text' })
-  threadUrl: string;
+  threadUrl!: string;
 
   @Column({ name: 'tiktok_url', type: 'text' })
-  tiktokUrl: string;
+  tiktokUrl!: string;
 }

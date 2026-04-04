@@ -4,14 +4,14 @@ import { DefaultEntity } from '../../../../../shared/core/model/default_entity';
 @Entity('achievements')
 export class AchievementEntity extends DefaultEntity {
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ name: 'description' })
-  description: string;
+  description!: string;
 
   @Column({ name: 'date', type: 'timestamp' })
-  date: Date;
+  date!: Date;
 
   @Column({ name: 'image_path', type: 'text', nullable: true })
-  imagePath: string | null;
+  imagePath?: string | null;
 }

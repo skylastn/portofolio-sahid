@@ -1,5 +1,5 @@
 import { MinioService } from '../../../../../support/application/minio_service';
-import { PortofolioFrameworkMappingEntity } from '../../entities/portofolio/portofolio_framework_mapping_entity';
+import type { PortofolioFrameworkMappingEntity } from '../../entities/portofolio/portofolio_framework_mapping_entity';
 import { FrameworkResponse } from '../framework_response';
 
 export class PortofolioFrameworkMappingResponse {
@@ -43,7 +43,7 @@ export class PortofolioFrameworkMappingResponse {
       ),
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

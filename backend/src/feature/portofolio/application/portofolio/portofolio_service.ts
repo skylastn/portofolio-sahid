@@ -2,8 +2,8 @@ import { Injectable, Inject } from '@nestjs/common';
 import { MinioService } from '../../../support/application/minio_service';
 import {
   PORTOFOLIO_DATABASE_REPOSITORY,
-  PortofolioDatabaseRepository,
 } from '../../domain/repository/database/portofolio/portofolio_database_repository';
+import type { PortofolioDatabaseRepository } from '../../domain/repository/database/portofolio/portofolio_database_repository';
 import { PortofolioImageService } from './portofolio_image_service';
 import { PortofolioFrameworkMappingService } from './portofolio_framework_mapping_service';
 import { PortofolioCategoryMappingService } from './portofolio_category_mapping_service';
@@ -108,22 +108,22 @@ export class PortofolioService {
     if (FormatHelper.isPresent(result)) {
       await this.portofolioAppsSourceService.syncWithPortofolioIdAndListAppsSourceId(
         result.id,
-        request.apps_sources,
+        request.apps_sources ?? [],
         [],
       );
       await this.portofolioImageService.syncWithPortofolioIdAndListImagePath(
         result.id,
-        request.images,
+        request.images ?? [],
         [],
       );
       await this.portofolioCategoryMappingService.syncWithPortofolioIdAndListCategoryId(
         result.id,
-        request.category_ids,
+        request.category_ids ?? [],
         [],
       );
       await this.portofolioFrameworkMappingService.syncWithPortofolioIdAndListFrameworkId(
         result.id,
-        request.framework_ids,
+        request.framework_ids ?? [],
         [],
       );
     }
@@ -156,23 +156,23 @@ export class PortofolioService {
       }
       await this.portofolioAppsSourceService.syncWithPortofolioIdAndListAppsSourceId(
         result.id,
-        request.apps_sources,
-        request.deleted_apps_source_ids,
+        request.apps_sources ?? [],
+        request.deleted_apps_source_ids ?? [],
       );
       await this.portofolioImageService.syncWithPortofolioIdAndListImagePath(
         result.id,
-        request.images,
-        request.deleted_image_ids,
+        request.images ?? [],
+        request.deleted_image_ids ?? [],
       );
       await this.portofolioCategoryMappingService.syncWithPortofolioIdAndListCategoryId(
         result.id,
-        request.category_ids,
-        request.deleted_category_ids,
+        request.category_ids ?? [],
+        request.deleted_category_ids ?? [],
       );
       await this.portofolioFrameworkMappingService.syncWithPortofolioIdAndListFrameworkId(
         result.id,
-        request.framework_ids,
-        request.deleted_framework_ids,
+        request.framework_ids ?? [],
+        request.deleted_framework_ids ?? [],
       );
     }
     return result;

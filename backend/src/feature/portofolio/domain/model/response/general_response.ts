@@ -1,4 +1,4 @@
-import { GeneralEntity } from '../entities/general_entity';
+import type { GeneralEntity } from '../entities/general_entity';
 
 export class GeneralResponse {
   id: string;
@@ -58,7 +58,7 @@ export class GeneralResponse {
       content.tiktokUrl,
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

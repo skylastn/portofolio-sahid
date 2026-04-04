@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import {
   CATEGORY_DATABASE_REPOSITORY,
-  CategoryDatabaseRepository,
 } from '../domain/repository/database/category_database_repository';
+import type { CategoryDatabaseRepository } from '../domain/repository/database/category_database_repository';
 import { CategoryEntity } from '../domain/model/entities/category_entity';
 import { CategoryRequest } from '../domain/model/request/category/category_request';
 import { CategoryResponse } from '../domain/model/response/category_response';

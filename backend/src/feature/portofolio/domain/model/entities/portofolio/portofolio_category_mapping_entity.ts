@@ -5,9 +5,9 @@ import { CategoryEntity } from '../category_entity';
 @Entity('portofolio_category_mapping')
 export class PortofolioCategoryMappingEntity extends DefaultEntity {
   @Column({ name: 'portofolio_id', type: 'uuid' })
-  portofolioId: string;
+  portofolioId!: string;
   @Column({ name: 'category_id', type: 'uuid' })
-  categoryId: string;
+  categoryId!: string;
 
   @ManyToOne(() => CategoryEntity)
   @JoinColumn({
@@ -15,5 +15,5 @@ export class PortofolioCategoryMappingEntity extends DefaultEntity {
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'FK_portofolio_category_mapping_category_id',
   })
-  category: CategoryEntity;
+  category!: CategoryEntity;
 }

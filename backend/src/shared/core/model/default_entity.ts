@@ -8,14 +8,14 @@ import {
 
 export abstract class DefaultEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at', nullable: true })
-  deletedAt: Date | null;
+  deletedAt?: Date | null;
 }

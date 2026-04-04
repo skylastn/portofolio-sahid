@@ -1,5 +1,5 @@
 import { AuthService } from '../../application/auth_service';
-import { Request } from 'express';
+import type { Request } from 'express';
 import {
   Body,
   Controller,

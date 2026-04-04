@@ -1,5 +1,4 @@
-import { MinioService } from '../../../../../support/application/minio_service';
-import { PortofolioAppsSourceEntity } from '../../entities/portofolio/portofolio_apps_source_entity';
+import type { PortofolioAppsSourceEntity } from '../../entities/portofolio/portofolio_apps_source_entity';
 import { AppSourceType } from '../../enum/apps_source_type';
 
 export class PortofolioAppsSourceResponse {
@@ -37,7 +36,7 @@ export class PortofolioAppsSourceResponse {
       content.type,
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

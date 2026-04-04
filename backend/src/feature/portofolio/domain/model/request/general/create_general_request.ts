@@ -4,28 +4,28 @@ import { GeneralEntity } from '../../entities/general_entity';
 
 export class CreateGeneralRequest {
   @IsString()
-  title: string;
+  title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
-  github_url: string;
+  github_url!: string;
 
   @IsString()
-  gitlab_url: string;
+  gitlab_url!: string;
 
   @IsString()
-  linkedin_url: string;
+  linkedin_url!: string;
 
   @IsString()
-  thread_url: string;
+  thread_url!: string;
 
   @IsString()
-  tiktok_url: string;
+  tiktok_url!: string;
 
   convertToEntity(): GeneralEntity {
     const entity = new GeneralEntity();

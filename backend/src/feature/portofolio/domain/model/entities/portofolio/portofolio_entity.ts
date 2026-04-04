@@ -5,16 +5,16 @@ import { WorkEntity } from '../work/work_entity';
 @Entity('portofolios')
 export class PortofolioEntity extends DefaultEntity {
   @Column({ name: 'work_id', type: 'uuid', nullable: true })
-  workId: string | null;
+  workId?: string | null;
 
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ type: 'text' })
-  description: string;
+  description!: string;
 
   @Column({ type: 'text', name: 'thumbnail_path', nullable: true })
-  thumbnailPath: string;
+  thumbnailPath?: string | null;
 
   @ManyToOne(() => WorkEntity)
   @JoinColumn({
@@ -22,5 +22,5 @@ export class PortofolioEntity extends DefaultEntity {
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'FK_portofolio_work_id',
   })
-  work: WorkEntity;
+  work?: WorkEntity | null;
 }

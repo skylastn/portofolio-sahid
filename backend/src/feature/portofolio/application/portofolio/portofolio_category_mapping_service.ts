@@ -5,8 +5,8 @@ import { PortofolioCategoryMappingEntity } from '../../domain/model/entities/por
 import { PortofolioCategoryMappingResponse } from '../../domain/model/response/portofolio/portofolio_category_mapping_response';
 import {
   PORTOFOLIO_CATEGORY_MAPPING_DATABASE_REPOSITORY,
-  PortofolioCategoryMappingDatabaseRepository,
 } from '../../domain/repository/database/portofolio/portofolio_category_mapping_database_repository';
+import type { PortofolioCategoryMappingDatabaseRepository } from '../../domain/repository/database/portofolio/portofolio_category_mapping_database_repository';
 import { CategoryService } from '../category_service';
 
 @Injectable()

@@ -4,10 +4,10 @@ import { CategoryEntity } from '../../entities/category_entity';
 
 export class CreateCategoryRequest {
   @IsString()
-  title: string;
+  title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   convertToEntity(): CategoryEntity {
     const entity = new CategoryEntity();

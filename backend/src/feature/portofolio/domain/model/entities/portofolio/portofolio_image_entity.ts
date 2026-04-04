@@ -4,7 +4,7 @@ import { DefaultEntity } from '../../../../../../shared/core/model/default_entit
 @Entity('portofolio_images')
 export class PortofolioImageEntity extends DefaultEntity {
   @Column({ name: 'portofolio_id', type: 'uuid' })
-  portofolioId: string;
+  portofolioId!: string;
   @Column({ type: 'text', name: 'image_path', nullable: true })
-  imagePath: string;
+  imagePath?: string | null;
 }

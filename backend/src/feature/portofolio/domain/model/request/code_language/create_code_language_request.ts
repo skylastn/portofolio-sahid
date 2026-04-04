@@ -6,10 +6,10 @@ import { FormatHelper } from '../../../../../../shared/utils/utility/format_help
 
 export class CreateCodeLanguageRequest {
   @IsString()
-  title: string;
+  title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @IsOptional()
   @IsString()
@@ -17,7 +17,7 @@ export class CreateCodeLanguageRequest {
     if (!FormatHelper.isNotEmpty(value)) return null;
     return String(value);
   })
-  image_path: string | null;
+  image_path?: string | null;
 
   convertToEntity(): CodeLanguageEntity {
     const entity = new CodeLanguageEntity();

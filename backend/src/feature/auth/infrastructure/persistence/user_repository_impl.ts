@@ -6,13 +6,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserEntity } from '../../domain/model/entities/user_entity';
-import { UserRepository } from '../../domain/repository/user_repository';
+import type { UserRepository } from '../../domain/repository/user_repository';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../../domain/model/enum/user_role';
 import { getEntityManager } from '../../../../shared/core/provider/transaction_provider';
 import { CurrentUserProvider } from '../../../../shared/core/provider/current_user_provider';
-import { UserResponse } from '../../domain/model/response/user_response';
-import { RegisterUserRequest } from '../../domain/model/request/user/register_user_request';
+import type { UserResponse } from '../../domain/model/response/user_response';
+import type { RegisterUserRequest } from '../../domain/model/request/user/register_user_request';
 
 @Injectable()
 export class UserRepositoryImpl implements UserRepository {

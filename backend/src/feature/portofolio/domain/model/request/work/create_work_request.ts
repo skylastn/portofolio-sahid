@@ -11,7 +11,7 @@ import { WorkEntity } from '../../entities/work/work_entity';
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
 export class CreateWorkRequest {
   @IsString()
-  company_name: string;
+  company_name!: string;
 
   @IsOptional()
   @Transform(({ value }) => {
@@ -19,17 +19,17 @@ export class CreateWorkRequest {
     return String(value);
   })
   @IsString()
-  company_url: string | null;
+  company_url?: string | null;
 
   @IsString()
-  job_title: string;
+  job_title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @Type(() => Date)
   @IsDate()
-  start_date: Date;
+  start_date!: Date;
 
   @IsOptional()
   @Transform(({ value }) => {
@@ -38,7 +38,7 @@ export class CreateWorkRequest {
   })
   @Type(() => Date)
   @IsDate()
-  end_date: Date | null;
+  end_date?: Date | null;
 
   @IsOptional()
   @IsString()
@@ -46,7 +46,7 @@ export class CreateWorkRequest {
     if (!FormatHelper.isNotEmpty(value)) return null;
     return String(value);
   })
-  image_path: string | null;
+  image_path?: string | null;
 
   convertToEntity(): WorkEntity {
     const entity = new WorkEntity();

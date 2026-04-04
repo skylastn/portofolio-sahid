@@ -2,8 +2,8 @@ import { Injectable, Inject } from '@nestjs/common';
 import { MinioService } from '../../../support/application/minio_service';
 import {
   PORTOFOLIO_IMAGE_DATABASE_REPOSITORY,
-  PortofolioImageDatabaseRepository,
 } from '../../domain/repository/database/portofolio/portofolio_image_database_repository';
+import type { PortofolioImageDatabaseRepository } from '../../domain/repository/database/portofolio/portofolio_image_database_repository';
 import { PortofolioImageEntity } from '../../domain/model/entities/portofolio/portofolio_image_entity';
 import { FormatHelper } from '../../../../shared/utils/utility/format_helper';
 import { PortofolioImageResponse } from '../../domain/model/response/portofolio/portofolio_image_response';

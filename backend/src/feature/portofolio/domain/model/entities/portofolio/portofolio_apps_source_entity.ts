@@ -5,11 +5,11 @@ import { DefaultEntity } from '../../../../../../shared/core/model/default_entit
 @Entity('portofolio_apps_sources')
 export class PortofolioAppsSourceEntity extends DefaultEntity {
   @Column({ name: 'portofolio_id', type: 'uuid' })
-  portofolioId: string;
+  portofolioId!: string;
 
   @Column({ type: 'text' })
-  url: string;
+  url!: string;
 
   @Column({ type: 'enum', enum: AppSourceType, default: AppSourceType.web })
-  type: AppSourceType;
+  type!: AppSourceType;
 }

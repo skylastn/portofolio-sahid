@@ -1,6 +1,6 @@
 import { FormatHelper } from '../../../../../shared/utils/utility/format_helper';
 import { MinioService } from '../../../../support/application/minio_service';
-import { CodeLanguageEntity } from '../entities/code_language_entity';
+import type { CodeLanguageEntity } from '../entities/code_language_entity';
 
 export class CodeLanguageResponse {
   id: string;
@@ -40,14 +40,14 @@ export class CodeLanguageResponse {
       content.id,
       content.title,
       content.description,
-      content.imagePath,
+      content.imagePath ?? null,
       FormatHelper.isPresent(minioService) &&
         FormatHelper.isPresent(content.imagePath)
         ? (await minioService.getPresignedViewUrl(content.imagePath)).url
         : null,
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
 import {
   GENERAL_DATABASE_REPOSITORY,
-  GeneralDatabaseRepository,
 } from '../domain/repository/database/general_database_repository';
+import type { GeneralDatabaseRepository } from '../domain/repository/database/general_database_repository';
 import { GeneralEntity } from '../domain/model/entities/general_entity';
 import { CreateGeneralRequest } from '../domain/model/request/general/create_general_request';
 import { GeneralResponse } from '../domain/model/response/general_response';

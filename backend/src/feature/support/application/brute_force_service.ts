@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { RedisService } from 'src/feature/support/application/redis_service';
+import { RedisService } from './redis_service';
 
 @Injectable()
 export class BruteForceService {

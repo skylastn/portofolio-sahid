@@ -5,7 +5,7 @@ import { UserService } from './user_service';
 import { EncryptExt } from '../../../shared/utils/extension/encrypt_ext';
 import { UserResponse } from '../domain/model/response/user_response';
 import { jwtConstants } from '../../../shared/constant/variable';
-import { UserEntity } from '../domain/model/entities/user_entity';
+import type { UserEntity } from '../domain/model/entities/user_entity';
 import { LoginRequest } from '../domain/model/request/user/login_request';
 import { FormatHelper } from '../../../shared/utils/utility/format_helper';
 import { BruteForceService } from '../../support/application/brute_force_service';

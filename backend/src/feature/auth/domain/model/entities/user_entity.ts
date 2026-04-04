@@ -5,24 +5,24 @@ import { UserRole } from '../enum/user_role';
 @Entity('users')
 export class UserEntity extends DefaultEntity {
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ unique: true })
-  username: string;
+  username!: string;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column({
     type: 'enum',
     enum: UserRole,
     default: UserRole.USER,
   })
-  role: UserRole;
+  role!: UserRole;
 
   @Column({ default: true, name: 'is_active' })
-  isActive: boolean;
+  isActive!: boolean;
 }

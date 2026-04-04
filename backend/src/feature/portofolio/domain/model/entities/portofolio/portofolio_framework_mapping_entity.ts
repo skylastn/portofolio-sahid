@@ -5,9 +5,9 @@ import { FrameworkEntity } from '../framework_entity';
 @Entity('portofolio_framework_mapping')
 export class PortofolioFrameworkMappingEntity extends DefaultEntity {
   @Column({ name: 'portofolio_id', type: 'uuid' })
-  portofolioId: string;
+  portofolioId!: string;
   @Column({ name: 'framework_id', type: 'uuid' })
-  frameworkId: string;
+  frameworkId!: string;
 
   @ManyToOne(() => FrameworkEntity)
   @JoinColumn({
@@ -15,5 +15,5 @@ export class PortofolioFrameworkMappingEntity extends DefaultEntity {
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'FK_portofolio_framework_mapping_framework_id',
   })
-  framework: FrameworkEntity;
+  framework!: FrameworkEntity;
 }

@@ -11,14 +11,14 @@ export class CreatePortofolioAppsSourceRequest {
     return value;
   })
   @IsUUID()
-  id: string | null;
+  id?: string | null;
 
   @IsString()
-  url: string;
+  url!: string;
 
   @IsEnum(AppSourceType)
   @Transform(({ value }) => AppSourceType.fromString(value))
-  type: AppSourceType;
+  type!: AppSourceType;
 
   convertToEntity(): PortofolioAppsSourceEntity {
     const entity = new PortofolioAppsSourceEntity();

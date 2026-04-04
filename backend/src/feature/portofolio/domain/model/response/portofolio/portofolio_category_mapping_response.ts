@@ -1,5 +1,4 @@
-import { MinioService } from '../../../../../support/application/minio_service';
-import { PortofolioCategoryMappingEntity } from '../../entities/portofolio/portofolio_category_mapping_entity';
+import type { PortofolioCategoryMappingEntity } from '../../entities/portofolio/portofolio_category_mapping_entity';
 import { CategoryResponse } from '../category_response';
 
 export class PortofolioCategoryMappingResponse {
@@ -39,7 +38,7 @@ export class PortofolioCategoryMappingResponse {
       CategoryResponse.convertFromEntity(content.category),
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

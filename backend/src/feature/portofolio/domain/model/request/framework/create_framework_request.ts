@@ -5,13 +5,13 @@ import { FormatHelper } from '../../../../../../shared/utils/utility/format_help
 
 export class CreateFrameworkRequest {
   @IsUUID()
-  code_language_id: string;
+  code_language_id!: string;
 
   @IsString()
-  title: string;
+  title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @IsOptional()
   @IsString()
@@ -19,7 +19,7 @@ export class CreateFrameworkRequest {
     if (!FormatHelper.isNotEmpty(value)) return null;
     return String(value);
   })
-  image_path: string | null;
+  image_path?: string | null;
 
   convertToEntity(): FrameworkEntity {
     const entity = new FrameworkEntity();

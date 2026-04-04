@@ -1,8 +1,6 @@
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
 import { MinioService } from '../../../../../support/application/minio_service';
-import { WorkEntity } from '../../entities/work/work_entity';
-import { CategoryResponse } from '../category_response';
-import { PortofolioResponse } from '../portofolio/portofolio_response';
+import type { WorkEntity } from '../../entities/work/work_entity';
 
 export class WorkResponse {
   id: string;
@@ -53,19 +51,19 @@ export class WorkResponse {
     return new WorkResponse(
       content.id,
       content.companyName,
-      content.companyUrl,
+      content.companyUrl ?? null,
       content.jobTitle,
       content.description,
       content.startDate,
-      content.endDate,
-      content.imagePath,
+      content.endDate ?? null,
+      content.imagePath ?? null,
       FormatHelper.isPresent(minioService) &&
         FormatHelper.isPresent(content.imagePath)
         ? (await minioService.getPresignedViewUrl(content.imagePath)).url
         : null,
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

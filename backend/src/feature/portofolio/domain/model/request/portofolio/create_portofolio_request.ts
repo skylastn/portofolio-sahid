@@ -17,13 +17,13 @@ export class CreatePortofolioRequest {
     if (!FormatHelper.isNotEmpty(value)) return null;
     return String(value);
   })
-  work_id: string | null;
+  work_id?: string | null;
 
   @IsString()
-  title: string;
+  title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @IsOptional()
   @IsString()
@@ -31,41 +31,41 @@ export class CreatePortofolioRequest {
     if (!FormatHelper.isNotEmpty(value)) return null;
     return String(value);
   })
-  thumbnail_path: string | null;
+  thumbnail_path?: string | null;
 
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreatePortofolioAppsSourceRequest)
-  apps_sources: CreatePortofolioAppsSourceRequest[];
+  apps_sources?: CreatePortofolioAppsSourceRequest[];
 
   @IsArray()
   @IsOptional()
-  deleted_apps_source_ids: string[];
+  deleted_apps_source_ids?: string[];
 
   @IsArray()
   @IsOptional()
-  images: string[];
+  images?: string[];
 
   @IsArray()
   @IsOptional()
-  deleted_image_ids: string[];
+  deleted_image_ids?: string[];
 
   @IsArray()
   @IsOptional()
-  category_ids: string[];
+  category_ids?: string[];
 
   @IsArray()
   @IsOptional()
-  deleted_category_ids: string[];
+  deleted_category_ids?: string[];
 
   @IsArray()
   @IsOptional()
-  framework_ids: string[];
+  framework_ids?: string[];
 
   @IsArray()
   @IsOptional()
-  deleted_framework_ids: string[];
+  deleted_framework_ids?: string[];
 
   convertToEntity(): PortofolioEntity {
     const entity = new PortofolioEntity();

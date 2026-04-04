@@ -1,4 +1,4 @@
-import { UserEntity } from '../entities/user_entity';
+import type { UserEntity } from '../entities/user_entity';
 import { UserRole } from '../enum/user_role';
 
 type UserResponseProps = {
@@ -47,7 +47,7 @@ export class UserResponse {
       isActive: user.isActive,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      deletedAt: user.deletedAt,
+      deletedAt: user.deletedAt ?? null,
     });
   }
 

@@ -5,14 +5,14 @@ import { FormatHelper } from '../../../../../../shared/utils/utility/format_help
 
 export class CreateAchievementRequest {
   @IsString()
-  title: string;
+  title!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @Type(() => Date)
   @IsDate()
-  date: Date;
+  date!: Date;
 
   @IsOptional()
   @IsString()
@@ -20,7 +20,7 @@ export class CreateAchievementRequest {
     if (!FormatHelper.isNotEmpty(value)) return null;
     return String(value);
   })
-  image_path: string | null;
+  image_path?: string | null;
 
   convertToEntity(): AchievementEntity {
     const entity = new AchievementEntity();

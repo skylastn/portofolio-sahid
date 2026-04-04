@@ -1,6 +1,6 @@
 import { FormatHelper } from '../../../../../shared/utils/utility/format_helper';
 import { MinioService } from '../../../../support/application/minio_service';
-import { AchievementEntity } from '../entities/achievement_entity';
+import type { AchievementEntity } from '../entities/achievement_entity';
 
 export class AchievementResponse {
   id: string;
@@ -44,14 +44,14 @@ export class AchievementResponse {
       content.title,
       content.description,
       content.date,
-      content.imagePath,
+      content.imagePath ?? null,
       FormatHelper.isPresent(minioService) &&
         FormatHelper.isPresent(content.imagePath)
         ? (await minioService.getPresignedViewUrl(content.imagePath)).url
         : null,
       content.createdAt,
       content.updatedAt,
-      content.deletedAt,
+      content.deletedAt ?? null,
     );
   }
 

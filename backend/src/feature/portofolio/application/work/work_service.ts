@@ -2,8 +2,8 @@ import { Injectable, Inject } from '@nestjs/common';
 import { MinioService } from '../../../support/application/minio_service';
 import {
   WORK_DATABASE_REPOSITORY,
-  WorkDatabaseRepository,
 } from '../../domain/repository/database/work/work_database_repository';
+import type { WorkDatabaseRepository } from '../../domain/repository/database/work/work_database_repository';
 import { PaginationResponse } from '../../../../shared/core/model/response/pagination_response';
 import { WorkEntity } from '../../domain/model/entities/work/work_entity';
 import { WorkRequest } from '../../domain/model/request/work/work_request';

@@ -9,8 +9,8 @@ import { AchievementRequest } from '../domain/model/request/achievement/achievem
 import { CreateAchievementRequest } from '../domain/model/request/achievement/create_achievement_request';
 import {
   ACHIEVEMENT_DATABASE_REPOSITORY,
-  AchievementDatabaseRepository,
 } from '../domain/repository/database/achievement_database_repository';
+import type { AchievementDatabaseRepository } from '../domain/repository/database/achievement_database_repository';
 import { AchievementResponse } from '../domain/model/response/achievement_response';
 
 @Injectable()

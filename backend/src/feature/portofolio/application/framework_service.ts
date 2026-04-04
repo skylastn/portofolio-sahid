@@ -8,8 +8,8 @@ import { FrameworkEntity } from '../domain/model/entities/framework_entity';
 import { CreateFrameworkRequest } from '../domain/model/request/framework/create_framework_request';
 import {
   FRAMEWORK_DATABASE_REPOSITORY,
-  FrameworkDatabaseRepository,
 } from '../domain/repository/database/framework_database_repository';
+import type { FrameworkDatabaseRepository } from '../domain/repository/database/framework_database_repository';
 import { FrameworkRequest } from '../domain/model/request/framework/framework_request';
 import { FrameworkResponse } from '../domain/model/response/framework_response';
 

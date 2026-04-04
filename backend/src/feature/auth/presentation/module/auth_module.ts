@@ -4,8 +4,8 @@ import { jwtConstants } from '../../../../shared/constant/variable';
 import { AuthService } from '../../application/auth_service';
 import { AuthController } from '../controller/auth_controller';
 import { UserModule } from './user_module';
-import { RedisModule } from 'src/feature/support/presentation/module/redis_module';
-import { BruteForceModule } from 'src/feature/support/presentation/module/brute_force_module';
+import { RedisModule } from '../../../support/presentation/module/redis_module';
+import { BruteForceModule } from '../../../support/presentation/module/brute_force_module';
 
 @Module({
   imports: [

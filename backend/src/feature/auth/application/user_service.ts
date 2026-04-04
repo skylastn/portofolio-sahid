@@ -1,11 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserEntity } from '../domain/model/entities/user_entity';
-import {
-  USER_REPOSITORY,
-  UserRepository,
-} from '../domain/repository/user_repository';
+import type { UserEntity } from '../domain/model/entities/user_entity';
+import { USER_REPOSITORY } from '../domain/repository/user_repository';
+import type { UserRepository } from '../domain/repository/user_repository';
 import { UserResponse } from '../domain/model/response/user_response';
-import { RegisterUserRequest } from '../domain/model/request/user/register_user_request';
+import type { RegisterUserRequest } from '../domain/model/request/user/register_user_request';
 
 @Injectable()
 export class UserService {
