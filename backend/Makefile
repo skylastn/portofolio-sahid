@@ -19,6 +19,7 @@ migrate-revert:
 	npm run typeorm -- migration:revert -d $(DATA_SOURCE)
 
 deploy:
+	cp ".env.production" .env
 	docker-compose down && docker-compose build && docker-compose up -d
 
 startSeeder:
