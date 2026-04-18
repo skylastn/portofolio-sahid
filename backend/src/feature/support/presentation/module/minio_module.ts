@@ -26,7 +26,7 @@ import { FormatHelper } from '../../../../shared/utils/utility/format_helper';
           isGlobal: true,
           endPoint: config.get<string>('MINIO_ENDPOINT')!,
           ...(rawPort ? { port: Number(rawPort) } : {}),
-          useSSL: false,
+          useSSL: rawPort ? false : true,
           accessKey: config.get<string>('MINIO_ACCESS_KEY')!,
           secretKey: config.get<string>('MINIO_SECRET_KEY')!,
         };
