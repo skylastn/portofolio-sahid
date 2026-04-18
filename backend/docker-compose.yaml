@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: be-sample-${ENV}
+    container_name: be-portofolio-${ENV}
     command: >
       sh -c "
         npm run migrate &&

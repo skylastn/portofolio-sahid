@@ -4,6 +4,7 @@ import { NestMinioModule } from 'nestjs-minio';
 import { MinioController } from '../controller/minio_controller';
 import { ENV } from '../../../../shared/constant/variable';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FormatHelper } from '../../../../shared/utils/utility/format_helper';
 
 @Module({
   imports: [
@@ -20,10 +21,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         //   accessKey: config.get<string>('MINIO_ACCESS_KEY')!,
         //   secretKey: config.get<string>('MINIO_SECRET_KEY')!,
         // });
+        const rawPort = config.get<string>('MINIO_PORT');
         return {
           isGlobal: true,
           endPoint: config.get<string>('MINIO_ENDPOINT')!,
-          port: Number(config.get<string>('MINIO_PORT') ?? 9000),
+          ...(rawPort ? { port: Number(rawPort) } : {}),
           useSSL: false,
           accessKey: config.get<string>('MINIO_ACCESS_KEY')!,
           secretKey: config.get<string>('MINIO_SECRET_KEY')!,
