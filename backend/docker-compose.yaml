@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  be-sample:
+  be-portofolio:
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,14 +14,9 @@ services:
       "
     env_file:
       - .env
-    ports:
-      - '${DOCKER_PORT}:3000'
+    # ports:
+    #   - '${DOCKER_PORT}:3000'
     volumes:
       - ./public:/app/public
-    networks:
-      - be-sample-network
+    network_mode: "host"
     restart: always
-
-networks:
-  be-sample-network:
-    driver: bridge
