@@ -14,7 +14,6 @@ migration:
 migrate:
 	npm run typeorm -- migration:run -d $(DATA_SOURCE)
 
-
 # Revert last migration
 migrate-revert:
 	npm run typeorm -- migration:revert -d $(DATA_SOURCE)

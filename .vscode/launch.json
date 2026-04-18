@@ -21,7 +21,7 @@
       "type": "node-terminal",
       "name": "Run FrontEnd Prod",
       "request": "launch",
-      "command": "npm run start:prod",
+      "command": "npm run dev",
       "cwd": "${workspaceFolder}/frontend"
     }
   ]
