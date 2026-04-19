@@ -1,6 +1,7 @@
 "use client";
 
 import AdminShell from "../admin_shell";
+import DefaultImage from "@/shared/component/ui/default_image";
 import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
 import { useWorkLogic } from "./work_logic";
 
@@ -32,6 +33,15 @@ export default function WorkUI() {
   } = useWorkLogic();
 
   const totalPages = Math.max(1, Math.ceil((total || works.length) / perPage));
+  const formatDateTime = (value?: string | Date | null) =>
+    value ? new Date(value).toLocaleString() : "-";
+  const twoLineClampStyle: React.CSSProperties = {
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 2,
+    overflow: "hidden",
+    wordBreak: "break-word",
+  };
 
   return (
     <AdminShell activeKey="work" title="Work">
@@ -53,19 +63,46 @@ export default function WorkUI() {
         </div>
 
         <div className="mt-6 overflow-x-auto rounded-[1.25rem] border border-white/10">
-          <table className="min-w-full border-collapse">
+          <table className="min-w-full table-fixed border-separate border-spacing-0">
             <thead>
               <tr className="bg-slate-900/70">
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Number
+                </th>
+                <th className="w-32.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
                   Company
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-42.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Company URL
+                </th>
+                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
                   Job Title
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-55 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Description
+                </th>
+                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Start date
+                </th>
+                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  End date
+                </th>
+                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Image path
+                </th>
+                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Image url
+                </th>
+                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Created
+                </th>
+                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
                   Updated
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Deleted
+                </th>
+                <th className="sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l border-white/10 bg-slate-900/95 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 shadow-[-12px_0_24px_rgba(2,6,23,0.35)]">
                   Actions
                 </th>
               </tr>
@@ -73,29 +110,89 @@ export default function WorkUI() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td colSpan={12} className="px-5 py-10 text-center text-sm text-slate-300">
                     Loading work data...
                   </td>
                 </tr>
               ) : works.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td colSpan={12} className="px-5 py-10 text-center text-sm text-slate-300">
                     No work data found.
                   </td>
                 </tr>
               ) : (
-                works.map((item) => (
-                  <tr key={item.id} className="odd:bg-white/[0.03]">
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      {item.company_name}
+                works.map((item, index) => (
+                  <tr key={item.id} className="odd:bg-white/3">
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {(currentPage - 1) * perPage + index + 1}
+                      </div>
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      {item.job_title}
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.company_name}
+                      </div>
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      {item.updated_at ? new Date(item.updated_at).toLocaleString() : "-"}
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.company_url ?? "-"}
+                      </div>
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.job_title}
+                      </div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="max-w-55 leading-6" style={twoLineClampStyle}>
+                        {item.description}
+                      </div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.start_date)}
+                      </div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.end_date)}
+                      </div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.image_path ?? "-"}
+                      </div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      {item.image_url ? (
+                        <div className="h-14 w-20 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                          <DefaultImage
+                            src={item.image_url}
+                            alt={item.job_title ?? "work image"}
+                            className="h-full w-full"
+                            sizes="80px"
+                          />
+                        </div>
+                      ) : (
+                        <div className="clamp-2">-</div>
+                      )}
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.created_at)}
+                      </div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.updated_at)}
+                      </div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.deleted_at)}
+                      </div>
+                    </td>
+                    <td className="sticky right-0 z-20 border-b border-l border-white/10 bg-slate-950/95 px-3 py-4 text-sm text-slate-100 shadow-[-12px_0_24px_rgba(2,6,23,0.35)]">
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -222,7 +319,7 @@ export default function WorkUI() {
                 <input
                   value={formState.company_name}
                   onChange={(event) => setFormField("company_name", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter company name"
                 />
               </label>
@@ -232,7 +329,7 @@ export default function WorkUI() {
                   type="url"
                   value={formState.company_url ?? ""}
                   onChange={(event) => setFormField("company_url", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter company URL"
                 />
               </label>
@@ -241,7 +338,7 @@ export default function WorkUI() {
                 <input
                   value={formState.job_title}
                   onChange={(event) => setFormField("job_title", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter job title"
                 />
               </label>
@@ -251,7 +348,7 @@ export default function WorkUI() {
                   type="date"
                   value={formState.start_date}
                   onChange={(event) => setFormField("start_date", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                 />
               </label>
               <label className="flex flex-col gap-2 md:col-span-2">
@@ -259,7 +356,7 @@ export default function WorkUI() {
                 <textarea
                   value={formState.description}
                   onChange={(event) => setFormField("description", event.target.value)}
-                  className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter description"
                 />
               </label>
@@ -269,7 +366,7 @@ export default function WorkUI() {
                   type="date"
                   value={formState.end_date ?? ""}
                   onChange={(event) => setFormField("end_date", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                 />
               </label>
               <div>

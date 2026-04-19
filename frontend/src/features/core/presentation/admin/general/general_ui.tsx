@@ -213,7 +213,7 @@ export default function GeneralUI() {
                     <textarea
                       value={formState[field.key]}
                       onChange={(event) => setFormField(field.key, event.target.value)}
-                      className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                      className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                       placeholder={`Enter ${field.label.toLowerCase()}`}
                     />
                   ) : (
@@ -221,7 +221,7 @@ export default function GeneralUI() {
                       type={field.type ?? "text"}
                       value={formState[field.key]}
                       onChange={(event) => setFormField(field.key, event.target.value)}
-                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                       placeholder={`Enter ${field.label.toLowerCase()}`}
                     />
                   )}

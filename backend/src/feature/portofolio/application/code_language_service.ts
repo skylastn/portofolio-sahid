@@ -87,7 +87,7 @@ export class CodeLanguageService {
       throw new Error('CodeLanguage not found');
     }
     const oldImagePath = find.imagePath;
-    Object.assign(find, data);
+    Object.assign(find, data.convertToEntity());
     const result = await this.createOrUpdate(find);
     if (
       result &&

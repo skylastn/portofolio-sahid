@@ -1,6 +1,7 @@
 "use client";
 
 import AdminShell from "../../admin_shell";
+import DefaultImage from "@/shared/component/ui/default_image";
 import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
 import { usePortofolioLogic } from "./portfolio_logic";
 
@@ -32,6 +33,15 @@ export default function PortofolioUI() {
   } = usePortofolioLogic();
 
   const totalPages = Math.max(1, Math.ceil((total || portofolios.length) / perPage));
+  const formatDateTime = (value?: string | Date | null) =>
+    value ? new Date(value).toLocaleString() : "-";
+  const twoLineClampStyle: React.CSSProperties = {
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 2,
+    overflow: "hidden",
+    wordBreak: "break-word",
+  };
 
   return (
     <AdminShell activeKey="portfolio" title="Portfolio" portfolioActiveKey="portfolio">
@@ -53,19 +63,37 @@ export default function PortofolioUI() {
         </div>
 
         <div className="mt-6 overflow-x-auto rounded-[1.25rem] border border-white/10">
-          <table className="min-w-full border-collapse">
+          <table className="min-w-full table-fixed border-separate border-spacing-0">
             <thead>
               <tr className="bg-slate-900/70">
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Number
+                </th>
+                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
                   Title
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
                   Work
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-55 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Description
+                </th>
+                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Thumbnail path
+                </th>
+                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Thumbnail url
+                </th>
+                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Created
+                </th>
+                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
                   Updated
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  Deleted
+                </th>
+                <th className="sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l border-white/10 bg-slate-900/95 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 shadow-[-12px_0_24px_rgba(2,6,23,0.35)]">
                   Actions
                 </th>
               </tr>
@@ -73,29 +101,62 @@ export default function PortofolioUI() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td colSpan={10} className="px-5 py-10 text-center text-sm text-slate-300">
                     Loading portfolio data...
                   </td>
                 </tr>
               ) : portofolios.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td colSpan={10} className="px-5 py-10 text-center text-sm text-slate-300">
                     No portfolio data found.
                   </td>
                 </tr>
               ) : (
-                portofolios.map((item) => (
-                  <tr key={item.id} className="odd:bg-white/[0.03]">
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      {item.title}
+                portofolios.map((item, index) => (
+                  <tr key={item.id} className="odd:bg-white/3">
+                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {(currentPage - 1) * perPage + index + 1}
+                      </div>
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      {item.work?.job_title ?? item.work?.company_name ?? item.work_id ?? "-"}
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>{item.title}</div>
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      {item.updated_at ? new Date(item.updated_at).toLocaleString() : "-"}
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.work?.job_title ?? item.work?.company_name ?? item.work_id ?? "-"}
+                      </div>
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>{item.description}</div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>{item.thumbnail_path ?? "-"}</div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      {item.thumbnail_url ? (
+                        <div className="h-14 w-20 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                          <DefaultImage
+                            src={item.thumbnail_url}
+                            alt={item.title ?? "portfolio thumbnail"}
+                            className="h-full w-full"
+                            sizes="80px"
+                          />
+                        </div>
+                      ) : (
+                        <div className="leading-6" style={twoLineClampStyle}>-</div>
+                      )}
+                    </td>
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.created_at)}</div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.updated_at)}</div>
+                    </td>
+                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.deleted_at)}</div>
+                    </td>
+                    <td className="sticky right-0 z-20 border-b border-l border-white/10 bg-slate-950/95 px-5 py-4 text-sm text-slate-100 shadow-[-12px_0_24px_rgba(2,6,23,0.35)]">
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -219,7 +280,7 @@ export default function PortofolioUI() {
                 <input
                   value={formState.work_id ?? ""}
                   onChange={(event) => setFormField("work_id", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter work id"
                 />
               </label>
@@ -228,7 +289,7 @@ export default function PortofolioUI() {
                 <input
                   value={formState.title}
                   onChange={(event) => setFormField("title", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter title"
                 />
               </label>
@@ -237,7 +298,7 @@ export default function PortofolioUI() {
                 <textarea
                   value={formState.description}
                   onChange={(event) => setFormField("description", event.target.value)}
-                  className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter description"
                 />
               </label>

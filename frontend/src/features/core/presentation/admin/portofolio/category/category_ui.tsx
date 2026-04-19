@@ -229,7 +229,7 @@ export default function CategoryUI() {
                 <input
                   value={formState.title}
                   onChange={(event) => setFormField("title", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter title"
                 />
               </label>
@@ -238,7 +238,7 @@ export default function CategoryUI() {
                 <textarea
                   value={formState.description}
                   onChange={(event) => setFormField("description", event.target.value)}
-                  className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
+                  className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter description"
                 />
               </label>

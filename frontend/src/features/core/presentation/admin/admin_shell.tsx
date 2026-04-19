@@ -37,6 +37,10 @@ export default function AdminShell({
   const inactiveNavClass = isDarkMode
     ? "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-300 hover:text-cyan-200"
     : "border-slate-200 bg-white text-slate-600 hover:border-sky-300 hover:text-sky-700";
+  const shellGridStyle: React.CSSProperties = {
+    maxWidth: 1800,
+    gridTemplateColumns: "290px minmax(0, 1fr)",
+  };
 
   const renderNavButton = (item: AdminNavigationItem, nested = false) => {
     const isActive =
@@ -71,7 +75,10 @@ export default function AdminShell({
         />
       </div>
 
-      <div className="relative mx-auto grid min-h-screen w-full max-w-7xl gap-6 px-4 py-4 sm:px-6 lg:grid-cols-[300px_1fr] lg:px-8">
+      <div
+        className="relative mx-auto grid min-h-screen w-full gap-6 px-4 py-4 sm:px-6 lg:px-8"
+        style={shellGridStyle}
+      >
         <aside
           className={`${shellClass} sticky top-4 flex h-fit flex-col gap-6 rounded-4xl p-5`}
         >
