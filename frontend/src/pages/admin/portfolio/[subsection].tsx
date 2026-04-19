@@ -3,22 +3,28 @@ import AdminGuard from "@/features/core/presentation/admin/admin_guard";
 import {
   AdminProvider,
   getPortfolioSubsectionFromSlug,
-  PortfolioSection,
-  useAdminLogic,
 } from "@/features/core/presentation/admin/admin_logic";
-import AdminTableUI from "@/features/core/presentation/admin/admin_table_ui";
 import { CategoryProvider } from "../../../features/core/presentation/admin/portofolio/category/category_logic";
 import CategoryUI from "../../../features/core/presentation/admin/portofolio/category/category_ui";
+import { PortofolioProvider } from "../../../features/core/presentation/admin/portofolio/portfolio/portfolio_logic";
+import PortofolioUI from "../../../features/core/presentation/admin/portofolio/portfolio/portfolio_ui";
 
 function PortfolioSubsectionRoute() {
   const router = useRouter();
   const subsection = getPortfolioSubsectionFromSlug(
     router.query.subsection as string | undefined,
   );
-  const { tableViews } = useAdminLogic();
 
   if (!router.isReady || !subsection) {
     return null;
+  }
+
+  if (subsection === "portfolio") {
+    return (
+      <PortofolioProvider>
+        <PortofolioUI />
+      </PortofolioProvider>
+    );
   }
 
   if (subsection === "category") {
@@ -29,15 +35,7 @@ function PortfolioSubsectionRoute() {
     );
   }
 
-  const portfolioViews = tableViews.portfolio as PortfolioSection;
-  return (
-    <AdminTableUI
-      activeKey="portfolio"
-      portfolioActiveKey={subsection}
-      title={subsection === "portfolio" ? "Portfolio" : "Category"}
-      tableView={portfolioViews[subsection]}
-    />
-  );
+  return null;
 }
 
 export default function PortfolioSubsectionPage() {

@@ -2,20 +2,23 @@ import { useRouter } from "next/router";
 import AdminGuard from "@/features/core/presentation/admin/admin_guard";
 import { AdminProvider } from "@/features/core/presentation/admin/admin_logic";
 import { getAdminSectionFromSlug } from "@/features/core/presentation/admin/admin_logic";
-import AdminTableUI from "@/features/core/presentation/admin/admin_table_ui";
 import AdminUI from "@/features/core/presentation/admin/admin_ui";
 import { GeneralProvider } from "@/features/core/presentation/admin/general/general_logic";
 import GeneralUI from "@/features/core/presentation/admin/general/general_ui";
-import {
-  PortfolioSection,
-  TableView,
-  useAdminLogic,
-} from "@/features/core/presentation/admin/admin_logic";
+import { AchievementProvider } from "@/features/core/presentation/admin/achievement/achievement_logic";
+import AchievementUI from "@/features/core/presentation/admin/achievement/achievement_ui";
+import { WorkProvider } from "@/features/core/presentation/admin/work/work_logic";
+import WorkUI from "@/features/core/presentation/admin/work/work_ui";
+import { CodeLanguageProvider } from "@/features/core/presentation/admin/code_language/code_language_logic";
+import CodeLanguageUI from "@/features/core/presentation/admin/code_language/code_language_ui";
+import { FrameworkProvider } from "@/features/core/presentation/admin/framework/framework_logic";
+import FrameworkUI from "@/features/core/presentation/admin/framework/framework_ui";
+import { PortofolioProvider } from "@/features/core/presentation/admin/portofolio/portfolio/portfolio_logic";
+import PortofolioUI from "@/features/core/presentation/admin/portofolio/portfolio/portfolio_ui";
 
 function AdminSectionRoute() {
   const router = useRouter();
   const section = getAdminSectionFromSlug(router.query.section as string | undefined);
-  const { tableViews } = useAdminLogic();
 
   if (!router.isReady || !section) {
     return null;
@@ -26,14 +29,42 @@ function AdminSectionRoute() {
   }
 
   if (section === "portfolio") {
-    const portfolioViews = tableViews.portfolio as PortfolioSection;
     return (
-      <AdminTableUI
-        activeKey="portfolio"
-        portfolioActiveKey="portfolio"
-        title="Portfolio"
-        tableView={portfolioViews.portfolio}
-      />
+      <PortofolioProvider>
+        <PortofolioUI />
+      </PortofolioProvider>
+    );
+  }
+
+  if (section === "achievement") {
+    return (
+      <AchievementProvider>
+        <AchievementUI />
+      </AchievementProvider>
+    );
+  }
+
+  if (section === "work") {
+    return (
+      <WorkProvider>
+        <WorkUI />
+      </WorkProvider>
+    );
+  }
+
+  if (section === "code_language") {
+    return (
+      <CodeLanguageProvider>
+        <CodeLanguageUI />
+      </CodeLanguageProvider>
+    );
+  }
+
+  if (section === "framework") {
+    return (
+      <FrameworkProvider>
+        <FrameworkUI />
+      </FrameworkProvider>
     );
   }
 
@@ -45,18 +76,7 @@ function AdminSectionRoute() {
     );
   }
 
-  const tableView = tableViews[section] as TableView;
-  return (
-    <AdminTableUI
-      activeKey={section}
-      title={
-        section === "code_language"
-          ? "Code Language"
-          : section.charAt(0).toUpperCase() + section.slice(1).replace(/_/g, " ")
-      }
-      tableView={tableView}
-    />
-  );
+  return null;
 }
 
 export default function AdminSectionPage() {

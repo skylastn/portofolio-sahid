@@ -18,6 +18,21 @@ export const UrlPath = {
   // general
   GENERAL: "api/general",
 
+  // achievement
+  ACHIEVEMENT: "api/achievement",
+
+  // work
+  WORK: "api/work",
+
+  // code language
+  CODE_LANGUAGE: "api/code_language",
+
+  // framework
+  FRAMEWORK: "api/framework",
+
+  // portofolio
+  PORTOFOLIO: "api/portofolio",
+
   //Sample
   SAMPLE_PRESIDENT: "presidents",
   SAMPLE_PHOTO: "v2/list",
