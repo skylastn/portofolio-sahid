@@ -63,10 +63,7 @@ export class PortofolioAppsSourceService {
     if (!FormatHelper.isNotEmpty(listCreatedAppsSource)) return;
 
     for (const content of listCreatedAppsSource) {
-      if (
-        FormatHelper.isPresent(content.id) &&
-        FormatHelper.isNotEmpty(listDeletedAppsSourceId)
-      ) {
+      if (FormatHelper.isPresent(content.id)) {
         const find = await this.findOneById(content.id);
         if (!FormatHelper.isPresent(find)) {
           throw new Error('AppsSource not found');
