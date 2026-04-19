@@ -6,6 +6,17 @@ export const UrlPath = {
   REGISTER_WITH_VERIFIED_PHONE: "api/auth/register/phone",
   LOGIN: "api/auth/login",
   LOGIN_WITH_PHONE: `api/auth/login/phone`,
+  LOGOUT: "api/auth/logout",
+
+  // user
+  ME: "api/user/me",
+  USER: "api/user",
+
+  // category
+  CATEGORY: "api/category",
+
+  // general
+  GENERAL: "api/general",
 
   //Sample
   SAMPLE_PRESIDENT: "presidents",

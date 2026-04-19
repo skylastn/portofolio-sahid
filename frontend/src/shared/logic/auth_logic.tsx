@@ -10,9 +10,11 @@ import delay from "@/shared/utils/utility/delay";
 import { useAuthService } from "@/shared/dependency_injection/global_container";
 import { LoginRequest } from "@/features/auth/domain/model/request/login_request";
 import { Either, left, right } from "@/shared/utils/utility/either";
+import { UserResponse } from "../../features/auth/domain/model/response/user_response";
 
 interface AuthContextProps {
   isLogin: boolean;
+  user: UserResponse.Data | null;
   logout: () => Promise<void>;
   login: (request: LoginRequest) => Promise<Either<string, string>>;
 }
@@ -22,6 +24,7 @@ const AuthLogic = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const service = useAuthService();
   const [isLogin, setIsLogin] = useState(service.isLogin);
+  const [user, setUser] = useState<UserResponse.Data | null>(service.user);
 
   const login = useCallback(
     async (request: LoginRequest): Promise<Either<string, string>> => {
@@ -34,9 +37,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const message = err.message ?? "";
             throw new Error(message);
           },
-          () => {
-            toast.success("Berhasil Login!");
+          async (r) => {
             setIsLogin(true);
+            setUser(r.user ?? null);
           },
         );
         return right("Success");
@@ -62,6 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const value = useMemo(
     () => ({
       isLogin,
+      user,
       logout,
       login,
     }),

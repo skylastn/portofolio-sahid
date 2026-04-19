@@ -2,6 +2,7 @@ import { ResponseModel } from "@/shared/domain/model/response_model";
 import { Either } from "@/shared/utils/utility/either";
 import { LoginRequest } from "../model/request/login_request";
 import { LoginResponse } from "../model/response/login_response";
+import { UserResponse } from "../model/response/user_response";
 
 export interface AuthRepository {
   get isLogin(): boolean;
@@ -9,5 +10,7 @@ export interface AuthRepository {
   loginWithPhone(phone: string): Promise<Either<ResponseModel, boolean>>;
   logout(): Promise<Either<string, boolean>>;
   saveIsDarkMode(value: boolean): void;
+  get user(): UserResponse.Data | null;
   get isDarkMode(): boolean;
+  fetchUser(id: string): Promise<Either<ResponseModel, UserResponse.Data>>;
 }

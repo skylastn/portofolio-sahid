@@ -1,17 +1,26 @@
 import { SessionData } from "@/shared/constant/session";
+import { UserResponse } from "../../../domain/model/response/user_response";
 
 export class AuthLocalDataSource {
   constructor(private localDb = new SessionData()) {}
-  async login(token: string): Promise<void> {
+  login(token: string, refreshToken: string, user?: UserResponse.Data): void {
     this.localDb.saveToken(token);
+    this.localDb.saveRefreshToken(refreshToken);
+    this.localDb.saveUser(user);
   }
 
-  async logout(): Promise<void> {
+  logout(): void {
     this.localDb.saveToken("");
+    this.localDb.saveRefreshToken("");
+    this.localDb.saveUser(undefined);
   }
 
   get isLogin(): boolean {
     return !!this.localDb.token;
+  }
+
+  get user(): UserResponse.Data | null {
+    return this.localDb.user;
   }
 
   saveIsDarkMode(value: boolean): void {

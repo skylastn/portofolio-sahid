@@ -6,6 +6,7 @@ import { AuthRepository } from "../domain/repository/auth_repository";
 import { AuthLocalDataSource } from "../infrastructure/data_source/local/auth_local_data_source";
 import { AuthRemoteDataSource } from "../infrastructure/data_source/remote/auth_remote_data_source";
 import { AuthRepositoryImpl } from "../infrastructure/persistence/auth_repository_impl";
+import { UserResponse } from "../domain/model/response/user_response";
 
 export class AuthService {
   private repo: AuthRepository;
@@ -30,6 +31,12 @@ export class AuthService {
     return await this.repo.loginWithPhone(phone);
   }
 
+  async fetchUser(
+    id: string,
+  ): Promise<Either<ResponseModel, UserResponse.Data>> {
+    return await this.repo.fetchUser(id);
+  }
+
   async logout(): Promise<Either<string, boolean>> {
     return await this.repo.logout();
   }
@@ -40,5 +47,9 @@ export class AuthService {
 
   get isDarkMode(): boolean {
     return this.repo.isDarkMode;
+  }
+
+  get user(): UserResponse.Data | null {
+    return this.repo.user;
   }
 }

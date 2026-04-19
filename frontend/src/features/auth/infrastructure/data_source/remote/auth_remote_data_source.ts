@@ -6,6 +6,7 @@ import { Either, left, right } from "@/shared/utils/utility/either";
 import { ResponseModel } from "@/shared/domain/model/response_model";
 import { HttpMethod } from "@/shared/domain/model/enum/http_method";
 import { LoginResponse } from "@/features/auth/domain/model/response/login_response";
+import { UserResponse } from "../../../domain/model/response/user_response";
 
 export class AuthRemoteDataSource {
   constructor(
@@ -23,13 +24,16 @@ export class AuthRemoteDataSource {
         data: request,
       });
       if (response.status == false) {
+        if (
+          Array.isArray(response.data) &&
+          response.data.every((item) => typeof item === "string")
+        ) {
+          response.message = response.data[0];
+          return left(response);
+        }
         return left(response);
       }
       const result = LoginResponse.Convert.fromJson(JSON.stringify(response));
-      if (result.status) {
-        await this.local.login(result.data?.access_token ?? "");
-        // this.local.saveUser(result.data?.user ?? null);
-      }
       return right(result.data!);
     } catch (error) {
       return left(ResponseModel.fromError(error));
@@ -44,6 +48,40 @@ export class AuthRemoteDataSource {
         data: {
           phone: phone,
         },
+      });
+      if (response.status == false) {
+        return left(response);
+      }
+      return right(true);
+    } catch (error) {
+      return left(ResponseModel.fromError(error));
+    }
+  }
+
+  async fetchUser(
+    id: string,
+  ): Promise<Either<ResponseModel, UserResponse.Data>> {
+    try {
+      const response = await this.api.request({
+        path: UrlPath.USER + `/${id}`,
+        method: HttpMethod.GET,
+      });
+      if (response.status == false) {
+        return left(response);
+      }
+      return right(
+        UserResponse.Convert.fromJson(JSON.stringify(response)).data!,
+      );
+    } catch (error) {
+      return left(ResponseModel.fromError(error));
+    }
+  }
+
+  async updateUser(id: string): Promise<Either<ResponseModel, boolean>> {
+    try {
+      const response = await this.api.request({
+        path: UrlPath.USER + `/${id}`,
+        method: HttpMethod.GET,
       });
       if (response.status == false) {
         return left(response);

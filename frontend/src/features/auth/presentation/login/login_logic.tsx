@@ -4,6 +4,7 @@ import delay from "@/shared/utils/utility/delay";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { UserRole } from "../../domain/model/enum/user_role";
 
 export const useLoginLogic = () => {
   const router = useRouter();
@@ -27,6 +28,11 @@ export const useLoginLogic = () => {
         },
         async () => {
           await delay(1);
+          toast.success("Berhasil Login!");
+          if (authLogic.user?.role === UserRole.ADMIN) {
+            router.push("/admin");
+            return;
+          }
           router.push("/");
         },
       );
