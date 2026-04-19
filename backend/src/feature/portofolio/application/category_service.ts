@@ -1,7 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import {
-  CATEGORY_DATABASE_REPOSITORY,
-} from '../domain/repository/database/category_database_repository';
+import { CATEGORY_DATABASE_REPOSITORY } from '../domain/repository/database/category_database_repository';
 import type { CategoryDatabaseRepository } from '../domain/repository/database/category_database_repository';
 import { CategoryEntity } from '../domain/model/entities/category_entity';
 import { CategoryRequest } from '../domain/model/request/category/category_request';
@@ -54,18 +52,18 @@ export class CategoryService {
   async createCategory(
     request: CreateCategoryRequest,
   ): Promise<CategoryEntity | null> {
-    return await this.repo.createOrUpdate(request.convertToEntity());
+    return await this.createOrUpdate(request.convertToEntity());
   }
 
   async updateCategory(
     id: string,
     request: CreateCategoryRequest,
   ): Promise<CategoryEntity | null> {
-    const find = await this.repo.findOneById(id);
+    const find = await this.findOneById(id);
     if (!find) {
       throw new Error('Category not found');
     }
     Object.assign(find, request);
-    return await this.repo.createOrUpdate(find);
+    return await this.createOrUpdate(find);
   }
 }

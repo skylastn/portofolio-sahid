@@ -6,7 +6,7 @@ import { ApiClient } from "@/shared/network/api_client";
 import { Either, left, right } from "@/shared/utils/utility/either";
 import { CreatePortofolioRequest } from "../../domain/model/request/portofolio/create_portofolio_request";
 import { PortofolioRequest } from "../../domain/model/request/portofolio/portofolio_request";
-import { PortofolioResponse } from "../../domain/model/response/portofolio_response";
+import { PortofolioResponse } from "../../domain/model/response/portofolio/portofolio_response";
 
 export class PortofolioRemoteDataSource {
   constructor(private api = new ApiClient()) {}

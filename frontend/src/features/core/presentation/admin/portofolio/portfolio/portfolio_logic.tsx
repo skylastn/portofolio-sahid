@@ -14,7 +14,7 @@ import { useLoading } from "@/shared/component/elements/loading_context";
 import { PortofolioService } from "@/features/core/application/portofolio_service";
 import { CreatePortofolioRequest } from "@/features/core/domain/model/request/portofolio/create_portofolio_request";
 import { PortofolioRequest } from "@/features/core/domain/model/request/portofolio/portofolio_request";
-import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio_response";
+import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
 import { EitherType } from "@/shared/utils/utility/either";
 import {
   buildUploadFileName,

@@ -1,19 +1,13 @@
 import { BaseModelResponse } from "@/shared/domain/model/response/base_model_response";
 import { BaseResponse } from "@/shared/domain/model/response/base_response";
 import { ConvertResponse } from "@/shared/domain/model/response/convert_response";
+import { WorkResponse } from "../work_response";
 
-export namespace PortofolioResponse {
+export namespace PortofolioImageResponse {
   export class Data extends BaseModelResponse {
-    work_id?: string | null;
-    title?: string;
-    description?: string;
-    thumbnail_path?: string | null;
-    thumbnail_url?: string | null;
-    work?: {
-      id?: string;
-      company_name?: string;
-      job_title?: string;
-    } | null;
+    portofolio_id?: string;
+    image_path?: string;
+    image_url?: string;
   }
 
   export type ResponseList = BaseResponse<Data[]>;
