@@ -15,7 +15,7 @@ async function bootstrap() {
 
   const allowedOrigins = [
     'https://portofolio.skytech.my.id',
-    'http://localhost:3005',
+    'http://localhost:3000',
   ];
 
   app.enableCors({
