@@ -115,6 +115,9 @@ export class PortofolioImageService {
     for (const content of findAll) {
       if (!existingSet.has(content.id)) continue;
       await this.removeById(content.id);
+      if (FormatHelper.isPresent(content.imagePath)) {
+        this.minioService.removeObject(content.imagePath);
+      }
     }
   }
 }

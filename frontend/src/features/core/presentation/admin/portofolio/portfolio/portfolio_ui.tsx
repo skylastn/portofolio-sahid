@@ -10,6 +10,7 @@ export default function PortofolioUI() {
     portofolios,
     selectedPortofolio,
     isLoading,
+    isDetailLoading,
     isSubmitting,
     isUploading,
     isDetailOpen,
@@ -113,7 +114,7 @@ export default function PortofolioUI() {
                 </tr>
               ) : (
                 portofolios.map((item, index) => (
-                  <tr key={item.id} className="odd:bg-white/3">
+                  <tr key={item.id} className="odd:bg-white/[0.03]">
                     <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
                       <div className="leading-6" style={twoLineClampStyle}>
                         {(currentPage - 1) * perPage + index + 1}
@@ -214,9 +215,9 @@ export default function PortofolioUI() {
       </div>
 
       {isDetailOpen && selectedPortofolio ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-[1.75rem] border border-white/10 bg-slate-950 p-6">
-            <div className="flex items-start justify-between gap-4">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/70 px-4 py-6 backdrop-blur-sm">
+          <div className="my-auto w-full max-w-5xl overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950">
+            <div className="flex items-start justify-between gap-4 px-6 pt-6">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">
                   View portfolio
@@ -225,29 +226,211 @@ export default function PortofolioUI() {
                   {selectedPortofolio.title}
                 </h4>
               </div>
-              <button
-                type="button"
-                onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
-              >
-                Close
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => openEditForm(selectedPortofolio)}
+                  className="rounded-full border border-sky-300/30 bg-sky-400/10 px-3 py-2 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
+                >
+                  Close
+                </button>
+              </div>
             </div>
 
-            <div className="mt-6 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
-              {[
-                ["Work", selectedPortofolio.work?.job_title ?? selectedPortofolio.work?.company_name ?? selectedPortofolio.work_id],
-                ["Description", selectedPortofolio.description],
-                ["Thumbnail path", selectedPortofolio.thumbnail_path],
-                ["Updated", selectedPortofolio.updated_at ? new Date(selectedPortofolio.updated_at).toLocaleString() : "-"],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-2xl bg-white/5 px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                    {label}
-                  </p>
-                  <p className="mt-2 break-all text-sm text-white">{value ?? "-"}</p>
+            <div className="max-h-[calc(90vh-120px)] overflow-y-auto px-6 pb-6">
+              {isDetailLoading ? (
+                <div className="mt-6 flex min-h-[320px] items-center justify-center rounded-[1.5rem] border border-white/10 bg-white/5 text-sm text-slate-300">
+                  Loading portfolio detail...
                 </div>
-              ))}
+              ) : (
+                <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+                  <div className="flex min-w-0 flex-col gap-4">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-white/5 px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                          Work
+                        </p>
+                        <p className="mt-2 text-sm text-white">
+                          {selectedPortofolio.work?.job_title ??
+                            selectedPortofolio.work?.company_name ??
+                            selectedPortofolio.work_id ??
+                            "-"}
+                        </p>
+                        {selectedPortofolio.work?.company_url ? (
+                          <p className="mt-2 break-all text-xs text-slate-400">
+                            {selectedPortofolio.work.company_url}
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="rounded-2xl bg-white/5 px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                          Thumbnail
+                        </p>
+                        <p className="mt-2 break-all text-sm text-white">
+                          {selectedPortofolio.thumbnail_path ?? "-"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                          Thumbnail preview
+                        </p>
+                        <div className="mt-3 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60">
+                          {selectedPortofolio.thumbnail_url ? (
+                            <DefaultImage
+                              src={selectedPortofolio.thumbnail_url}
+                              alt={selectedPortofolio.title ?? "portfolio thumbnail"}
+                              className="h-full w-full"
+                              sizes="480px"
+                            />
+                          ) : (
+                            <span className="text-sm text-slate-400">No thumbnail preview</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl bg-white/5 px-4 py-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                          Description
+                        </p>
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-white">
+                          {selectedPortofolio.description ?? "-"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/5 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                        Gallery
+                      </p>
+                      <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        {(selectedPortofolio.images ?? []).length === 0 ? (
+                          <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/50 px-4 py-8 text-sm text-slate-400 sm:col-span-2 xl:col-span-3">
+                            No gallery images.
+                          </div>
+                        ) : (
+                          (selectedPortofolio.images ?? []).map((image) => (
+                            <div
+                              key={image.id}
+                              className="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60"
+                            >
+                              <div className="flex h-44 items-center justify-center bg-slate-900/50">
+                                {image.image_url ? (
+                                  <DefaultImage
+                                    src={image.image_url}
+                                    alt={image.image_path ?? "portfolio image"}
+                                    className="h-full w-full"
+                                    sizes="320px"
+                                  />
+                                ) : (
+                                  <span className="px-4 text-center text-sm text-slate-400">
+                                    {image.image_path ?? "-"}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="px-4 py-3">
+                                <p className="break-all text-xs text-slate-400">
+                                  {image.image_path ?? "-"}
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex min-w-0 flex-col gap-4">
+                    <div className="rounded-2xl bg-white/5 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                        Apps Sources
+                      </p>
+                      <div className="mt-3 flex flex-col gap-3">
+                        {(selectedPortofolio.apps_sources ?? []).length === 0 ? (
+                          <p className="text-sm text-slate-300">No app sources.</p>
+                        ) : (
+                          (selectedPortofolio.apps_sources ?? []).map((source) => (
+                            <div
+                              key={source.id}
+                              className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3"
+                            >
+                              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                                {source.type ?? "other"}
+                              </p>
+                              <p className="mt-2 break-all text-sm text-white">
+                                {source.url ?? "-"}
+                              </p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/5 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                        Categories
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {(selectedPortofolio.category_mappings ?? []).length === 0 ? (
+                          <p className="text-sm text-slate-300">No categories.</p>
+                        ) : (
+                          (selectedPortofolio.category_mappings ?? []).map((mapping) => (
+                            <span
+                              key={mapping.id}
+                              className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-100"
+                            >
+                              {mapping.category?.title ?? mapping.category_id}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl bg-white/5 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                        Frameworks
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {(selectedPortofolio.framework_mappings ?? []).length === 0 ? (
+                          <p className="text-sm text-slate-300">No frameworks.</p>
+                        ) : (
+                          (selectedPortofolio.framework_mappings ?? []).map((mapping) => (
+                            <span
+                              key={mapping.id}
+                              className="rounded-full border border-sky-300/30 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-100"
+                            >
+                              {mapping.framework?.title ?? mapping.framework_id}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {[
+                        ["Created", selectedPortofolio.created_at ? new Date(selectedPortofolio.created_at).toLocaleString() : "-"],
+                        ["Updated", selectedPortofolio.updated_at ? new Date(selectedPortofolio.updated_at).toLocaleString() : "-"],
+                      ].map(([label, value]) => (
+                        <div key={label} className="rounded-2xl bg-white/5 px-4 py-3">
+                          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                            {label}
+                          </p>
+                          <p className="mt-2 break-all text-sm text-white">{value ?? "-"}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

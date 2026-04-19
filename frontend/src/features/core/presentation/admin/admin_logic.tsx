@@ -182,9 +182,9 @@ const adminContent: AdminContextProps = {
   ],
   navigationItems: [
     { label: "Dashboard", href: "/admin" },
-    { label: "Portfolio", href: "/admin/portfolio" },
-    { label: "Activity", href: "/admin/portfolio" },
-    { label: "Tables", href: "/admin/portfolio" },
+    { label: "Portfolio", href: "/admin/portofolio" },
+    { label: "Activity", href: "/admin/portofolio" },
+    { label: "Tables", href: "/admin/portofolio" },
   ],
   mainTabs: [
     { label: "Portfolio", value: "portfolio" },
@@ -313,11 +313,11 @@ export const adminNavigationItems: AdminNavigationItem[] = [
   { label: "Dashboard", href: "/admin", key: "dashboard" },
   {
     label: "Portfolio",
-    href: "/admin/portfolio",
+    href: "/admin/portofolio",
     key: "portfolio",
     children: [
-      { label: "Portfolio", href: "/admin/portfolio", key: "portfolio" },
-      { label: "Category", href: "/admin/portfolio/category", key: "category" },
+      { label: "Portfolio", href: "/admin/portofolio", key: "portfolio" },
+      { label: "Category", href: "/admin/portofolio/category", key: "category" },
     ],
   },
   { label: "Achievement", href: "/admin/achievement", key: "achievement" },

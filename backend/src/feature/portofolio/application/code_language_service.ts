@@ -92,7 +92,8 @@ export class CodeLanguageService {
     if (
       result &&
       FormatHelper.isPresent(data.image_path) &&
-      FormatHelper.isPresent(oldImagePath)
+      FormatHelper.isPresent(oldImagePath) && 
+      data.image_path !== oldImagePath
     ) {
       this.minioService.removeObject(oldImagePath);
     }

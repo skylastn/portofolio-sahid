@@ -1,9 +1,11 @@
+import { CreatePortofolioAppsSourceRequest } from "./create_portofolio_apps_source_request";
+
 export interface CreatePortofolioRequest {
   work_id?: string | null;
   title: string;
   description: string;
   thumbnail_path?: string | null;
-  apps_sources?: unknown[];
+  apps_sources?: CreatePortofolioAppsSourceRequest[];
   deleted_apps_source_ids?: string[];
   images?: string[];
   deleted_image_ids?: string[];

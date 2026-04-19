@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { useLoading } from "@/shared/component/elements/loading_context";
 import { PortofolioService } from "@/features/core/application/portofolio_service";
@@ -27,6 +28,7 @@ interface PortofolioContextProps {
   portofolios: PortofolioResponse.Data[];
   selectedPortofolio: PortofolioResponse.Data | null;
   isLoading: boolean;
+  isDetailLoading: boolean;
   isSubmitting: boolean;
   isUploading: boolean;
   isDetailOpen: boolean;
@@ -38,7 +40,7 @@ interface PortofolioContextProps {
   perPage: number;
   total: number;
   openCreateForm: () => void;
-  openViewModal: (item: PortofolioResponse.Data) => void;
+  openViewModal: (item: PortofolioResponse.Data) => Promise<void>;
   openEditForm: (item: PortofolioResponse.Data) => void;
   openDeleteDialog: (item: PortofolioResponse.Data) => void;
   closeModal: () => void;
@@ -65,12 +67,14 @@ export const PortofolioProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const router = useRouter();
   const service = useMemo(() => new PortofolioService(), []);
   const { setLoading } = useLoading();
   const [portofolios, setPortofolios] = useState<PortofolioResponse.Data[]>([]);
   const [selectedPortofolio, setSelectedPortofolio] =
     useState<PortofolioResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -122,28 +126,38 @@ export const PortofolioProvider = ({
   }, []);
 
   const openCreateForm = useCallback(() => {
-    setSelectedPortofolio(null);
-    setIsEditing(false);
-    setFormState(defaultFormState);
-    setIsFormOpen(true);
-  }, []);
+    void router.push("/admin/portofolio/create");
+  }, [router]);
 
-  const openViewModal = useCallback((item: PortofolioResponse.Data) => {
-    setSelectedPortofolio(item);
-    setIsDetailOpen(true);
-  }, []);
+  const openViewModal = useCallback(
+    async (item: PortofolioResponse.Data) => {
+      if (!item.id) return;
+      setSelectedPortofolio(item);
+      setIsDetailOpen(true);
+      setIsDetailLoading(true);
+      setLoading(true);
+      try {
+        const result = await service.fetchPortofolioById(item.id);
+        result.fold(
+          (err) => {
+            toast.error(err.message ?? "Failed to load portfolio detail");
+          },
+          (response) => {
+            setSelectedPortofolio(response);
+          },
+        );
+      } finally {
+        setIsDetailLoading(false);
+        setLoading(false);
+      }
+    },
+    [service, setLoading],
+  );
 
   const openEditForm = useCallback((item: PortofolioResponse.Data) => {
-    setSelectedPortofolio(item);
-    setIsEditing(true);
-    setFormState({
-      work_id: item.work_id ?? "",
-      title: item.title ?? "",
-      description: item.description ?? "",
-      thumbnail_path: item.thumbnail_path ?? "",
-    });
-    setIsFormOpen(true);
-  }, []);
+    if (!item.id) return;
+    void router.push(`/admin/portofolio/${item.id}/edit`);
+  }, [router]);
 
   const openDeleteDialog = useCallback((item: PortofolioResponse.Data) => {
     setSelectedPortofolio(item);
@@ -269,6 +283,7 @@ export const PortofolioProvider = ({
         portofolios,
         selectedPortofolio,
         isLoading,
+        isDetailLoading,
         isSubmitting,
         isUploading,
         isDetailOpen,

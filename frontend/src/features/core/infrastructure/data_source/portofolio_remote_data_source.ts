@@ -28,6 +28,23 @@ export class PortofolioRemoteDataSource {
     }
   }
 
+  async createImageUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    try {
+      const response = await this.api.request({
+        path: `${UrlPath.PORTOFOLIO}/images/upload-signature`,
+        method: HttpMethod.POST,
+        data: { image_name: imageName },
+      });
+      if (response.status == false) return left(response);
+      const parsed = MinioUploadResponse.Convert.fromJson(JSON.stringify(response));
+      return right(parsed.data!);
+    } catch (error) {
+      return left(ResponseModel.fromError(error));
+    }
+  }
+
   async fetchPortofolios(
     query?: PortofolioRequest,
   ): Promise<Either<ResponseModel, ResponseModel<PortofolioResponse.Data[]>>> {

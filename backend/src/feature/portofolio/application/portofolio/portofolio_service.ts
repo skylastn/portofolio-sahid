@@ -1,8 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { MinioService } from '../../../support/application/minio_service';
-import {
-  PORTOFOLIO_DATABASE_REPOSITORY,
-} from '../../domain/repository/database/portofolio/portofolio_database_repository';
+import { PORTOFOLIO_DATABASE_REPOSITORY } from '../../domain/repository/database/portofolio/portofolio_database_repository';
 import type { PortofolioDatabaseRepository } from '../../domain/repository/database/portofolio/portofolio_database_repository';
 import { PortofolioImageService } from './portofolio_image_service';
 import { PortofolioFrameworkMappingService } from './portofolio_framework_mapping_service';
@@ -150,7 +148,8 @@ export class PortofolioService {
     if (result) {
       if (
         FormatHelper.isPresent(request.thumbnail_path) &&
-        FormatHelper.isPresent(oldThumbnailPath)
+        FormatHelper.isPresent(oldThumbnailPath) &&
+        request.thumbnail_path !== oldThumbnailPath
       ) {
         this.minioService.removeObject(oldThumbnailPath);
       }

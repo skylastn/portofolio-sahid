@@ -15,6 +15,9 @@ export interface PortofolioRepository {
   createUploadSignature(
     imageName: string,
   ): Promise<Either<ResponseModel, MinioUploadResponse.Data>>;
+  createImageUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>>;
   createPortofolio(
     request: CreatePortofolioRequest,
   ): Promise<Either<ResponseModel, PortofolioResponse.Data>>;

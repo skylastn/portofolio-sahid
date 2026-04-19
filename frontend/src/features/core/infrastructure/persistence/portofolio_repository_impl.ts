@@ -28,6 +28,12 @@ export class PortofolioRepositoryImpl implements PortofolioRepository {
     return await this.remote.createUploadSignature(imageName);
   }
 
+  async createImageUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.remote.createImageUploadSignature(imageName);
+  }
+
   async createPortofolio(
     request: CreatePortofolioRequest,
   ): Promise<Either<ResponseModel, PortofolioResponse.Data>> {
