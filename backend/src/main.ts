@@ -14,7 +14,7 @@ async function bootstrap() {
   app.useStaticAssets(join(process.cwd(), 'public'));
 
   const allowedOrigins = [
-    'https://sahid.skytech.my.id',
+    'https://portofolio.skytech.my.id',
     'http://localhost:3005',
   ];
 

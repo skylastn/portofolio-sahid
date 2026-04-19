@@ -1,9 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { UserEntity } from '../domain/model/entities/user_entity';
 import { USER_REPOSITORY } from '../domain/repository/user_repository';
 import type { UserRepository } from '../domain/repository/user_repository';
 import { UserResponse } from '../domain/model/response/user_response';
-import type { RegisterUserRequest } from '../domain/model/request/user/register_user_request';
+import type { CreateUserRequest } from '../domain/model/request/user/create_user_request';
+import { FormatHelper } from '../../../shared/utils/utility/format_helper';
+import { UserRole } from '../domain/model/enum/user_role';
 
 @Injectable()
 export class UserService {
@@ -28,6 +30,9 @@ export class UserService {
 
   async findByIdResponse(id: string): Promise<UserResponse | null> {
     const result = await this.usersRepository.findById(id);
+    if (!FormatHelper.isPresent(result)) {
+      return null;
+    }
     return UserResponse.convertFromEntity(result);
   }
 
@@ -41,20 +46,33 @@ export class UserService {
     return result;
   }
 
-  async createUser(data: RegisterUserRequest): Promise<UserEntity | null> {
-    const result = await this.usersRepository.create(data);
-    return result;
-  }
-
-  async updateUser(
-    id: string,
-    data: RegisterUserRequest,
-  ): Promise<UserEntity | null> {
-    const result = await this.usersRepository.update(data, id);
+  async createOrUpdate(data: UserEntity): Promise<UserEntity | null> {
+    const result = await this.usersRepository.createOrUpdate(data);
     return result;
   }
 
   async removeById(id: number): Promise<void> {
     return await this.usersRepository.removeById(id);
+  }
+
+  async createUser(data: CreateUserRequest): Promise<UserEntity | null> {
+    const result = await this.usersRepository.createOrUpdate(data.toEntity());
+    return result;
+  }
+
+  async updateUser(
+    id: string,
+    data: CreateUserRequest,
+  ): Promise<UserEntity | null> {
+    const entity = await this.findById(id);
+    if (!FormatHelper.isPresent(entity)) {
+      throw new Error('User not found');
+    }
+    if (entity.role != UserRole.ADMIN) {
+      throw new UnauthorizedException();
+    }
+    Object.assign(entity, data);
+    const result = await this.createOrUpdate(entity);
+    return result;
   }
 }
