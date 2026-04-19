@@ -1,5 +1,6 @@
 import { ResponseModel } from "@/shared/domain/model/response_model";
 import { Either } from "@/shared/utils/utility/either";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 import { CreateFrameworkRequest } from "../domain/model/request/framework/create_framework_request";
 import { FrameworkRequest } from "../domain/model/request/framework/framework_request";
 import { FrameworkResponse } from "../domain/model/response/framework_response";
@@ -24,6 +25,12 @@ export class FrameworkService {
     id: string,
   ): Promise<Either<ResponseModel, FrameworkResponse.Data>> {
     return await this.repo.fetchFrameworkById(id);
+  }
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.repo.createUploadSignature(imageName);
   }
 
   async createFramework(

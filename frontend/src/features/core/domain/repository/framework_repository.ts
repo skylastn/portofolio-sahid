@@ -3,6 +3,7 @@ import { Either } from "@/shared/utils/utility/either";
 import { FrameworkRequest } from "../model/request/framework/framework_request";
 import { CreateFrameworkRequest } from "../model/request/framework/create_framework_request";
 import { FrameworkResponse } from "../model/response/framework_response";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export interface FrameworkRepository {
   fetchFrameworks(
@@ -11,6 +12,9 @@ export interface FrameworkRepository {
   fetchFrameworkById(
     id: string,
   ): Promise<Either<ResponseModel, FrameworkResponse.Data>>;
+  createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>>;
   createFramework(
     request: CreateFrameworkRequest,
   ): Promise<Either<ResponseModel, FrameworkResponse.Data>>;

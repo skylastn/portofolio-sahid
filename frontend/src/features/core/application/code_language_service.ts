@@ -1,5 +1,6 @@
 import { ResponseModel } from "@/shared/domain/model/response_model";
 import { Either } from "@/shared/utils/utility/either";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 import { CodeLanguageRequest } from "../domain/model/request/code_language/code_language_request";
 import { CreateCodeLanguageRequest } from "../domain/model/request/code_language/create_code_language_request";
 import { CodeLanguageResponse } from "../domain/model/response/code_language_response";
@@ -26,6 +27,12 @@ export class CodeLanguageService {
     id: string,
   ): Promise<Either<ResponseModel, CodeLanguageResponse.Data>> {
     return await this.repo.fetchCodeLanguageById(id);
+  }
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.repo.createUploadSignature(imageName);
   }
 
   async createCodeLanguage(

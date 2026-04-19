@@ -1,6 +1,7 @@
 "use client";
 
 import AdminShell from "../../admin_shell";
+import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
 import { usePortofolioLogic } from "./portfolio_logic";
 
 export default function PortofolioUI() {
@@ -9,6 +10,7 @@ export default function PortofolioUI() {
     selectedPortofolio,
     isLoading,
     isSubmitting,
+    isUploading,
     isDetailOpen,
     isFormOpen,
     isDeleteOpen,
@@ -25,6 +27,7 @@ export default function PortofolioUI() {
     setFormField,
     savePortofolio,
     deletePortofolio,
+    uploadPortofolioThumbnail,
     goToPage,
   } = usePortofolioLogic();
 
@@ -238,15 +241,14 @@ export default function PortofolioUI() {
                   placeholder="Enter description"
                 />
               </label>
-              <label className="flex flex-col gap-2 md:col-span-2">
-                <span className="text-sm font-semibold text-slate-200">Thumbnail path</span>
-                <input
-                  value={formState.thumbnail_path ?? ""}
-                  onChange={(event) => setFormField("thumbnail_path", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
-                  placeholder="Enter thumbnail path"
+              <div className="md:col-span-2">
+                <FileUploadField
+                  label="Thumbnail"
+                  value={formState.thumbnail_path}
+                  isUploading={isUploading}
+                  onUpload={uploadPortofolioThumbnail}
                 />
-              </label>
+              </div>
             </div>
 
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -260,7 +262,7 @@ export default function PortofolioUI() {
               <button
                 type="button"
                 onClick={savePortofolio}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading}
                 className="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}

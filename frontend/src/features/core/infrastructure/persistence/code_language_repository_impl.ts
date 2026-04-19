@@ -5,6 +5,7 @@ import { CreateCodeLanguageRequest } from "../../domain/model/request/code_langu
 import { CodeLanguageResponse } from "../../domain/model/response/code_language_response";
 import { CodeLanguageRepository } from "../../domain/repository/code_language_repository";
 import { CodeLanguageRemoteDataSource } from "../data_source/code_language_remote_data_source";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export class CodeLanguageRepositoryImpl implements CodeLanguageRepository {
   constructor(private readonly remote: CodeLanguageRemoteDataSource) {}
@@ -19,6 +20,12 @@ export class CodeLanguageRepositoryImpl implements CodeLanguageRepository {
     id: string,
   ): Promise<Either<ResponseModel, CodeLanguageResponse.Data>> {
     return await this.remote.fetchCodeLanguageById(id);
+  }
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.remote.createUploadSignature(imageName);
   }
 
   async createCodeLanguage(

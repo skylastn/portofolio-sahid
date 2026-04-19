@@ -1,6 +1,7 @@
 "use client";
 
 import AdminShell from "../admin_shell";
+import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
 import { useFrameworkLogic } from "./framework_logic";
 
 export default function FrameworkUI() {
@@ -10,6 +11,7 @@ export default function FrameworkUI() {
     selectedFramework,
     isLoading,
     isSubmitting,
+    isUploading,
     isDetailOpen,
     isFormOpen,
     isDeleteOpen,
@@ -26,6 +28,7 @@ export default function FrameworkUI() {
     setFormField,
     saveFramework,
     deleteFramework,
+    uploadFrameworkImage,
     goToPage,
   } = useFrameworkLogic();
 
@@ -248,15 +251,14 @@ export default function FrameworkUI() {
                   placeholder="Enter description"
                 />
               </label>
-              <label className="flex flex-col gap-2 md:col-span-2">
-                <span className="text-sm font-semibold text-slate-200">Image path</span>
-                <input
-                  value={formState.image_path ?? ""}
-                  onChange={(event) => setFormField("image_path", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
-                  placeholder="Enter image path"
+              <div className="md:col-span-2">
+                <FileUploadField
+                  label="Image"
+                  value={formState.image_path}
+                  isUploading={isUploading}
+                  onUpload={uploadFrameworkImage}
                 />
-              </label>
+              </div>
             </div>
 
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -270,7 +272,7 @@ export default function FrameworkUI() {
               <button
                 type="button"
                 onClick={saveFramework}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading}
                 className="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}

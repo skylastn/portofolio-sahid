@@ -1,6 +1,7 @@
 import { UrlPath } from "@/shared/constant/url_path";
 import { HttpMethod } from "@/shared/domain/model/enum/http_method";
 import { ResponseModel } from "@/shared/domain/model/response_model";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 import { ApiClient } from "@/shared/network/api_client";
 import { Either, left, right } from "@/shared/utils/utility/either";
 import { CodeLanguageRequest } from "../../domain/model/request/code_language/code_language_request";
@@ -9,6 +10,23 @@ import { CodeLanguageResponse } from "../../domain/model/response/code_language_
 
 export class CodeLanguageRemoteDataSource {
   constructor(private api = new ApiClient()) {}
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    try {
+      const response = await this.api.request({
+        path: `${UrlPath.CODE_LANGUAGE}/upload-signature`,
+        method: HttpMethod.POST,
+        data: { image_name: imageName },
+      });
+      if (response.status == false) return left(response);
+      const parsed = MinioUploadResponse.Convert.fromJson(JSON.stringify(response));
+      return right(parsed.data!);
+    } catch (error) {
+      return left(ResponseModel.fromError(error));
+    }
+  }
 
   async fetchCodeLanguages(
     query?: CodeLanguageRequest,

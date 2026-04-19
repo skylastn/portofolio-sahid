@@ -5,6 +5,7 @@ import { FrameworkRequest } from "../../domain/model/request/framework/framework
 import { FrameworkResponse } from "../../domain/model/response/framework_response";
 import { FrameworkRepository } from "../../domain/repository/framework_repository";
 import { FrameworkRemoteDataSource } from "../data_source/framework_remote_data_source";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export class FrameworkRepositoryImpl implements FrameworkRepository {
   constructor(private readonly remote: FrameworkRemoteDataSource) {}
@@ -19,6 +20,12 @@ export class FrameworkRepositoryImpl implements FrameworkRepository {
     id: string,
   ): Promise<Either<ResponseModel, FrameworkResponse.Data>> {
     return await this.remote.fetchFrameworkById(id);
+  }
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.remote.createUploadSignature(imageName);
   }
 
   async createFramework(

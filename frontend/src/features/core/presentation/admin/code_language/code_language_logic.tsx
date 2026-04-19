@@ -15,6 +15,11 @@ import { CodeLanguageService } from "@/features/core/application/code_language_s
 import { CodeLanguageRequest } from "@/features/core/domain/model/request/code_language/code_language_request";
 import { CreateCodeLanguageRequest } from "@/features/core/domain/model/request/code_language/create_code_language_request";
 import { CodeLanguageResponse } from "@/features/core/domain/model/response/code_language_response";
+import { EitherType } from "@/shared/utils/utility/either";
+import {
+  buildUploadFileName,
+  uploadFileToPresignedUrl,
+} from "@/shared/utils/utility/minio_upload";
 
 interface CodeLanguageFormState extends CreateCodeLanguageRequest {}
 
@@ -23,6 +28,7 @@ interface CodeLanguageContextProps {
   selectedCodeLanguage: CodeLanguageResponse.Data | null;
   isLoading: boolean;
   isSubmitting: boolean;
+  isUploading: boolean;
   isDetailOpen: boolean;
   isFormOpen: boolean;
   isDeleteOpen: boolean;
@@ -39,6 +45,7 @@ interface CodeLanguageContextProps {
   setFormField: (field: keyof CodeLanguageFormState, value: string) => void;
   saveCodeLanguage: () => Promise<void>;
   deleteCodeLanguage: () => Promise<void>;
+  uploadCodeLanguageImage: (file: File) => Promise<void>;
   goToPage: (page: number) => Promise<void>;
 }
 
@@ -64,6 +71,7 @@ export const CodeLanguageProvider = ({
     useState<CodeLanguageResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -147,6 +155,37 @@ export const CodeLanguageProvider = ({
     [],
   );
 
+  const uploadCodeLanguageImage = useCallback(
+    async (file: File) => {
+      setIsUploading(true);
+      setLoading(true);
+      try {
+        const signatureResult = await service.createUploadSignature(
+          buildUploadFileName(file),
+        );
+        if (signatureResult.tag === EitherType.Left) {
+          toast.error(
+            signatureResult.left.message ?? "Failed to create upload signature",
+          );
+          return;
+        }
+        const signature = signatureResult.right;
+
+        await uploadFileToPresignedUrl(signature.url, file);
+        setFormState((prev) => ({ ...prev, image_path: signature.key }));
+        toast.success("Image uploaded");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
+      } finally {
+        setIsUploading(false);
+        setLoading(false);
+      }
+    },
+    [service, setLoading],
+  );
+
   const saveCodeLanguage = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
@@ -227,6 +266,7 @@ export const CodeLanguageProvider = ({
         selectedCodeLanguage,
         isLoading,
         isSubmitting,
+        isUploading,
         isDetailOpen,
         isFormOpen,
         isDeleteOpen,
@@ -243,6 +283,7 @@ export const CodeLanguageProvider = ({
         setFormField,
         saveCodeLanguage,
         deleteCodeLanguage,
+        uploadCodeLanguageImage,
         goToPage,
       }}
     >

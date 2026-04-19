@@ -5,6 +5,7 @@ import { CreateAchievementRequest } from "../../domain/model/request/achievement
 import { AchievementResponse } from "../../domain/model/response/achievement_response";
 import { AchievementRepository } from "../../domain/repository/achievement_repository";
 import { AchievementRemoteDataSource } from "../data_source/achievement_remote_data_source";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export class AchievementRepositoryImpl implements AchievementRepository {
   constructor(private readonly remote: AchievementRemoteDataSource) {}
@@ -19,6 +20,12 @@ export class AchievementRepositoryImpl implements AchievementRepository {
     id: string,
   ): Promise<Either<ResponseModel, AchievementResponse.Data>> {
     return await this.remote.fetchAchievementById(id);
+  }
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.remote.createUploadSignature(imageName);
   }
 
   async createAchievement(

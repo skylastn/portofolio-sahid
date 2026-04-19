@@ -15,6 +15,11 @@ import { WorkService } from "@/features/core/application/work_service";
 import { CreateWorkRequest } from "@/features/core/domain/model/request/work/create_work_request";
 import { WorkRequest } from "@/features/core/domain/model/request/work/work_request";
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
+import { EitherType } from "@/shared/utils/utility/either";
+import {
+  buildUploadFileName,
+  uploadFileToPresignedUrl,
+} from "@/shared/utils/utility/minio_upload";
 
 interface WorkFormState extends CreateWorkRequest {}
 
@@ -23,6 +28,7 @@ interface WorkContextProps {
   selectedWork: WorkResponse.Data | null;
   isLoading: boolean;
   isSubmitting: boolean;
+  isUploading: boolean;
   isDetailOpen: boolean;
   isFormOpen: boolean;
   isDeleteOpen: boolean;
@@ -39,6 +45,7 @@ interface WorkContextProps {
   setFormField: (field: keyof WorkFormState, value: string) => void;
   saveWork: () => Promise<void>;
   deleteWork: () => Promise<void>;
+  uploadWorkImage: (file: File) => Promise<void>;
   goToPage: (page: number) => Promise<void>;
 }
 
@@ -61,6 +68,7 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedWork, setSelectedWork] = useState<WorkResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -144,6 +152,37 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
   const setFormField = useCallback((field: keyof WorkFormState, value: string) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
   }, []);
+
+  const uploadWorkImage = useCallback(
+    async (file: File) => {
+      setIsUploading(true);
+      setLoading(true);
+      try {
+        const signatureResult = await service.createUploadSignature(
+          buildUploadFileName(file),
+        );
+        if (signatureResult.tag === EitherType.Left) {
+          toast.error(
+            signatureResult.left.message ?? "Failed to create upload signature",
+          );
+          return;
+        }
+        const signature = signatureResult.right;
+
+        await uploadFileToPresignedUrl(signature.url, file);
+        setFormState((prev) => ({ ...prev, image_path: signature.key }));
+        toast.success("Image uploaded");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
+      } finally {
+        setIsUploading(false);
+        setLoading(false);
+      }
+    },
+    [service, setLoading],
+  );
 
   const saveWork = useCallback(async () => {
     setIsSubmitting(true);
@@ -233,6 +272,7 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
         selectedWork,
         isLoading,
         isSubmitting,
+        isUploading,
         isDetailOpen,
         isFormOpen,
         isDeleteOpen,
@@ -249,6 +289,7 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
         setFormField,
         saveWork,
         deleteWork,
+        uploadWorkImage,
         goToPage,
       }}
     >

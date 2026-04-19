@@ -1,6 +1,7 @@
 "use client";
 
 import AdminShell from "../admin_shell";
+import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
 import { useCodeLanguageLogic } from "./code_language_logic";
 
 export default function CodeLanguageUI() {
@@ -9,6 +10,7 @@ export default function CodeLanguageUI() {
     selectedCodeLanguage,
     isLoading,
     isSubmitting,
+    isUploading,
     isDetailOpen,
     isFormOpen,
     isDeleteOpen,
@@ -25,6 +27,7 @@ export default function CodeLanguageUI() {
     setFormField,
     saveCodeLanguage,
     deleteCodeLanguage,
+    uploadCodeLanguageImage,
     goToPage,
   } = useCodeLanguageLogic();
 
@@ -213,15 +216,14 @@ export default function CodeLanguageUI() {
                   placeholder="Enter title"
                 />
               </label>
-              <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Image path</span>
-                <input
-                  value={formState.image_path ?? ""}
-                  onChange={(event) => setFormField("image_path", event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none focus:border-cyan-300"
-                  placeholder="Enter image path"
+              <div className="md:col-span-2">
+                <FileUploadField
+                  label="Image"
+                  value={formState.image_path}
+                  isUploading={isUploading}
+                  onUpload={uploadCodeLanguageImage}
                 />
-              </label>
+              </div>
               <label className="flex flex-col gap-2 md:col-span-2">
                 <span className="text-sm font-semibold text-slate-200">Description</span>
                 <textarea
@@ -244,7 +246,7 @@ export default function CodeLanguageUI() {
               <button
                 type="button"
                 onClick={saveCodeLanguage}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading}
                 className="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}

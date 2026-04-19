@@ -1,6 +1,7 @@
 import { UrlPath } from "@/shared/constant/url_path";
 import { HttpMethod } from "@/shared/domain/model/enum/http_method";
 import { ResponseModel } from "@/shared/domain/model/response_model";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 import { ApiClient } from "@/shared/network/api_client";
 import { Either, left, right } from "@/shared/utils/utility/either";
 import { CreateFrameworkRequest } from "../../domain/model/request/framework/create_framework_request";
@@ -9,6 +10,23 @@ import { FrameworkResponse } from "../../domain/model/response/framework_respons
 
 export class FrameworkRemoteDataSource {
   constructor(private api = new ApiClient()) {}
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    try {
+      const response = await this.api.request({
+        path: `${UrlPath.FRAMEWORK}/upload-signature`,
+        method: HttpMethod.POST,
+        data: { image_name: imageName },
+      });
+      if (response.status == false) return left(response);
+      const parsed = MinioUploadResponse.Convert.fromJson(JSON.stringify(response));
+      return right(parsed.data!);
+    } catch (error) {
+      return left(ResponseModel.fromError(error));
+    }
+  }
 
   async fetchFrameworks(
     query?: FrameworkRequest,

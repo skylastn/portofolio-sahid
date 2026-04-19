@@ -5,6 +5,7 @@ import { PortofolioRequest } from "../../domain/model/request/portofolio/portofo
 import { PortofolioResponse } from "../../domain/model/response/portofolio_response";
 import { PortofolioRepository } from "../../domain/repository/portofolio_repository";
 import { PortofolioRemoteDataSource } from "../data_source/portofolio_remote_data_source";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export class PortofolioRepositoryImpl implements PortofolioRepository {
   constructor(private readonly remote: PortofolioRemoteDataSource) {}
@@ -19,6 +20,12 @@ export class PortofolioRepositoryImpl implements PortofolioRepository {
     id: string,
   ): Promise<Either<ResponseModel, PortofolioResponse.Data>> {
     return await this.remote.fetchPortofolioById(id);
+  }
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.remote.createUploadSignature(imageName);
   }
 
   async createPortofolio(

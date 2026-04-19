@@ -15,6 +15,11 @@ import { AchievementService } from "@/features/core/application/achievement_serv
 import { AchievementRequest } from "@/features/core/domain/model/request/achievement/achievement_request";
 import { CreateAchievementRequest } from "@/features/core/domain/model/request/achievement/create_achievement_request";
 import { AchievementResponse } from "@/features/core/domain/model/response/achievement_response";
+import { EitherType } from "@/shared/utils/utility/either";
+import {
+  buildUploadFileName,
+  uploadFileToPresignedUrl,
+} from "@/shared/utils/utility/minio_upload";
 
 interface AchievementFormState extends CreateAchievementRequest {}
 
@@ -23,6 +28,7 @@ interface AchievementContextProps {
   selectedAchievement: AchievementResponse.Data | null;
   isLoading: boolean;
   isSubmitting: boolean;
+  isUploading: boolean;
   isDetailOpen: boolean;
   isFormOpen: boolean;
   isDeleteOpen: boolean;
@@ -39,6 +45,7 @@ interface AchievementContextProps {
   setFormField: (field: keyof AchievementFormState, value: string) => void;
   saveAchievement: () => Promise<void>;
   deleteAchievement: () => Promise<void>;
+  uploadAchievementImage: (file: File) => Promise<void>;
   goToPage: (page: number) => Promise<void>;
 }
 
@@ -65,6 +72,7 @@ export const AchievementProvider = ({
     useState<AchievementResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -151,6 +159,37 @@ export const AchievementProvider = ({
     [],
   );
 
+  const uploadAchievementImage = useCallback(
+    async (file: File) => {
+      setIsUploading(true);
+      setLoading(true);
+      try {
+        const signatureResult = await service.createUploadSignature(
+          buildUploadFileName(file),
+        );
+        if (signatureResult.tag === EitherType.Left) {
+          toast.error(
+            signatureResult.left.message ?? "Failed to create upload signature",
+          );
+          return;
+        }
+        const signature = signatureResult.right;
+
+        await uploadFileToPresignedUrl(signature.url, file);
+        setFormState((prev) => ({ ...prev, image_path: signature.key }));
+        toast.success("Image uploaded");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
+      } finally {
+        setIsUploading(false);
+        setLoading(false);
+      }
+    },
+    [service, setLoading],
+  );
+
   const saveAchievement = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
@@ -235,6 +274,7 @@ export const AchievementProvider = ({
     selectedAchievement,
     isLoading,
     isSubmitting,
+    isUploading,
     isDetailOpen,
     isFormOpen,
     isDeleteOpen,
@@ -251,6 +291,7 @@ export const AchievementProvider = ({
     setFormField,
     saveAchievement,
     deleteAchievement,
+    uploadAchievementImage,
     goToPage,
   };
 

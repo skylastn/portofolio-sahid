@@ -1,5 +1,6 @@
 import { ResponseModel } from "@/shared/domain/model/response_model";
 import { Either } from "@/shared/utils/utility/either";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 import { AchievementRequest } from "../domain/model/request/achievement/achievement_request";
 import { CreateAchievementRequest } from "../domain/model/request/achievement/create_achievement_request";
 import { AchievementResponse } from "../domain/model/response/achievement_response";
@@ -24,6 +25,12 @@ export class AchievementService {
     id: string,
   ): Promise<Either<ResponseModel, AchievementResponse.Data>> {
     return await this.repo.fetchAchievementById(id);
+  }
+
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.repo.createUploadSignature(imageName);
   }
 
   async createAchievement(

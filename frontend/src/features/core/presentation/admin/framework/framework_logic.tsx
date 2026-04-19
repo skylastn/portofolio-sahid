@@ -17,6 +17,11 @@ import { CodeLanguageResponse } from "@/features/core/domain/model/response/code
 import { CreateFrameworkRequest } from "@/features/core/domain/model/request/framework/create_framework_request";
 import { FrameworkRequest } from "@/features/core/domain/model/request/framework/framework_request";
 import { FrameworkResponse } from "@/features/core/domain/model/response/framework_response";
+import { EitherType } from "@/shared/utils/utility/either";
+import {
+  buildUploadFileName,
+  uploadFileToPresignedUrl,
+} from "@/shared/utils/utility/minio_upload";
 
 interface FrameworkFormState extends CreateFrameworkRequest {}
 
@@ -26,6 +31,7 @@ interface FrameworkContextProps {
   selectedFramework: FrameworkResponse.Data | null;
   isLoading: boolean;
   isSubmitting: boolean;
+  isUploading: boolean;
   isDetailOpen: boolean;
   isFormOpen: boolean;
   isDeleteOpen: boolean;
@@ -42,6 +48,7 @@ interface FrameworkContextProps {
   setFormField: (field: keyof FrameworkFormState, value: string) => void;
   saveFramework: () => Promise<void>;
   deleteFramework: () => Promise<void>;
+  uploadFrameworkImage: (file: File) => Promise<void>;
   goToPage: (page: number) => Promise<void>;
 }
 
@@ -66,6 +73,7 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
     useState<FrameworkResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -159,6 +167,37 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
     [],
   );
 
+  const uploadFrameworkImage = useCallback(
+    async (file: File) => {
+      setIsUploading(true);
+      setLoading(true);
+      try {
+        const signatureResult = await service.createUploadSignature(
+          buildUploadFileName(file),
+        );
+        if (signatureResult.tag === EitherType.Left) {
+          toast.error(
+            signatureResult.left.message ?? "Failed to create upload signature",
+          );
+          return;
+        }
+        const signature = signatureResult.right;
+
+        await uploadFileToPresignedUrl(signature.url, file);
+        setFormState((prev) => ({ ...prev, image_path: signature.key }));
+        toast.success("Image uploaded");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
+      } finally {
+        setIsUploading(false);
+        setLoading(false);
+      }
+    },
+    [service, setLoading],
+  );
+
   const saveFramework = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
@@ -242,6 +281,7 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
         selectedFramework,
         isLoading,
         isSubmitting,
+        isUploading,
         isDetailOpen,
         isFormOpen,
         isDeleteOpen,
@@ -258,6 +298,7 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
         setFormField,
         saveFramework,
         deleteFramework,
+        uploadFrameworkImage,
         goToPage,
       }}
     >
