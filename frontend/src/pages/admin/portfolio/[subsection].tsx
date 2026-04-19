@@ -6,8 +6,8 @@ import {
   useAdminLogic,
 } from "@/features/core/presentation/admin/admin_logic";
 import AdminTableUI from "@/features/core/presentation/admin/admin_table_ui";
-import { CategoryProvider } from "@/features/core/presentation/admin/portfolio/category/category_logic";
-import CategoryUI from "@/features/core/presentation/admin/portfolio/category/category_ui";
+import { CategoryProvider } from "../../../features/core/presentation/admin/portofolio/category/category_logic";
+import CategoryUI from "../../../features/core/presentation/admin/portofolio/category/category_ui";
 
 function PortfolioSubsectionRoute() {
   const router = useRouter();

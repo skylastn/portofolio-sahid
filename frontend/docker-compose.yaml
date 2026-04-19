@@ -1,12 +1,12 @@
 services:
-  web-sample:
+  fe-portofolio:
     build:
       context: .
       dockerfile: Dockerfile
       args:
         APP_ENV: ${APP_ENV}
         NEXT_PUBLIC_ENDPOINT_URL: ${NEXT_PUBLIC_ENDPOINT_URL}
-    container_name: fo-vg-${APP_ENV}
+    container_name: fe-portofolio
     env_file:
       - .env
     ports:
