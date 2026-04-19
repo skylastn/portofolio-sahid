@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import AdminGuard from "@/features/core/presentation/admin/admin_guard";
 import {
   AdminProvider,
   getPortfolioSubsectionFromSlug,
@@ -41,8 +42,10 @@ function PortfolioSubsectionRoute() {
 
 export default function PortfolioSubsectionPage() {
   return (
-    <AdminProvider>
-      <PortfolioSubsectionRoute />
-    </AdminProvider>
+    <AdminGuard>
+      <AdminProvider>
+        <PortfolioSubsectionRoute />
+      </AdminProvider>
+    </AdminGuard>
   );
 }

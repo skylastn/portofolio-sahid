@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import AdminGuard from "@/features/core/presentation/admin/admin_guard";
 import { AdminProvider } from "@/features/core/presentation/admin/admin_logic";
 import { getAdminSectionFromSlug } from "@/features/core/presentation/admin/admin_logic";
 import AdminTableUI from "@/features/core/presentation/admin/admin_table_ui";
@@ -60,8 +61,10 @@ function AdminSectionRoute() {
 
 export default function AdminSectionPage() {
   return (
-    <AdminProvider>
-      <AdminSectionRoute />
-    </AdminProvider>
+    <AdminGuard>
+      <AdminProvider>
+        <AdminSectionRoute />
+      </AdminProvider>
+    </AdminGuard>
   );
 }
