@@ -1,4 +1,4 @@
-import AdminGuard from "@/features/core/presentation/admin/admin_guard";
+import AdminGuard from "@/features/core/presentation/admin/component/admin_guard";
 import { AdminProvider } from "@/features/core/presentation/admin/admin_logic";
 import { CategoryProvider } from "@/features/core/presentation/admin/portofolio/category/category_logic";
 import CategoryUI from "@/features/core/presentation/admin/portofolio/category/category_ui";

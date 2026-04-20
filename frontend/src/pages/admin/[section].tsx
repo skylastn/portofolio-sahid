@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import AdminGuard from "@/features/core/presentation/admin/admin_guard";
+import AdminGuard from "@/features/core/presentation/admin/component/admin_guard";
 import { AdminProvider } from "@/features/core/presentation/admin/admin_logic";
 import { getAdminSectionFromSlug } from "@/features/core/presentation/admin/admin_logic";
 import AdminUI from "@/features/core/presentation/admin/admin_ui";

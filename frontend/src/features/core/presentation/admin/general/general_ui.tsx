@@ -1,6 +1,7 @@
 "use client";
 
-import AdminShell from "../admin_shell";
+import AdminShell from "../component/admin_shell";
+import { useAdminTheme } from "../styles/admin_theme";
 import { useGeneralLogic } from "./general_logic";
 
 const fieldLabels: Array<{
@@ -19,6 +20,7 @@ const fieldLabels: Array<{
 ];
 
 export default function GeneralUI() {
+  const theme = useAdminTheme();
   const {
     generals,
     selectedGeneral,
@@ -44,13 +46,13 @@ export default function GeneralUI() {
       activeKey="general"
       title="General Settings"
     >
-      <div className="rounded-[1.8rem] border border-white/10 bg-white/5 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.2)]">
+      <div className={`rounded-[1.8rem] p-6 ${theme.shellCardClass}`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">
+            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
               General content
             </p>
-            <h3 className="mt-2 text-2xl font-black text-white">General profile data</h3>
+            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>General profile data</h3>
           </div>
           <button
             type="button"
@@ -61,20 +63,20 @@ export default function GeneralUI() {
           </button>
         </div>
 
-        <div className="mt-6 overflow-x-auto rounded-[1.25rem] border border-white/10">
+        <div className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}>
           <table className="min-w-full border-collapse">
             <thead>
-              <tr className="bg-slate-900/70">
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+              <tr className={theme.tableHeaderRowClass}>
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Title
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Email
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Updated
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Actions
                 </th>
               </tr>
@@ -84,7 +86,7 @@ export default function GeneralUI() {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-5 py-10 text-center text-sm text-slate-300"
+                    className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}
                   >
                     Loading general data...
                   </td>
@@ -93,43 +95,43 @@ export default function GeneralUI() {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-5 py-10 text-center text-sm text-slate-300"
+                    className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}
                   >
                     No general data found.
                   </td>
                 </tr>
               ) : (
                 generals.map((item) => (
-                  <tr key={item.id} className="odd:bg-white/[0.03]">
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                  <tr key={item.id} className={theme.tableRowAltClass}>
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       {item.title}
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       {item.email}
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       {item.updated_at ? new Date(item.updated_at).toLocaleString() : "-"}
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
                           onClick={() => openViewModal(item)}
-                          className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionViewButtonClass}`}
                         >
                           View
                         </button>
                         <button
                           type="button"
                           onClick={() => openEditForm(item)}
-                          className="rounded-full border border-sky-300/30 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionEditButtonClass}`}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={() => openDeleteDialog(item)}
-                          className="rounded-full border border-rose-300/30 bg-rose-400/10 px-3 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionDeleteButtonClass}`}
                         >
                           Delete
                         </button>
@@ -156,7 +158,7 @@ export default function GeneralUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-3 py-2 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Close
               </button>
@@ -199,7 +201,7 @@ export default function GeneralUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-3 py-2 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Close
               </button>
@@ -233,7 +235,7 @@ export default function GeneralUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-5 py-3 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Cancel
               </button>
@@ -263,7 +265,7 @@ export default function GeneralUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-5 py-3 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Cancel
               </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAdminLogic } from "./admin_logic";
-import AdminShell from "./admin_shell";
+import AdminShell from "./component/admin_shell";
 
 export default function AdminUI() {
   const { overviewStats, shortcutItems, activityFeed, taskList, teamMembers } =

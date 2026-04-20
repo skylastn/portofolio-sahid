@@ -1,9 +1,11 @@
 "use client";
 
-import AdminShell from "../../admin_shell";
+import AdminShell from "../../component/admin_shell";
+import { useAdminTheme } from "../../styles/admin_theme";
 import { useCategoryLogic } from "./category_logic";
 
 export default function CategoryUI() {
+  const theme = useAdminTheme();
   const {
     categories,
     selectedCategory,
@@ -33,13 +35,13 @@ export default function CategoryUI() {
       portfolioActiveKey="category"
       title="Portfolio Category"
     >
-      <div className="rounded-[1.8rem] border border-white/10 bg-white/5 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.2)]">
+      <div className={`rounded-[1.8rem] p-6 ${theme.shellCardClass}`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">
+            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
               Category management
             </p>
-            <h3 className="mt-2 text-2xl font-black text-white">Categories</h3>
+            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>Categories</h3>
           </div>
           <button
             type="button"
@@ -50,20 +52,20 @@ export default function CategoryUI() {
           </button>
         </div>
 
-        <div className="mt-6 overflow-x-auto rounded-[1.25rem] border border-white/10">
+        <div className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}>
           <table className="min-w-full border-collapse">
             <thead>
-              <tr className="bg-slate-900/70">
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+              <tr className={theme.tableHeaderRowClass}>
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Title
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Description
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Updated
                 </th>
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Actions
                 </th>
               </tr>
@@ -73,7 +75,7 @@ export default function CategoryUI() {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-5 py-10 text-center text-sm text-slate-300"
+                    className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}
                   >
                     Loading categories...
                   </td>
@@ -82,45 +84,45 @@ export default function CategoryUI() {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-5 py-10 text-center text-sm text-slate-300"
+                    className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}
                   >
                     No categories found.
                   </td>
                 </tr>
               ) : (
                 categories.map((item) => (
-                  <tr key={item.id} className="odd:bg-white/3">
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                  <tr key={item.id} className={theme.tableRowAltClass}>
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       {item.title}
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       {item.description}
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       {item.updated_at
                         ? new Date(item.updated_at).toLocaleString()
                         : "-"}
                     </td>
-                    <td className="border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
                           onClick={() => openViewModal(item)}
-                          className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionViewButtonClass}`}
                         >
                           View
                         </button>
                         <button
                           type="button"
                           onClick={() => openEditForm(item)}
-                          className="rounded-full border border-sky-300/30 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionEditButtonClass}`}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={() => openDeleteDialog(item)}
-                          className="rounded-full border border-rose-300/30 bg-rose-400/10 px-3 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionDeleteButtonClass}`}
                         >
                           Delete
                         </button>
@@ -133,12 +135,12 @@ export default function CategoryUI() {
           </table>
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-3 text-sm text-slate-300">
+        <div className={`mt-5 flex items-center justify-between gap-3 text-sm ${theme.mutedTextClass}`}>
           <button
             type="button"
             disabled={currentPage <= 1 || isLoading}
             onClick={() => setPage(currentPage - 1)}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+            className={`rounded-full px-4 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${theme.actionButtonClass}`}
           >
             Previous
           </button>
@@ -149,7 +151,7 @@ export default function CategoryUI() {
             type="button"
             disabled={currentPage >= totalPages || isLoading}
             onClick={() => setPage(currentPage + 1)}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-40"
+            className={`rounded-full px-4 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${theme.actionButtonClass}`}
           >
             Next
           </button>
@@ -171,7 +173,7 @@ export default function CategoryUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-3 py-2 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Close
               </button>
@@ -217,7 +219,7 @@ export default function CategoryUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-3 py-2 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Close
               </button>
@@ -248,7 +250,7 @@ export default function CategoryUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-5 py-3 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Cancel
               </button>
@@ -278,7 +280,7 @@ export default function CategoryUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-5 py-3 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Cancel
               </button>

@@ -6,7 +6,7 @@ import {
   adminNavigationItems,
   AdminNavigationItem,
   PortfolioTabKey,
-} from "./admin_logic";
+} from "../admin_logic";
 
 type AdminShellProps = {
   activeKey: AdminNavigationItem["key"];
@@ -37,10 +37,31 @@ export default function AdminShell({
   const inactiveNavClass = isDarkMode
     ? "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-300 hover:text-cyan-200"
     : "border-slate-200 bg-white text-slate-600 hover:border-sky-300 hover:text-sky-700";
+  const viewSiteButtonClass =
+    "rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-600";
+  const viewSiteButtonStyle: React.CSSProperties = {
+    backgroundColor: "#0284c7",
+    color: "#ffffff",
+  };
   const shellGridStyle: React.CSSProperties = {
     maxWidth: 1800,
     gridTemplateColumns: "290px minmax(0, 1fr)",
   };
+  const adminThemeStyle: React.CSSProperties = isDarkMode
+    ? {
+        ["--admin-table-head-text" as string]: "#cbd5e1",
+        ["--admin-table-head-bg" as string]: "rgba(15, 23, 42, 0.82)",
+        ["--admin-table-body-text" as string]: "#f8fafc",
+        ["--admin-surface-heading" as string]: "#ffffff",
+        ["--admin-surface-muted" as string]: "#cbd5e1",
+      }
+    : {
+        ["--admin-table-head-text" as string]: "#64748b",
+        ["--admin-table-head-bg" as string]: "rgba(241, 245, 249, 0.95)",
+        ["--admin-table-body-text" as string]: "#0f172a",
+        ["--admin-surface-heading" as string]: "#0f172a",
+        ["--admin-surface-muted" as string]: "#475569",
+      };
 
   const renderNavButton = (item: AdminNavigationItem, nested = false) => {
     const isActive =
@@ -61,7 +82,7 @@ export default function AdminShell({
   };
 
   return (
-    <div className={pageClass}>
+    <div className={`admin-theme ${pageClass}`} style={adminThemeStyle}>
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
           className={`animate-float-slow absolute top-0 left-0 h-80 w-80 rounded-full blur-3xl ${
@@ -164,20 +185,16 @@ export default function AdminShell({
           <div className={`${shellClass} rounded-4xl px-6 py-5`}>
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p
-                  className={`text-sm font-semibold uppercase tracking-[0.28em] ${mutedTextClass}`}
-                >
-                  Admin dashboard
-                </p>
                 <h2
-                  className={`mt-2 text-3xl font-black tracking-tight sm:text-4xl ${strongTextClass}`}
+                  className={`text-3xl font-black tracking-tight sm:text-4xl ${strongTextClass}`}
                 >
                   {title}
                 </h2>
               </div>
               <Link
                 href="/"
-                className="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-sky-500"
+                className={viewSiteButtonClass}
+                style={viewSiteButtonStyle}
               >
                 View site
               </Link>

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import AdminShell from "./admin_shell";
-import { PortfolioTabKey, TableRow, TableView } from "./admin_logic";
+import { useAdminTheme } from "../styles/admin_theme";
+import { PortfolioTabKey, TableRow, TableView } from "../admin_logic";
 
 type AdminTableUIProps = {
   activeKey:
@@ -23,6 +24,7 @@ export default function AdminTableUI({
   tableView,
   portfolioActiveKey,
 }: AdminTableUIProps) {
+  const theme = useAdminTheme();
   const [rows, setRows] = useState<TableRow[]>(tableView.rows);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -97,16 +99,16 @@ export default function AdminTableUI({
       title={title}
       portfolioActiveKey={portfolioActiveKey}
     >
-      <div className="rounded-[1.8rem] border border-white/10 bg-white/5 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.2)]">
+      <div className={`rounded-[1.8rem] p-6 ${theme.shellCardClass}`}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">
+            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
               Sample table
             </p>
-            <h3 className="mt-2 text-2xl font-black text-white">{tableView.title}</h3>
+            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>{tableView.title}</h3>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${theme.buttonSurfaceClass}`}>
               {rows.length} rows
             </span>
             <button
@@ -119,47 +121,47 @@ export default function AdminTableUI({
           </div>
         </div>
 
-        <div className="mt-6 overflow-x-auto rounded-[1.25rem] border border-white/10">
+        <div className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}>
           <table className="min-w-full border-collapse">
             <thead>
-              <tr className="bg-slate-900/70">
+              <tr className={theme.tableHeaderRowClass}>
                 {tableView.columns.map((column) => (
                   <th
                     key={column.key}
-                    className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300"
+                    className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
                   >
                     {column.label}
                   </th>
                 ))}
-                <th className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`whitespace-nowrap border-b px-5 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, rowIndex) => (
-                <tr key={`${tableView.title}-${rowIndex}`} className="odd:bg-white/[0.03]">
+                <tr key={`${tableView.title}-${rowIndex}`} className={theme.tableRowAltClass}>
                   {tableView.columns.map((column) => (
                     <td
                       key={column.key}
-                      className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-sm text-slate-100"
+                      className={`whitespace-nowrap border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
                     >
                       {row[column.key]}
                     </td>
                   ))}
-                  <td className="whitespace-nowrap border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                  <td className={`whitespace-nowrap border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => openEditModal(rowIndex)}
-                        className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20"
+                        className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionEditButtonClass}`}
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(rowIndex)}
-                        className="rounded-full border border-rose-300/30 bg-rose-400/10 px-3 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-400/20"
+                        className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionDeleteButtonClass}`}
                       >
                         Delete
                       </button>
@@ -172,19 +174,19 @@ export default function AdminTableUI({
         </div>
 
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
-            <div className="w-full max-w-2xl rounded-[1.75rem] border border-white/10 bg-slate-950 p-6 shadow-[0_30px_100px_rgba(15,23,42,0.45)]">
+          <div className={`fixed inset-0 z-50 flex items-center justify-center px-4 ${theme.detailBackdropClass}`}>
+            <div className={`w-full max-w-2xl rounded-[1.75rem] p-6 shadow-[0_30px_100px_rgba(15,23,42,0.45)] ${theme.formPanelClass}`}>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">
+                  <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
                     {isEditing ? "Edit record" : "Create record"}
                   </p>
-                  <h4 className="mt-2 text-2xl font-black text-white">{modalTitle}</h4>
+                  <h4 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>{modalTitle}</h4>
                 </div>
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+                  className={`rounded-full px-3 py-2 text-sm font-semibold transition hover:bg-white/10 ${theme.buttonSurfaceClass}`}
                 >
                   Close
                 </button>
@@ -193,7 +195,7 @@ export default function AdminTableUI({
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 {tableView.columns.map((column) => (
                   <label key={column.key} className="flex flex-col gap-2">
-                    <span className="text-sm font-semibold text-slate-200">{column.label}</span>
+                    <span className={`text-sm font-semibold ${theme.formLabelClass}`}>{column.label}</span>
                     <input
                       value={formData[column.key] ?? ""}
                       onChange={(event) =>
@@ -202,7 +204,7 @@ export default function AdminTableUI({
                           [column.key]: event.target.value,
                         }))
                       }
-                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden transition placeholder:text-slate-500 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/20"
+                      className={`rounded-2xl px-4 py-3 text-sm outline-hidden transition placeholder:text-slate-500 focus:ring-2 focus:ring-cyan-300/20 ${theme.formInputClass}`}
                       placeholder={`Enter ${column.label.toLowerCase()}`}
                     />
                   </label>
@@ -213,7 +215,7 @@ export default function AdminTableUI({
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+                  className={`rounded-full px-5 py-3 text-sm font-semibold transition hover:bg-white/10 ${theme.buttonSurfaceClass}`}
                 >
                   Cancel
                 </button>

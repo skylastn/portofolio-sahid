@@ -1,11 +1,13 @@
 "use client";
 
-import AdminShell from "../admin_shell";
+import AdminShell from "../component/admin_shell";
+import { useAdminTheme } from "../styles/admin_theme";
 import DefaultImage from "@/shared/component/ui/default_image";
 import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
 import { useAchievementLogic } from "./achievement_logic";
 
 export default function AchievementUI() {
+  const theme = useAdminTheme();
   const {
     achievements,
     selectedAchievement,
@@ -45,13 +47,13 @@ export default function AchievementUI() {
 
   return (
     <AdminShell activeKey="achievement" title="Achievement">
-      <div className="rounded-[1.8rem] border border-white/10 bg-white/5 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.2)]">
+      <div className={`rounded-[1.8rem] p-6 ${theme.shellCardClass}`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-300">
+            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
               Achievement records
             </p>
-            <h3 className="mt-2 text-2xl font-black text-white">Achievement list</h3>
+            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>Achievement list</h3>
           </div>
           <button
             type="button"
@@ -62,38 +64,38 @@ export default function AchievementUI() {
           </button>
         </div>
 
-        <div className="mt-6 overflow-x-auto rounded-[1.25rem] border border-white/10">
+        <div className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}>
           <table className="min-w-full table-fixed border-separate border-spacing-0">
             <thead>
-              <tr className="bg-slate-900/70">
-                <th className="w-27.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+              <tr className={theme.tableHeaderRowClass}>
+                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Number
                 </th>
-                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Title
                 </th>
-                <th className="w-60 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-60 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Description
                 </th>
-                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Date
                 </th>
-                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Image path
                 </th>
-                <th className="w-37.5 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Image url
                 </th>
-                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Created
                 </th>
-                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Updated
                 </th>
-                <th className="w-30 whitespace-nowrap border-b border-white/10 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
                   Deleted
                 </th>
-                <th className="sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l border-white/10 bg-slate-900/95 px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-300 shadow-[-12px_0_24px_rgba(2,6,23,0.35)]">
+                <th className={`sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableHeaderTextClass}`}>
                   Actions
                 </th>
               </tr>
@@ -101,37 +103,37 @@ export default function AchievementUI() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={10} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td colSpan={10} className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}>
                     Loading achievement data...
                   </td>
                 </tr>
               ) : achievements.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td colSpan={10} className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}>
                     No achievement data found.
                   </td>
                 </tr>
               ) : (
                 achievements.map((item, index) => (
-                  <tr key={item.id} className="odd:bg-white/[0.03]">
-                    <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
+                  <tr key={item.id} className={theme.tableRowAltClass}>
+                    <td className={`align-top border-b px-3 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="leading-6" style={twoLineClampStyle}>
                         {(currentPage - 1) * perPage + index + 1}
                       </div>
                     </td>
-                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="leading-6" style={twoLineClampStyle}>{item.title}</div>
                     </td>
-                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="leading-6" style={twoLineClampStyle}>{item.description}</div>
                     </td>
-                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.date)}</div>
                     </td>
-                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="leading-6" style={twoLineClampStyle}>{item.image_path ?? "-"}</div>
                     </td>
-                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       {item.image_url ? (
                         <div className="h-14 w-20 overflow-hidden rounded-xl border border-white/10 bg-white/5">
                           <DefaultImage
@@ -145,7 +147,7 @@ export default function AchievementUI() {
                         <div className="leading-6" style={twoLineClampStyle}>-</div>
                       )}
                     </td>
-                    <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
+                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
                       <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.created_at)}</div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
@@ -154,26 +156,26 @@ export default function AchievementUI() {
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
                       <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.deleted_at)}</div>
                     </td>
-                    <td className="sticky right-0 z-20 border-b border-l border-white/10 bg-slate-950/95 px-5 py-4 text-sm text-slate-100 shadow-[-12px_0_24px_rgba(2,6,23,0.35)]">
+                    <td className={`sticky right-0 z-20 border-b border-l px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableBodyTextClass}`}>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
                           onClick={() => openViewModal(item)}
-                          className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionViewButtonClass}`}
                         >
                           View
                         </button>
                         <button
                           type="button"
                           onClick={() => openEditForm(item)}
-                          className="rounded-full border border-sky-300/30 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionEditButtonClass}`}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={() => openDeleteDialog(item)}
-                          className="rounded-full border border-rose-300/30 bg-rose-400/10 px-3 py-1.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-400/20"
+                          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${theme.actionDeleteButtonClass}`}
                         >
                           Delete
                         </button>
@@ -186,7 +188,7 @@ export default function AchievementUI() {
           </table>
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3 text-sm text-slate-300">
+        <div className={`mt-4 flex items-center justify-between gap-3 text-sm ${theme.mutedTextClass}`}>
           <span>
             Page {currentPage} of {totalPages}
           </span>
@@ -195,7 +197,7 @@ export default function AchievementUI() {
               type="button"
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage <= 1}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`rounded-full px-3 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${theme.actionButtonClass}`}
             >
               Previous
             </button>
@@ -203,7 +205,7 @@ export default function AchievementUI() {
               type="button"
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage >= totalPages}
-              className="rounded-full border border-white/10 bg-white/5 px-3 py-2 font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className={`rounded-full px-3 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${theme.actionButtonClass}`}
             >
               Next
             </button>
@@ -226,7 +228,7 @@ export default function AchievementUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-3 py-2 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Close
               </button>
@@ -266,7 +268,7 @@ export default function AchievementUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-3 py-2 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Close
               </button>
@@ -314,7 +316,7 @@ export default function AchievementUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-5 py-3 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Cancel
               </button>
@@ -344,7 +346,7 @@ export default function AchievementUI() {
               <button
                 type="button"
                 onClick={closeModal}
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-200"
+                className={`rounded-full px-5 py-3 text-sm font-semibold ${theme.buttonSurfaceClass}`}
               >
                 Cancel
               </button>
