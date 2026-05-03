@@ -1,6 +1,5 @@
-import { PublicListingPage } from "@/features/core/presentation/public_content/public_content_ui";
+import ListWorkUI from "@/features/core/presentation/front_office/work/list/list_work_ui";
 
 export default function WorkPage() {
-  return <PublicListingPage type="work" />;
+  return <ListWorkUI />;
 }
-

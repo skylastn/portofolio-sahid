@@ -3,15 +3,10 @@
 import Link from "next/link";
 import type { PropsWithChildren } from "react";
 import DefaultImage from "@/shared/component/ui/default_image";
-import { useGlobalLogic } from "@/shared/logic/global_logic";
 import { AchievementResponse } from "@/features/core/domain/model/response/achievement_response";
 import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
-import {
-  PublicContentType,
-  formatDisplayDate,
-  usePublicContent,
-} from "./public_content_logic";
+import { formatDisplayDate } from "@/features/core/presentation/front_office/home/home_logic";
 
 interface ThemeProps {
   isDarkMode: boolean;
@@ -27,18 +22,15 @@ interface HomePreviewProps extends ThemeProps {
 
 const sectionMeta = {
   portofolio: {
-    eyebrow: "Portofolio",
-    title: "Project work selected from the backend portfolio API",
+    title: "Portofolio",
     href: "/portofolio",
   },
   work: {
-    eyebrow: "Work",
-    title: "Professional experience pulled from work records",
+    title: "Work",
     href: "/work",
   },
   achievement: {
-    eyebrow: "Achievements",
-    title: "Recognition and milestones from achievement records",
+    title: "Achievements",
     href: "/achievement",
   },
 };
@@ -117,118 +109,6 @@ export function PublicHomePreviewSections(props: HomePreviewProps) {
   );
 }
 
-export function PublicListingPage({ type }: { type: PublicContentType }) {
-  const { isDarkMode, changeDarkMode } = useGlobalLogic();
-  const { portofolios, works, achievements, isLoading, errorMessage } =
-    usePublicContent(100);
-  const meta = sectionMeta[type];
-  const pageClass = isDarkMode
-    ? "min-h-screen bg-slate-950 text-slate-100"
-    : "min-h-screen bg-slate-50 text-slate-950";
-
-  return (
-    <div className={pageClass}>
-      <header
-        className={`sticky top-0 z-30 border-b backdrop-blur-xl ${
-          isDarkMode
-            ? "border-white/10 bg-slate-950/85"
-            : "border-slate-200 bg-white/85"
-        }`}
-      >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="text-base font-black sm:text-xl">
-            {"<SkyDeveloper />"}
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-                isDarkMode
-                  ? "border-white/15 text-slate-200"
-                  : "border-slate-300 text-slate-700"
-              }`}
-            >
-              Home
-            </Link>
-            <button
-              type="button"
-              onClick={changeDarkMode}
-              className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-                isDarkMode
-                  ? "border-white/15 bg-white/5 text-white"
-                  : "border-slate-300 bg-white text-slate-800"
-              }`}
-            >
-              {isDarkMode ? "Light" : "Dark"}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
-            {meta.eyebrow}
-          </p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">
-            {meta.title}
-          </h1>
-        </div>
-
-        {isLoading && <LoadingRows isDarkMode={isDarkMode} />}
-        {!isLoading && errorMessage && (
-          <p className="mt-8 rounded-2xl border border-amber-300 bg-amber-50 px-5 py-4 text-sm font-semibold text-amber-800">
-            {errorMessage}
-          </p>
-        )}
-
-        {type === "portofolio" && (
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {portofolios.map((item, index) => (
-              <PortofolioCard key={item.id ?? item.title ?? index} item={item} />
-            ))}
-          </div>
-        )}
-
-        {type === "work" && (
-          <div className="mt-10 space-y-5">
-            {works.map((item, index) => (
-              <WorkCard
-                key={item.id ?? `${item.company_name ?? "work"}-${item.job_title ?? index}`}
-                item={item}
-                isDarkMode={isDarkMode}
-              />
-            ))}
-          </div>
-        )}
-
-        {type === "achievement" && (
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {achievements.map((item, index) => (
-              <AchievementCard
-                key={item.id ?? item.title ?? index}
-                item={item}
-                isDarkMode={isDarkMode}
-              />
-            ))}
-          </div>
-        )}
-
-        <EmptyState
-          isVisible={
-            !isLoading &&
-            ((type === "portofolio" && portofolios.length === 0) ||
-              (type === "work" && works.length === 0) ||
-              (type === "achievement" && achievements.length === 0))
-          }
-          label={`No ${meta.eyebrow.toLowerCase()} data yet.`}
-          isDarkMode={isDarkMode}
-        />
-      </main>
-    </div>
-  );
-}
-
 function PreviewSection({
   type,
   isDarkMode,
@@ -237,7 +117,7 @@ function PreviewSection({
   children,
 }: PropsWithChildren<
   ThemeProps & {
-    type: PublicContentType;
+    type: "portofolio" | "work" | "achievement";
     isLoading: boolean;
     errorMessage?: string;
   }
@@ -249,7 +129,7 @@ function PreviewSection({
       className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
     >
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <SectionHeading eyebrow={meta.eyebrow} title={meta.title} isDarkMode={isDarkMode} />
+        <SectionHeading title={meta.title} isDarkMode={isDarkMode} />
         <Link
           href={meta.href}
           className={`w-fit rounded-full border px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-1 ${
@@ -272,17 +152,13 @@ function PreviewSection({
 }
 
 function SectionHeading({
-  eyebrow,
   title,
   isDarkMode,
-}: ThemeProps & { eyebrow: string; title: string }) {
+}: ThemeProps & { title: string }) {
   return (
     <div className="max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-700 sm:text-sm sm:tracking-[0.28em]">
-        {eyebrow}
-      </p>
       <h2
-        className={`mt-3 text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl ${
+        className={`text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl ${
           isDarkMode ? "text-white" : "text-slate-950"
         }`}
       >
@@ -436,13 +312,13 @@ function AchievementCard({
           />
         ) : (
           <div className="flex h-full items-center justify-center px-6 text-center text-sm font-semibold text-slate-500">
-            {formatDisplayDate(item.date)}
+            {item.date}
           </div>
         )}
       </div>
       <div className="p-6">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
-          {formatDisplayDate(item.date)}
+          {item.date}
         </p>
         <h3 className="mt-3 text-2xl font-bold">{item.title ?? "Achievement"}</h3>
         <p

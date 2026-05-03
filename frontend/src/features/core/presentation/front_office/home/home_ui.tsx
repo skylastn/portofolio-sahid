@@ -1,18 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useHomeLogic } from "./home_logic";
+import { useHomeLogic, usePublicContent } from "./home_logic";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
-import { PublicHomePreviewSections } from "../public_content/public_content_ui";
-import { usePublicContent } from "../public_content/public_content_logic";
+import { PublicHomePreviewSections } from "../component/home_component";
 
 export default function HomeUI() {
-  const {
-    navItems,
-    socialLinks,
-    skillGroups,
-    heroStats,
-  } = useHomeLogic();
+  const { navItems, socialLinks, skillGroups, heroStats } = useHomeLogic();
   const { changeDarkMode, isDarkMode } = useGlobalLogic();
   const publicContent = usePublicContent(3);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -169,16 +163,17 @@ export default function HomeUI() {
       <main className="relative">
         <section className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16 lg:px-8 lg:py-24">
           <div className="max-w-3xl">
-            <span className={`${badgeClass} max-w-full text-center text-xs sm:text-sm`}>
-              Software Developer Portfolio
+            <span
+              className={`${badgeClass} max-w-full text-center text-xs sm:text-sm`}
+            >
+              Software Engineer
             </span>
 
             <h1
               className={`animate-reveal mt-5 text-4xl font-black tracking-tight [animation-delay:0.15s] sm:mt-6 sm:text-5xl lg:text-6xl ${strongTextClass}`}
             >
               Hi, I&apos;m Sky.
-              <br />
-              I build clean, modern, and production-ready web experiences.
+              <br />I build clean, modern, and production-ready web experiences.
             </h1>
 
             <p
@@ -196,7 +191,10 @@ export default function HomeUI() {
               >
                 See My Work
               </a>
-              <a href="#contact" className={`${secondaryButtonClass} text-center`}>
+              <a
+                href="#contact"
+                className={`${secondaryButtonClass} text-center`}
+              >
                 Get In Touch
               </a>
             </div>

@@ -1,6 +1,5 @@
-import { PublicListingPage } from "@/features/core/presentation/public_content/public_content_ui";
+import ListPortofolioUI from "@/features/core/presentation/front_office/portofolio/list/list_portofolio_ui";
 
 export default function PortofolioPage() {
-  return <PublicListingPage type="portofolio" />;
+  return <ListPortofolioUI />;
 }
-

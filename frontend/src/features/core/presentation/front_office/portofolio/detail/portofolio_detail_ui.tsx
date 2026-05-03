@@ -2,42 +2,22 @@
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import DefaultImage from "@/shared/component/ui/default_image";
-import { PortofolioService } from "@/features/core/application/portofolio_service";
-import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
 import { EitherType } from "@/shared/utils/utility/either";
-import { formatDisplayDate } from "./public_content_logic";
+import { usePortofolioDetail, formatDisplayDate } from "./portofolio_detail_logic";
 
 export default function PortofolioDetailUI() {
   const router = useRouter();
   const { isDarkMode, changeDarkMode } = useGlobalLogic();
-  const service = useMemo(() => new PortofolioService(), []);
-  const [item, setItem] = useState<PortofolioResponse.Data | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const { item, isLoading, errorMessage, fetchDetail } = usePortofolioDetail();
   const id = typeof router.query.id === "string" ? router.query.id : undefined;
 
   useEffect(() => {
     if (!router.isReady || !id) return;
-
-    const fetchDetail = async () => {
-      setIsLoading(true);
-      setErrorMessage(undefined);
-      const result = await service.fetchPortofolioById(id);
-
-      if (result.tag === EitherType.Left) {
-        setErrorMessage(result.left.message ?? "Failed to load portofolio detail");
-        setItem(null);
-      } else {
-        setItem(result.right);
-      }
-      setIsLoading(false);
-    };
-
-    void fetchDetail();
-  }, [id, router.isReady, service]);
+    void fetchDetail(id);
+  }, [id, router.isReady, fetchDetail]);
 
   const pageClass = isDarkMode
     ? "min-h-screen bg-[linear-gradient(180deg,#020617_0%,#0f172a_48%,#111827_100%)] text-slate-100"
@@ -355,4 +335,3 @@ function DetailSkeleton({ isDarkMode }: { isDarkMode: boolean }) {
     </div>
   );
 }
-
