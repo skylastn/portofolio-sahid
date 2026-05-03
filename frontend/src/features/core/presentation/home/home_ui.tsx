@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { useHomeLogic } from "./home_logic";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
+import { PublicHomePreviewSections } from "../public_content/public_content_ui";
+import { usePublicContent } from "../public_content/public_content_logic";
 
 export default function HomeUI() {
   const {
     navItems,
     socialLinks,
     skillGroups,
-    experiences,
-    projects,
-    achievements,
-    blogs,
     heroStats,
   } = useHomeLogic();
   const { changeDarkMode, isDarkMode } = useGlobalLogic();
+  const publicContent = usePublicContent(3);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const pageClass = isDarkMode
@@ -31,9 +30,6 @@ export default function HomeUI() {
   const panelClass = isDarkMode
     ? "rounded-[1.75rem] border border-white/10 bg-white/5 p-7 shadow-[0_20px_60px_rgba(15,23,42,0.3)] backdrop-blur transition duration-300 hover:-translate-y-2 hover:shadow-[0_30px_80px_rgba(15,23,42,0.42)]"
     : "rounded-[1.75rem] border border-slate-200/70 bg-white/85 p-7 shadow-[0_20px_60px_rgba(148,163,184,0.15)] backdrop-blur transition duration-300 hover:-translate-y-2 hover:shadow-[0_30px_80px_rgba(148,163,184,0.22)]";
-  const timelineClass = isDarkMode
-    ? "animate-reveal grid gap-4 rounded-[1.75rem] border border-white/10 bg-white/5 p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg lg:grid-cols-[180px_1fr]"
-    : "animate-reveal grid gap-4 rounded-[1.75rem] border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg lg:grid-cols-[180px_1fr]";
   const mutedTextClass = isDarkMode ? "text-slate-300" : "text-slate-600";
   const strongTextClass = isDarkMode ? "text-white" : "text-slate-950";
   const badgeClass = isDarkMode
@@ -48,9 +44,6 @@ export default function HomeUI() {
   const listItemClass = isDarkMode
     ? "rounded-2xl bg-white/5 px-4 py-3 text-sm font-medium text-slate-200"
     : "rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700";
-  const achievementClass = isDarkMode
-    ? "rounded-2xl bg-white/5 px-5 py-4 text-base leading-7 text-slate-200 transition duration-300 hover:-translate-y-1"
-    : "rounded-2xl bg-slate-50 px-5 py-4 text-base leading-7 text-slate-700 transition duration-300 hover:-translate-y-1";
 
   return (
     <div className={pageClass}>
@@ -293,132 +286,14 @@ export default function HomeUI() {
           </div>
         </section>
 
-        <section
-          id="experience"
-          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
-        >
-          <SectionHeading
-            eyebrow="Work Experience"
-            title="A simple timeline of the kind of work I have been doing"
-            isDarkMode={isDarkMode}
-          />
-
-          <div className="mt-10 space-y-5">
-            {experiences.map((item, index) => (
-              <article
-                key={`${item.period}-${item.title}`}
-                className={timelineClass}
-                style={{ animationDelay: `${0.1 + index * 0.12}s` }}
-              >
-                <div className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">
-                  {item.period}
-                </div>
-                <div>
-                  <h3 className={`text-2xl font-bold ${strongTextClass}`}>
-                    {item.title}
-                  </h3>
-                  <p className="mt-1 text-base font-semibold text-slate-500">
-                    {item.company}
-                  </p>
-                  <p
-                    className={`mt-4 max-w-3xl text-base leading-7 ${mutedTextClass}`}
-                  >
-                    {item.description}
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section
-          id="projects"
-          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
-        >
-          <SectionHeading
-            eyebrow="Open Source and Big Projects"
-            title="Selected portfolio pieces and product building blocks"
-            isDarkMode={isDarkMode}
-          />
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {projects.map((project, index) => (
-              <article
-                key={project.title}
-                className="animate-reveal rounded-[1.75rem] bg-slate-950 p-7 text-white shadow-[0_25px_70px_rgba(15,23,42,0.2)] transition duration-300 hover:-translate-y-2 hover:shadow-[0_35px_90px_rgba(15,23,42,0.28)]"
-                style={{ animationDelay: `${0.1 + index * 0.12}s` }}
-              >
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-sky-300">
-                  {project.subtitle}
-                </p>
-                <h3 className="mt-4 text-2xl font-bold">{project.title}</h3>
-                <p className="mt-4 text-base leading-7 text-slate-300">
-                  {project.description}
-                </p>
-
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {project.stack.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-200"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section
-          id="achievements"
-          className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14"
-        >
-          <SectionHeading
-            eyebrow="Achievements"
-            title="Highlights that reflect how I approach building software"
-            isDarkMode={isDarkMode}
-          />
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-            <div
-              className={`animate-reveal rounded-[1.75rem] p-7 shadow-sm [animation-delay:0.12s] ${
-                isDarkMode
-                  ? "border border-white/10 bg-white/5"
-                  : "border border-slate-200 bg-white"
-              }`}
-            >
-              <ul className="space-y-4">
-                {achievements.map((item) => (
-                  <li key={item} className={achievementClass}>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="animate-reveal rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,#0f172a_0%,#1d4ed8_100%)] p-7 text-white shadow-sm [animation-delay:0.24s]">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-sky-200">
-                Blogs and Talks
-              </p>
-              <h3 className="mt-4 text-3xl font-bold">
-                Ideas I would love to share more often
-              </h3>
-
-              <ul className="mt-6 space-y-4 text-slate-100">
-                {blogs.map((item) => (
-                  <li
-                    key={item}
-                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-base"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
+        <PublicHomePreviewSections
+          isDarkMode={isDarkMode}
+          portofolios={publicContent.portofolios}
+          works={publicContent.works}
+          achievements={publicContent.achievements}
+          isLoading={publicContent.isLoading}
+          errorMessage={publicContent.errorMessage}
+        />
 
         <section
           id="contact"

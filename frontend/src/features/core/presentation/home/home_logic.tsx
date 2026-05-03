@@ -50,9 +50,9 @@ interface HomeContextProps {
 const homeContent: HomeContextProps = {
   navItems: [
     { label: "Skills", href: "#skills" },
-    { label: "Experience", href: "#experience" },
-    { label: "Projects", href: "#projects" },
-    { label: "Achievements", href: "#achievements" },
+    { label: "Portofolio", href: "#projects" },
+    { label: "Work", href: "#work" },
+    { label: "Achievements", href: "#achievement" },
     { label: "Contact", href: "#contact" },
   ],
   socialLinks: [
