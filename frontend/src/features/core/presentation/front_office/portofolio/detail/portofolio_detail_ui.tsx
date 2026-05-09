@@ -43,7 +43,7 @@ export default function PortofolioDetailUI() {
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="text-base font-black sm:text-xl">
-            {"<SkyDeveloper />"}
+            {"SkyDeveloper"}
           </Link>
           <div className="flex items-center gap-3">
             <Link
@@ -209,11 +209,12 @@ export default function PortofolioDetailUI() {
             <section className="mt-12">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
+                  {/* <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
                     Gallery
-                  </p>
+                  </p> */}
                   <h2 className={`mt-3 text-3xl font-black ${titleClass}`}>
-                    Screens and supporting images
+                    Gallery
+                    {/* Screens and supporting images */}
                   </h2>
                 </div>
               </div>

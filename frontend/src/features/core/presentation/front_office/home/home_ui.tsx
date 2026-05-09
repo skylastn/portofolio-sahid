@@ -1,15 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useHomeLogic, usePublicContent } from "./home_logic";
+import { useHomeLogic, useHomeData } from "./home_logic";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
 import { PublicHomePreviewSections } from "../component/home_component";
+import ContactCard from "@/features/component/contact_card";
 
 export default function HomeUI() {
-  const { navItems, socialLinks, skillGroups, heroStats } = useHomeLogic();
   const { changeDarkMode, isDarkMode } = useGlobalLogic();
-  const publicContent = usePublicContent(3);
+  const {
+    navItems,
+    profile,
+    skillGroups,
+    heroStats,
+    portofolios,
+    works,
+    achievements,
+    isLoading,
+    errorMessage,
+  } = useHomeData();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const socialLinks = profile?.socialLinks || [];
+  const heroTitle =
+    profile?.title?.trim() ||
+    "Hi, I'm Sky.\nI build clean, modern, and production-ready web experiences.";
+  const heroDescription =
+    profile?.description?.trim() ||
+    "This portfolio is inspired by DeveloperFolio: a personal landing page that introduces who I am, what I build, the technologies I use, and the work I am proud to ship.";
 
   const pageClass = isDarkMode
     ? "min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.14),_transparent_28%),linear-gradient(180deg,_#020617_0%,_#0f172a_46%,_#111827_100%)] text-slate-100"
@@ -170,18 +188,15 @@ export default function HomeUI() {
             </span>
 
             <h1
-              className={`animate-reveal mt-5 text-4xl font-black tracking-tight [animation-delay:0.15s] sm:mt-6 sm:text-5xl lg:text-6xl ${strongTextClass}`}
+              className={`animate-reveal mt-5 whitespace-pre-line text-4xl font-black tracking-tight [animation-delay:0.15s] sm:mt-6 sm:text-5xl lg:text-6xl ${strongTextClass}`}
             >
-              Hi, I&apos;m Sky.
-              <br />I build clean, modern, and production-ready web experiences.
+              {heroTitle}
             </h1>
 
             <p
               className={`animate-reveal mt-5 max-w-2xl text-base leading-7 [animation-delay:0.25s] sm:mt-6 sm:text-lg sm:leading-8 ${mutedTextClass}`}
             >
-              This portfolio is inspired by DeveloperFolio: a personal landing
-              page that introduces who I am, what I build, the technologies I
-              use, and the work I am proud to ship.
+              {heroDescription}
             </p>
 
             <div className="animate-reveal mt-8 flex flex-col gap-3 [animation-delay:0.35s] sm:flex-row sm:flex-wrap sm:gap-4">
@@ -213,13 +228,13 @@ export default function HomeUI() {
             </div>
           </div>
 
-          <div className="animate-reveal relative order-first [animation-delay:0.3s] lg:order-none">
+          <div className="animate-reveal relative order-first [animation-delay:0.3s] lg:order-0">
             <div
               className={`animate-pulse-soft absolute -top-5 -left-2 h-20 w-20 rounded-3xl blur-2xl sm:-top-6 sm:-left-4 sm:h-24 sm:w-24 ${
                 isDarkMode ? "bg-cyan-300/30" : "bg-amber-200/70"
               }`}
             />
-            <div className="animate-float-card relative overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950 p-5 text-white shadow-[0_30px_80px_rgba(15,23,42,0.24)] sm:p-8">
+            <div className="animate-float-card relative overflow-hidden rounded-4xl border border-white/10 bg-slate-950 p-5 text-white shadow-[0_30px_80px_rgba(15,23,42,0.24)] sm:p-8">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-rose-400" />
                 <span className="h-3 w-3 rounded-full bg-amber-300" />
@@ -286,45 +301,18 @@ export default function HomeUI() {
 
         <PublicHomePreviewSections
           isDarkMode={isDarkMode}
-          portofolios={publicContent.portofolios}
-          works={publicContent.works}
-          achievements={publicContent.achievements}
-          isLoading={publicContent.isLoading}
-          errorMessage={publicContent.errorMessage}
+          portofolios={portofolios}
+          works={works}
+          achievements={achievements}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
         />
 
         <section
           id="contact"
           className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20"
         >
-          <div className="animate-reveal rounded-[2rem] bg-slate-950 px-5 py-10 text-white shadow-[0_35px_90px_rgba(15,23,42,0.26)] sm:px-8 sm:py-12 [animation-delay:0.1s]">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-300 sm:text-sm sm:tracking-[0.3em]">
-              Contact Me
-            </p>
-            <h2 className="mt-4 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-              Let&apos;s build something useful, fast, and memorable together.
-            </h2>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">
-              You can replace this section with your real email, social links,
-              resume URL, and any direct call-to-action you want visitors to
-              take next.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-              <a
-                href="mailto:hello@example.com"
-                className="rounded-full bg-white px-6 py-3 text-center text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
-              >
-                hello@example.com
-              </a>
-              <a
-                href="https://github.com"
-                className="rounded-full border border-white/15 px-6 py-3 text-center text-sm font-semibold text-white transition hover:border-sky-300 hover:text-sky-200"
-              >
-                github.com/your-profile
-              </a>
-            </div>
-          </div>
+          <ContactCard profile={profile} isDarkMode={isDarkMode} />
         </section>
       </main>
     </div>

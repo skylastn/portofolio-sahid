@@ -76,7 +76,7 @@ export default function ListPortofolioUI() {
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="text-base font-black tracking-tight sm:text-xl">
-            {"<SkyDeveloper />"}
+            {"SkyDeveloper"}
           </Link>
           <div className="flex items-center gap-3">
             <Link
