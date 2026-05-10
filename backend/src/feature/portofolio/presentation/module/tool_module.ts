@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MinioModule } from '../../../support/presentation/module/minio_module';
 import { ToolService } from '../../application/tool_service';
 import { ToolEntity } from '../../domain/model/entities/tool_entity';
 import { TOOL_DATABASE_REPOSITORY } from '../../domain/repository/database/tool_database_repository';
@@ -7,7 +8,7 @@ import { ToolDatabaseRepositoryImpl } from '../../infrastructure/persistence/dat
 import { ToolController } from '../controller/tool_controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ToolEntity])],
+  imports: [TypeOrmModule.forFeature([ToolEntity]), MinioModule],
   providers: [
     ToolService,
     {
