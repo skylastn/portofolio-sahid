@@ -28,6 +28,13 @@ export default function HomeUI() {
   const heroDescription =
     profile?.description?.trim() ||
     "This portfolio is inspired by DeveloperFolio: a personal landing page that introduces who I am, what I build, the technologies I use, and the work I am proud to ship.";
+  const currentFocus = works[0];
+  const currentFocusTitle =
+    // currentFocus?.job_title?.trim() ||
+    "Production-ready web experiences with thoughtful execution.";
+  const currentFocusDescription =
+    // currentFocus?.description?.trim() ||
+    "I build practical interfaces and reliable systems that are clear to use, easy to maintain, and ready to ship.";
 
   const pageClass = isDarkMode
     ? "min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.14),_transparent_28%),linear-gradient(180deg,_#020617_0%,_#0f172a_46%,_#111827_100%)] text-slate-100"
@@ -246,11 +253,10 @@ export default function HomeUI() {
                   Current Focus
                 </p>
                 <h2 className="text-2xl font-bold sm:text-3xl">
-                  Frontend systems with strong UX and maintainable architecture.
+                  {currentFocusTitle}
                 </h2>
                 <p className="text-sm leading-6 text-slate-300 sm:text-base sm:leading-7">
-                  I enjoy turning ideas into interfaces that feel clear, fast,
-                  and intentionally crafted across desktop and mobile.
+                  {currentFocusDescription}
                 </p>
               </div>
 

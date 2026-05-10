@@ -1,12 +1,43 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { UrlPath } from "@/shared/constant/url_path";
+import { HttpMethod } from "@/shared/domain/model/enum/http_method";
+import { ApiClient } from "@/shared/network/api_client";
 
 interface OverviewStat {
   label: string;
   value: string;
   change: string;
   note: string;
+}
+
+interface DashboardSummary {
+  totals?: {
+    portofolios?: number;
+    works?: number;
+    achievements?: number;
+    code_languages?: number;
+    frameworks?: number;
+    categories?: number;
+    generals?: number;
+  };
+  work_types?: {
+    freelance?: number;
+    fulltime?: number;
+  };
+  latest?: {
+    portofolio?: { title?: string; updated_at?: string } | null;
+    work?: { title?: string; type?: string; updated_at?: string } | null;
+    achievement?: { title?: string; updated_at?: string } | null;
+  };
 }
 
 interface ShortcutItem {
@@ -92,33 +123,71 @@ function makeTableView(
   return { title, description, columns, rows };
 }
 
-const adminContent: AdminContextProps = {
-  overviewStats: [
+const defaultOverviewStats: OverviewStat[] = [
+  {
+    label: "Portfolios",
+    value: "0",
+    change: "0 categories",
+    note: "Published portfolio records",
+  },
+  {
+    label: "Works",
+    value: "0",
+    change: "0 freelance / 0 fulltime",
+    note: "Experience records",
+  },
+  {
+    label: "Achievements",
+    value: "0",
+    change: "Latest activity",
+    note: "Achievement records",
+  },
+  {
+    label: "Tech Stack",
+    value: "0",
+    change: "0 languages / 0 frameworks",
+    note: "Code language and framework records",
+  },
+];
+
+function formatCount(value?: number) {
+  return String(value ?? 0).padStart(2, "0");
+}
+
+function buildOverviewStats(summary?: DashboardSummary): OverviewStat[] {
+  const totals = summary?.totals;
+  const workTypes = summary?.work_types;
+  return [
     {
-      label: "Live Visitors",
-      value: "2.8K",
-      change: "+18.4%",
-      note: "Compared with yesterday",
+      label: "Portfolios",
+      value: formatCount(totals?.portofolios),
+      change: `${formatCount(totals?.categories)} categories`,
+      note: summary?.latest?.portofolio?.title ?? "Published portfolio records",
     },
     {
-      label: "Messages",
-      value: "14",
-      change: "3 unread",
-      note: "New contact requests",
+      label: "Works",
+      value: formatCount(totals?.works),
+      change: `${formatCount(workTypes?.freelance)} freelance / ${formatCount(workTypes?.fulltime)} fulltime`,
+      note: summary?.latest?.work?.title ?? "Experience records",
     },
     {
-      label: "Projects",
-      value: "09",
-      change: "+2 this month",
-      note: "In active production",
+      label: "Achievements",
+      value: formatCount(totals?.achievements),
+      change: "Latest activity",
+      note: summary?.latest?.achievement?.title ?? "Achievement records",
     },
     {
-      label: "Conversion",
-      value: "6.2%",
-      change: "+1.1%",
-      note: "From portfolio contact flow",
+      label: "Tech Stack",
+      value: formatCount(
+        (totals?.code_languages ?? 0) + (totals?.frameworks ?? 0),
+      ),
+      change: `${formatCount(totals?.code_languages)} languages / ${formatCount(totals?.frameworks)} frameworks`,
+      note: "Code language and framework records",
     },
-  ],
+  ];
+}
+
+const adminContent: Omit<AdminContextProps, "overviewStats"> = {
   shortcutItems: [
     {
       title: "Publish a case study",
@@ -127,34 +196,40 @@ const adminContent: AdminContextProps = {
     },
     {
       title: "Review new messages",
-      description: "Respond to incoming contact requests and collaboration leads.",
+      description:
+        "Respond to incoming contact requests and collaboration leads.",
       href: "#inbox",
     },
     {
       title: "Update hero copy",
-      description: "Tune the headline, intro, and CTA for the latest positioning.",
+      description:
+        "Tune the headline, intro, and CTA for the latest positioning.",
       href: "#hero",
     },
   ],
   activityFeed: [
     {
       title: "Homepage content refreshed",
-      detail: "Updated hero metrics and project ordering for stronger positioning.",
+      detail:
+        "Updated hero metrics and project ordering for stronger positioning.",
       time: "12 min ago",
     },
     {
       title: "New lead received",
-      detail: "A product team asked for a dashboard redesign and frontend support.",
+      detail:
+        "A product team asked for a dashboard redesign and frontend support.",
       time: "34 min ago",
     },
     {
       title: "Deployment completed",
-      detail: "The latest portfolio build was pushed successfully to production.",
+      detail:
+        "The latest portfolio build was pushed successfully to production.",
       time: "2 hours ago",
     },
     {
       title: "Draft article saved",
-      detail: "A new post about scalable frontend structure is ready for review.",
+      detail:
+        "A new post about scalable frontend structure is ready for review.",
       time: "Today",
     },
   ],
@@ -210,9 +285,24 @@ const adminContent: AdminContextProps = {
           { label: "Updated", key: "updated" },
         ],
         [
-          { title: "Portfolio Revamp", type: "Landing Page", status: "Published", updated: "2h ago" },
-          { title: "Admin Dashboard", type: "Internal Tool", status: "Draft", updated: "1d ago" },
-          { title: "API Showcase", type: "Documentation", status: "Review", updated: "3d ago" },
+          {
+            title: "Portfolio Revamp",
+            type: "Landing Page",
+            status: "Published",
+            updated: "2h ago",
+          },
+          {
+            title: "Admin Dashboard",
+            type: "Internal Tool",
+            status: "Draft",
+            updated: "1d ago",
+          },
+          {
+            title: "API Showcase",
+            type: "Documentation",
+            status: "Review",
+            updated: "3d ago",
+          },
         ],
       ),
       category: makeTableView(
@@ -225,9 +315,24 @@ const adminContent: AdminContextProps = {
           { label: "Visibility", key: "visibility" },
         ],
         [
-          { category: "Frontend", slug: "frontend", items: "12", visibility: "Public" },
-          { category: "Backend", slug: "backend", items: "8", visibility: "Public" },
-          { category: "Experimental", slug: "experimental", items: "4", visibility: "Private" },
+          {
+            category: "Frontend",
+            slug: "frontend",
+            items: "12",
+            visibility: "Public",
+          },
+          {
+            category: "Backend",
+            slug: "backend",
+            items: "8",
+            visibility: "Public",
+          },
+          {
+            category: "Experimental",
+            slug: "experimental",
+            items: "4",
+            visibility: "Private",
+          },
         ],
       ),
     },
@@ -241,9 +346,24 @@ const adminContent: AdminContextProps = {
         { label: "Status", key: "status" },
       ],
       [
-        { title: "Best Portfolio UI", source: "Design Award", year: "2025", status: "Verified" },
-        { title: "Open Source Contributor", source: "GitHub", year: "2024", status: "Verified" },
-        { title: "Performance Showcase", source: "Internal Review", year: "2024", status: "Pending" },
+        {
+          title: "Best Portfolio UI",
+          source: "Design Award",
+          year: "2025",
+          status: "Verified",
+        },
+        {
+          title: "Open Source Contributor",
+          source: "GitHub",
+          year: "2024",
+          status: "Verified",
+        },
+        {
+          title: "Performance Showcase",
+          source: "Internal Review",
+          year: "2024",
+          status: "Pending",
+        },
       ],
     ),
     work: makeTableView(
@@ -256,9 +376,24 @@ const adminContent: AdminContextProps = {
         { label: "Progress", key: "progress" },
       ],
       [
-        { work: "Header redesign", owner: "Sky", priority: "High", progress: "82%" },
-        { work: "Contact flow", owner: "Sky", priority: "Medium", progress: "63%" },
-        { work: "SEO tuning", owner: "Content", priority: "Low", progress: "41%" },
+        {
+          work: "Header redesign",
+          owner: "Sky",
+          priority: "High",
+          progress: "82%",
+        },
+        {
+          work: "Contact flow",
+          owner: "Sky",
+          priority: "Medium",
+          progress: "63%",
+        },
+        {
+          work: "SEO tuning",
+          owner: "Content",
+          priority: "Low",
+          progress: "41%",
+        },
       ],
     ),
     code_language: makeTableView(
@@ -271,9 +406,24 @@ const adminContent: AdminContextProps = {
         { label: "Focus", key: "focus" },
       ],
       [
-        { language: "TypeScript", usage: "Frontend", level: "Expert", focus: "UI architecture" },
-        { language: "JavaScript", usage: "Shared", level: "Advanced", focus: "Client logic" },
-        { language: "SQL", usage: "Data", level: "Intermediate", focus: "Reporting" },
+        {
+          language: "TypeScript",
+          usage: "Frontend",
+          level: "Expert",
+          focus: "UI architecture",
+        },
+        {
+          language: "JavaScript",
+          usage: "Shared",
+          level: "Advanced",
+          focus: "Client logic",
+        },
+        {
+          language: "SQL",
+          usage: "Data",
+          level: "Intermediate",
+          focus: "Reporting",
+        },
       ],
     ),
     framework: makeTableView(
@@ -286,9 +436,24 @@ const adminContent: AdminContextProps = {
         { label: "Notes", key: "notes" },
       ],
       [
-        { framework: "Next.js", category: "Frontend", status: "Primary", notes: "Main site layer" },
-        { framework: "React", category: "UI", status: "Primary", notes: "Shared component base" },
-        { framework: "Tailwind CSS", category: "Styling", status: "Primary", notes: "Utility-driven design" },
+        {
+          framework: "Next.js",
+          category: "Frontend",
+          status: "Primary",
+          notes: "Main site layer",
+        },
+        {
+          framework: "React",
+          category: "UI",
+          status: "Primary",
+          notes: "Shared component base",
+        },
+        {
+          framework: "Tailwind CSS",
+          category: "Styling",
+          status: "Primary",
+          notes: "Utility-driven design",
+        },
       ],
     ),
     general: makeTableView(
@@ -301,9 +466,24 @@ const adminContent: AdminContextProps = {
         { label: "State", key: "state" },
       ],
       [
-        { setting: "Dark mode", value: "Enabled", group: "UI", state: "Active" },
-        { setting: "Notifications", value: "Email only", group: "System", state: "Active" },
-        { setting: "Autosave", value: "On", group: "Workflow", state: "Active" },
+        {
+          setting: "Dark mode",
+          value: "Enabled",
+          group: "UI",
+          state: "Active",
+        },
+        {
+          setting: "Notifications",
+          value: "Email only",
+          group: "System",
+          state: "Active",
+        },
+        {
+          setting: "Autosave",
+          value: "On",
+          group: "Workflow",
+          state: "Active",
+        },
       ],
     ),
   },
@@ -317,12 +497,20 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     key: "portfolio",
     children: [
       { label: "Portfolio", href: "/admin/portofolio", key: "portfolio" },
-      { label: "Category", href: "/admin/portofolio/category", key: "category" },
+      {
+        label: "Category",
+        href: "/admin/portofolio/category",
+        key: "category",
+      },
     ],
   },
   { label: "Achievement", href: "/admin/achievement", key: "achievement" },
   { label: "Work", href: "/admin/work", key: "work" },
-  { label: "Code Language", href: "/admin/code-language", key: "code_language" },
+  {
+    label: "Code Language",
+    href: "/admin/code-language",
+    key: "code_language",
+  },
   { label: "Framework", href: "/admin/framework", key: "framework" },
   { label: "General", href: "/admin/general", key: "general" },
 ];
@@ -368,7 +556,29 @@ export function getPortfolioSubsectionFromSlug(
 const AdminLogic = createContext<AdminContextProps | undefined>(undefined);
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
-  return <AdminLogic.Provider value={adminContent}>{children}</AdminLogic.Provider>;
+  const api = useMemo(() => new ApiClient(), []);
+  const [overviewStats, setOverviewStats] =
+    useState<OverviewStat[]>(defaultOverviewStats);
+
+  const fetchSummary = useCallback(async () => {
+    const response = await api.request<DashboardSummary>({
+      path: UrlPath.DASHBOARD_SUMMARY,
+      method: HttpMethod.GET,
+    });
+    if (response.status) {
+      setOverviewStats(buildOverviewStats(response.data));
+    }
+  }, [api]);
+
+  useEffect(() => {
+    void fetchSummary();
+  }, [fetchSummary]);
+
+  return (
+    <AdminLogic.Provider value={{ ...adminContent, overviewStats }}>
+      {children}
+    </AdminLogic.Provider>
+  );
 };
 
 export const useAdminLogic = () => {

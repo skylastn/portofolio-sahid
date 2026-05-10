@@ -42,11 +42,15 @@ export class AchievementDatabaseRepositoryImpl
             title: search,
           }),
         },
+        order: { position: 'ASC', createdAt: 'DESC' },
       },
     );
   }
   async findAllByListId(ids: string[]): Promise<AchievementEntity[]> {
-    return await this.db.findBy({ id: In(ids) });
+    return await this.db.find({
+      where: { id: In(ids) },
+      order: { position: 'ASC', createdAt: 'DESC' },
+    });
   }
   async findOneById(id: string): Promise<AchievementEntity | null> {
     return await this.db.findOne({ where: { id: id } });

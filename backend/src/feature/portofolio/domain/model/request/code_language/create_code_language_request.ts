@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { FrameworkEntity } from '../../entities/framework_entity';
 import { CodeLanguageEntity } from '../../entities/code_language_entity';
@@ -19,13 +19,19 @@ export class CreateCodeLanguageRequest {
   })
   image_path?: string | null;
 
+  @IsOptional()
+  @IsInt()
+  @Transform(({ value }) => Number(value ?? 0))
+  position?: number;
+
   convertToEntity(): CodeLanguageEntity {
     const entity = new CodeLanguageEntity();
     entity.title = this.title;
     entity.description = this.description;
-    if(FormatHelper.isPresent(this.image_path)){
+    if (FormatHelper.isPresent(this.image_path)) {
       entity.imagePath = this.image_path;
     }
+    entity.position = this.position ?? 0;
     return entity;
   }
 }

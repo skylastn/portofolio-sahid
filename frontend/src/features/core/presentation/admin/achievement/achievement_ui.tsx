@@ -34,7 +34,10 @@ export default function AchievementUI() {
     goToPage,
   } = useAchievementLogic();
 
-  const totalPages = Math.max(1, Math.ceil((total || achievements.length) / perPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil((total || achievements.length) / perPage),
+  );
   const formatDateTime = (value?: string | Date | null) =>
     value ? new Date(value).toLocaleString() : "-";
   const twoLineClampStyle: React.CSSProperties = {
@@ -50,10 +53,14 @@ export default function AchievementUI() {
       <div className={`rounded-[1.8rem] p-6 ${theme.shellCardClass}`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
+            <p
+              className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}
+            >
               Achievement records
             </p>
-            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>Achievement list</h3>
+            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>
+              Achievement list
+            </h3>
           </div>
           <button
             type="button"
@@ -64,38 +71,60 @@ export default function AchievementUI() {
           </button>
         </div>
 
-        <div className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}>
+        <div
+          className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}
+        >
           <table className="min-w-full table-fixed border-separate border-spacing-0">
             <thead>
               <tr className={theme.tableHeaderRowClass}>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Number
                 </th>
-                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Title
                 </th>
-                <th className={`w-60 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-60 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Description
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Date
                 </th>
-                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Image path
                 </th>
-                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Image url
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Created
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Updated
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Deleted
                 </th>
-                <th className={`sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableHeaderTextClass}`}
+                >
                   Actions
                 </th>
               </tr>
@@ -103,37 +132,63 @@ export default function AchievementUI() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={10} className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}>
+                  <td
+                    colSpan={10}
+                    className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}
+                  >
                     Loading achievement data...
                   </td>
                 </tr>
               ) : achievements.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}>
+                  <td
+                    colSpan={10}
+                    className={`px-5 py-10 text-center text-sm ${theme.mutedTextClass}`}
+                  >
                     No achievement data found.
                   </td>
                 </tr>
               ) : (
                 achievements.map((item, index) => (
                   <tr key={item.id} className={theme.tableRowAltClass}>
-                    <td className={`align-top border-b px-3 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
+                    <td
+                      className={`align-top border-b px-3 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
+                    >
                       <div className="leading-6" style={twoLineClampStyle}>
                         {(currentPage - 1) * perPage + index + 1}
                       </div>
                     </td>
-                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
-                      <div className="leading-6" style={twoLineClampStyle}>{item.title}</div>
+                    <td
+                      className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
+                    >
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.title}
+                      </div>
                     </td>
-                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
-                      <div className="leading-6" style={twoLineClampStyle}>{item.description}</div>
+                    <td
+                      className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
+                    >
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.description}
+                      </div>
                     </td>
-                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
-                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.date)}</div>
+                    <td
+                      className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
+                    >
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.date)}
+                      </div>
                     </td>
-                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
-                      <div className="leading-6" style={twoLineClampStyle}>{item.image_path ?? "-"}</div>
+                    <td
+                      className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
+                    >
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.image_path ?? "-"}
+                      </div>
                     </td>
-                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
+                    <td
+                      className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
+                    >
                       {item.image_url ? (
                         <div className="h-14 w-20 overflow-hidden rounded-xl border border-white/10 bg-white/5">
                           <DefaultImage
@@ -144,19 +199,31 @@ export default function AchievementUI() {
                           />
                         </div>
                       ) : (
-                        <div className="leading-6" style={twoLineClampStyle}>-</div>
+                        <div className="leading-6" style={twoLineClampStyle}>
+                          -
+                        </div>
                       )}
                     </td>
-                    <td className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}>
-                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.created_at)}</div>
+                    <td
+                      className={`align-top border-b px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableBodyTextClass}`}
+                    >
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.created_at)}
+                      </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.updated_at)}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.updated_at)}
+                      </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.deleted_at)}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.deleted_at)}
+                      </div>
                     </td>
-                    <td className={`sticky right-0 z-20 border-b border-l px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableBodyTextClass}`}>
+                    <td
+                      className={`sticky right-0 z-20 border-b border-l px-5 py-4 text-sm ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableBodyTextClass}`}
+                    >
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -188,7 +255,9 @@ export default function AchievementUI() {
           </table>
         </div>
 
-        <div className={`mt-4 flex items-center justify-between gap-3 text-sm ${theme.mutedTextClass}`}>
+        <div
+          className={`mt-4 flex items-center justify-between gap-3 text-sm ${theme.mutedTextClass}`}
+        >
           <span>
             Page {currentPage} of {totalPages}
           </span>
@@ -237,15 +306,27 @@ export default function AchievementUI() {
             <div className="mt-6 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
               {[
                 ["Description", selectedAchievement.description],
-                ["Date", selectedAchievement.date ? new Date(selectedAchievement.date).toLocaleDateString() : "-"],
+                [
+                  "Date",
+                  selectedAchievement.date
+                    ? new Date(selectedAchievement.date).toLocaleDateString()
+                    : "-",
+                ],
                 ["Image path", selectedAchievement.image_path],
-                ["Updated", selectedAchievement.updated_at ? new Date(selectedAchievement.updated_at).toLocaleString() : "-"],
+                [
+                  "Updated",
+                  selectedAchievement.updated_at
+                    ? new Date(selectedAchievement.updated_at).toLocaleString()
+                    : "-",
+                ],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl bg-white/5 px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
                     {label}
                   </p>
-                  <p className="mt-2 break-all text-sm text-white">{value ?? "-"}</p>
+                  <p className="mt-2 break-all text-sm text-white">
+                    {value ?? "-"}
+                  </p>
                 </div>
               ))}
             </div>
@@ -276,16 +357,22 @@ export default function AchievementUI() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Title</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Title
+                </span>
                 <input
                   value={formState.title}
-                  onChange={(event) => setFormField("title", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("title", event.target.value)
+                  }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter title"
                 />
               </label>
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Date</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Date
+                </span>
                 <input
                   type="date"
                   value={formState.date}
@@ -293,11 +380,29 @@ export default function AchievementUI() {
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                 />
               </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-200">
+                  Position
+                </span>
+                <input
+                  type="number"
+                  value={formState.position ?? 0}
+                  onChange={(event) =>
+                    setFormField("position", event.target.value)
+                  }
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
+                  placeholder="0"
+                />
+              </label>
               <label className="flex flex-col gap-2 md:col-span-2">
-                <span className="text-sm font-semibold text-slate-200">Description</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Description
+                </span>
                 <textarea
                   value={formState.description}
-                  onChange={(event) => setFormField("description", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("description", event.target.value)
+                  }
                   className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter description"
                 />
@@ -326,7 +431,11 @@ export default function AchievementUI() {
                 disabled={isSubmitting || isUploading}
                 className="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}
+                {isSubmitting
+                  ? "Saving..."
+                  : isEditing
+                    ? "Save Changes"
+                    : "Create"}
               </button>
             </div>
           </div>

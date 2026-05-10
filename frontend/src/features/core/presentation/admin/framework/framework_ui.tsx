@@ -166,7 +166,7 @@ export default function FrameworkUI() {
                     item.code_language?.title ??
                     getCodeLanguageTitle(item.code_language_id);
                   return (
-                    <tr key={item.id} className="odd:bg-white/[0.03]">
+                    <tr key={item.id} className="odd:bg-white/3">
                       <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
                         <div className="leading-6" style={twoLineClampStyle}>
                           {(currentPage - 1) * perPage + index + 1}
@@ -418,6 +418,20 @@ export default function FrameworkUI() {
                   }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter title"
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-200">
+                  Position
+                </span>
+                <input
+                  type="number"
+                  value={formState.position ?? 0}
+                  onChange={(event) =>
+                    setFormField("position", event.target.value)
+                  }
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
+                  placeholder="0"
                 />
               </label>
               <label className="flex flex-col gap-2 md:col-span-2">

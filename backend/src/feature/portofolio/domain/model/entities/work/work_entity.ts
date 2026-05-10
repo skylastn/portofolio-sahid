@@ -1,8 +1,16 @@
 import { Entity, Column } from 'typeorm';
 import { DefaultEntity } from '../../../../../../shared/core/model/default_entity';
 
+export enum WorkType {
+  FREELANCE = 'freelance',
+  FULLTIME = 'fulltime',
+}
+
 @Entity('works')
 export class WorkEntity extends DefaultEntity {
+  @Column({ type: 'enum', enum: WorkType, default: WorkType.FULLTIME })
+  type!: WorkType;
+
   @Column({ type: 'text', name: 'company_name' })
   companyName!: string;
 
@@ -23,4 +31,7 @@ export class WorkEntity extends DefaultEntity {
 
   @Column({ type: 'text', name: 'image_path', nullable: true })
   imagePath?: string | null;
+
+  @Column({ name: 'position', type: 'int', default: 0 })
+  position!: number;
 }

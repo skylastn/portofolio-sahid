@@ -3,7 +3,10 @@
 import AdminShell from "../../../component/admin_shell";
 import DefaultImage from "@/shared/component/ui/default_image";
 import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
-import { portofolioAppSourceTypes, usePortofolioFormLogic } from "./portfolio_form_logic";
+import {
+  portofolioAppSourceTypes,
+  usePortofolioFormLogic,
+} from "./portfolio_form_logic";
 import { useAdminTheme } from "../../../styles/admin_theme";
 
 function SectionCard({
@@ -65,7 +68,9 @@ export default function PortofolioFormUI() {
   const inputClass = `rounded-2xl px-4 py-3 text-sm outline-hidden transition ${theme.formInputClass}`;
   const textAreaClass = `min-h-40 rounded-2xl px-4 py-3 text-sm outline-hidden transition ${theme.formInputClass}`;
   const selectClass = `rounded-2xl px-4 py-3 text-sm outline-hidden transition ${theme.formInputClass}`;
-  const selectedOptionTitleClass = theme.isDarkMode ? "text-cyan-50" : "text-cyan-950";
+  const selectedOptionTitleClass = theme.isDarkMode
+    ? "text-cyan-50"
+    : "text-cyan-950";
   const selectedOptionDescriptionClass = theme.isDarkMode
     ? "text-cyan-100/80"
     : "text-cyan-900/80";
@@ -93,10 +98,14 @@ export default function PortofolioFormUI() {
       portfolioActiveKey="portfolio"
     >
       <div className="flex flex-col gap-6">
-        <div className={`rounded-[1.8rem] p-6 shadow-[0_18px_60px_rgba(15,23,42,0.2)] ${theme.shellCardClass}`}>
+        <div
+          className={`rounded-[1.8rem] p-6 shadow-[0_18px_60px_rgba(15,23,42,0.2)] ${theme.shellCardClass}`}
+        >
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
+              <p
+                className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}
+              >
                 Portfolio {isEditMode ? "update" : "create"}
               </p>
               <h3 className={`mt-2 text-3xl font-black ${theme.headingClass}`}>
@@ -138,7 +147,9 @@ export default function PortofolioFormUI() {
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="flex flex-col gap-2">
-                  <span className={`text-sm font-semibold ${theme.formLabelClass}`}>
+                  <span
+                    className={`text-sm font-semibold ${theme.formLabelClass}`}
+                  >
                     Title
                   </span>
                   <input
@@ -152,7 +163,9 @@ export default function PortofolioFormUI() {
                 </label>
 
                 <label className="flex flex-col gap-2">
-                  <span className={`text-sm font-semibold ${theme.formLabelClass}`}>
+                  <span
+                    className={`text-sm font-semibold ${theme.formLabelClass}`}
+                  >
                     Work
                   </span>
                   <select
@@ -171,8 +184,27 @@ export default function PortofolioFormUI() {
                   </select>
                 </label>
 
+                <label className="flex flex-col gap-2">
+                  <span
+                    className={`text-sm font-semibold ${theme.formLabelClass}`}
+                  >
+                    Position
+                  </span>
+                  <input
+                    type="number"
+                    value={formState.position ?? 0}
+                    onChange={(event) =>
+                      setFormField("position", event.target.value)
+                    }
+                    className={inputClass}
+                    placeholder="0"
+                  />
+                </label>
+
                 <label className="md:col-span-2 flex flex-col gap-2">
-                  <span className={`text-sm font-semibold ${theme.formLabelClass}`}>
+                  <span
+                    className={`text-sm font-semibold ${theme.formLabelClass}`}
+                  >
                     Description
                   </span>
                   <textarea
@@ -196,12 +228,18 @@ export default function PortofolioFormUI() {
               </div>
 
               <div className={`mt-5 rounded-2xl p-4 ${theme.panelClass}`}>
-                <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                <p
+                  className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                >
                   Work preview
                 </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <div className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}>
-                    <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                  <div
+                    className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}
+                  >
+                    <p
+                      className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                    >
                       Selected work
                     </p>
                     <p className={`mt-2 text-sm ${theme.detailValueClass}`}>
@@ -210,11 +248,17 @@ export default function PortofolioFormUI() {
                         : "-"}
                     </p>
                   </div>
-                  <div className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}>
-                    <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                  <div
+                    className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}
+                  >
+                    <p
+                      className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                    >
                       Thumbnail
                     </p>
-                    <p className={`mt-2 break-all text-sm ${theme.detailValueClass}`}>
+                    <p
+                      className={`mt-2 break-all text-sm ${theme.detailValueClass}`}
+                    >
                       {formState.thumbnail_path || "-"}
                     </p>
                   </div>
@@ -247,7 +291,9 @@ export default function PortofolioFormUI() {
                     className={`grid gap-3 rounded-2xl p-4 md:grid-cols-[minmax(0,1fr)_180px_auto] ${theme.buttonSurfaceClass}`}
                   >
                     <label className="flex flex-col gap-2">
-                      <span className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                      <span
+                        className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                      >
                         URL
                       </span>
                       <input
@@ -260,7 +306,9 @@ export default function PortofolioFormUI() {
                       />
                     </label>
                     <label className="flex flex-col gap-2">
-                      <span className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                      <span
+                        className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                      >
                         Type
                       </span>
                       <select
@@ -306,7 +354,9 @@ export default function PortofolioFormUI() {
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {formState.images.length === 0 ? (
-                    <div className={`rounded-2xl border border-dashed px-4 py-8 text-sm sm:col-span-2 xl:col-span-3 ${theme.buttonSurfaceClass}`}>
+                    <div
+                      className={`rounded-2xl border border-dashed px-4 py-8 text-sm sm:col-span-2 xl:col-span-3 ${theme.buttonSurfaceClass}`}
+                    >
                       No gallery images yet.
                     </div>
                   ) : (
@@ -324,13 +374,17 @@ export default function PortofolioFormUI() {
                               sizes="320px"
                             />
                           ) : (
-                            <div className={`px-4 text-center text-sm ${theme.mutedTextClass}`}>
+                            <div
+                              className={`px-4 text-center text-sm ${theme.mutedTextClass}`}
+                            >
                               {image.image_path}
                             </div>
                           )}
                         </div>
                         <div className="flex items-center justify-between gap-3 px-4 py-3">
-                          <p className={`truncate text-xs ${theme.subtleTextClass}`}>
+                          <p
+                            className={`truncate text-xs ${theme.subtleTextClass}`}
+                          >
                             {image.image_path}
                           </p>
                           <button
@@ -355,7 +409,9 @@ export default function PortofolioFormUI() {
               subtitle="Select every category that belongs to this portfolio."
               className={theme.shellCardClass}
             >
-              <div className={`max-h-105 overflow-auto rounded-2xl p-3 ${theme.panelClass}`}>
+              <div
+                className={`max-h-105 overflow-auto rounded-2xl p-3 ${theme.panelClass}`}
+              >
                 <div className="grid gap-2 sm:grid-cols-2">
                   {categories.map((category) => {
                     const checked = formState.category_ids.includes(
@@ -379,14 +435,18 @@ export default function PortofolioFormUI() {
                         <div className="min-w-0">
                           <p
                             className={`text-sm font-semibold ${
-                              checked ? selectedOptionTitleClass : theme.detailValueClass
+                              checked
+                                ? selectedOptionTitleClass
+                                : theme.detailValueClass
                             }`}
                           >
                             {category.title}
                           </p>
                           <p
                             className={`mt-1 break-all text-xs ${
-                              checked ? selectedOptionDescriptionClass : theme.subtleTextClass
+                              checked
+                                ? selectedOptionDescriptionClass
+                                : theme.subtleTextClass
                             }`}
                           >
                             {category.description ?? "-"}
@@ -404,7 +464,9 @@ export default function PortofolioFormUI() {
               subtitle="Pick the frameworks used in this portfolio."
               className={theme.shellCardClass}
             >
-              <div className={`max-h-105 overflow-auto rounded-2xl p-3 ${theme.panelClass}`}>
+              <div
+                className={`max-h-105 overflow-auto rounded-2xl p-3 ${theme.panelClass}`}
+              >
                 <div className="grid gap-2 sm:grid-cols-2">
                   {frameworks.map((framework) => {
                     const checked = formState.framework_ids.includes(
@@ -428,14 +490,18 @@ export default function PortofolioFormUI() {
                         <div className="min-w-0">
                           <p
                             className={`text-sm font-semibold ${
-                              checked ? selectedOptionTitleClass : theme.detailValueClass
+                              checked
+                                ? selectedOptionTitleClass
+                                : theme.detailValueClass
                             }`}
                           >
                             {framework.title}
                           </p>
                           <p
                             className={`mt-1 break-all text-xs ${
-                              checked ? selectedOptionDescriptionClass : theme.subtleTextClass
+                              checked
+                                ? selectedOptionDescriptionClass
+                                : theme.subtleTextClass
                             }`}
                           >
                             {framework.description ?? "-"}
@@ -454,32 +520,48 @@ export default function PortofolioFormUI() {
               className={theme.shellCardClass}
             >
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}>
-                  <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                <div
+                  className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}
+                >
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                  >
                     Sources
                   </p>
                   <p className={`mt-2 text-sm ${theme.detailValueClass}`}>
                     {formState.apps_sources.length}
                   </p>
                 </div>
-                <div className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}>
-                  <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                <div
+                  className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}
+                >
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                  >
                     Images
                   </p>
                   <p className={`mt-2 text-sm ${theme.detailValueClass}`}>
                     {formState.images.length}
                   </p>
                 </div>
-                <div className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}>
-                  <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                <div
+                  className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}
+                >
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                  >
                     Categories
                   </p>
                   <p className={`mt-2 text-sm ${theme.detailValueClass}`}>
                     {formState.category_ids.length}
                   </p>
                 </div>
-                <div className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}>
-                  <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}>
+                <div
+                  className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}
+                >
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                  >
                     Frameworks
                   </p>
                   <p className={`mt-2 text-sm ${theme.detailValueClass}`}>

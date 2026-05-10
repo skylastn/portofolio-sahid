@@ -20,6 +20,7 @@ import { AchievementModule } from '../../../feature/portofolio/presentation/modu
 import { PortofolioModule } from '../../../feature/portofolio/presentation/module/portofolio/portofolio_module';
 import { WorkModule } from '../../../feature/portofolio/presentation/module/work_module';
 import { FrameworkCodeMappingModule } from '../../../feature/portofolio/presentation/module/framework_code_mapping/framework_code_mapping_module';
+import { DashboardModule } from '../../../feature/portofolio/presentation/module/dashboard_module';
 @Module({
   imports: [
     DatabaseModule,
@@ -34,6 +35,7 @@ import { FrameworkCodeMappingModule } from '../../../feature/portofolio/presenta
     AchievementModule,
     WorkModule,
     PortofolioModule,
+    DashboardModule,
   ],
   providers: [
     {

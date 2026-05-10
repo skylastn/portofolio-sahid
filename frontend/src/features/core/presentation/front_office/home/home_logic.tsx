@@ -21,6 +21,9 @@ import { GeneralResponse } from "@/features/core/domain/model/response/general_r
 import { FrameworkResponse } from "@/features/core/domain/model/response/framework_response";
 import { CodeLanguageResponse } from "@/features/core/domain/model/response/code_language_response";
 import { EitherType } from "@/shared/utils/utility/either";
+import { ApiClient } from "@/shared/network/api_client";
+import { UrlPath } from "@/shared/constant/url_path";
+import { HttpMethod } from "@/shared/domain/model/enum/http_method";
 
 interface NavItem {
   label: string;
@@ -40,6 +43,20 @@ interface SkillGroup {
 interface HeroStat {
   title: string;
   value: string;
+}
+
+interface DashboardSummary {
+  totals?: {
+    portofolios?: number;
+    works?: number;
+    achievements?: number;
+    code_languages?: number;
+    frameworks?: number;
+  };
+  work_types?: {
+    freelance?: number;
+    fulltime?: number;
+  };
 }
 
 interface HomeProfile {
@@ -71,11 +88,37 @@ const defaultNavItems: NavItem[] = [
 ];
 
 const defaultHeroStats: HeroStat[] = [
-  { title: "Projects", value: "Completed" },
-  { title: "Experience", value: "Years" },
-  { title: "Technologies", value: "Mastered" },
-  { title: "Clients", value: "Served" },
+  { title: "Portfolios", value: "0 shipped" },
+  { title: "Works", value: "0 experiences" },
+  { title: "Tech Stack", value: "0 tools" },
+  { title: "Achievements", value: "0 milestones" },
 ];
+
+function formatCount(value?: number) {
+  return String(value ?? 0).padStart(2, "0");
+}
+
+function buildHeroStats(summary?: DashboardSummary): HeroStat[] {
+  const totals = summary?.totals;
+  return [
+    {
+      title: "Portfolios",
+      value: `${formatCount(totals?.portofolios)} shipped`,
+    },
+    {
+      title: "Works",
+      value: `${formatCount(totals?.works)} experiences`,
+    },
+    {
+      title: "Tech Stack",
+      value: `${formatCount((totals?.code_languages ?? 0) + (totals?.frameworks ?? 0))} tools`,
+    },
+    {
+      title: "Achievements",
+      value: `${formatCount(totals?.achievements)} milestones`,
+    },
+  ];
+}
 
 export function useHomeData() {
   const [state, setState] = useState<HomeContentState>({
@@ -99,6 +142,7 @@ export function useHomeData() {
     const portofolioService = new PortofolioService();
     const workService = new WorkService();
     const achievementService = new AchievementService();
+    const apiClient = new ApiClient();
 
     const [
       generalResult,
@@ -107,6 +151,7 @@ export function useHomeData() {
       portofolioResult,
       workResult,
       achievementResult,
+      dashboardResult,
     ] = await Promise.all([
       generalService.fetchGenerals(),
       frameworkService.fetchFrameworks({ page: 1, perPage: 50 }),
@@ -114,6 +159,10 @@ export function useHomeData() {
       portofolioService.fetchPortofolios({ page: 1, perPage: 6 }),
       workService.fetchWorks({ page: 1, perPage: 6 }),
       achievementService.fetchAchievements({ page: 1, perPage: 6 }),
+      apiClient.request<DashboardSummary>({
+        path: UrlPath.DASHBOARD_SUMMARY,
+        method: HttpMethod.GET,
+      }),
     ]);
 
     // Build profile from general data
@@ -186,7 +235,9 @@ export function useHomeData() {
       profile,
       skillGroups:
         skillGroups.length > 0 ? skillGroups : getDefaultSkillGroups(),
-      heroStats: defaultHeroStats,
+      heroStats: dashboardResult.status
+        ? buildHeroStats(dashboardResult.data)
+        : defaultHeroStats,
       portofolios:
         portofolioResult.tag === EitherType.Right
           ? (portofolioResult.right.data ?? [])

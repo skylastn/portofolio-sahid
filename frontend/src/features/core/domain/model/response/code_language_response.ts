@@ -8,6 +8,7 @@ export namespace CodeLanguageResponse {
     description?: string;
     image_path?: string | null;
     image_url?: string | null;
+    position?: number;
   }
 
   export type ResponseList = BaseResponse<Data[]>;

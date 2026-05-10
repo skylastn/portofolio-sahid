@@ -50,6 +50,7 @@ interface WorkContextProps {
 }
 
 const defaultFormState: WorkFormState = {
+  type: "fulltime",
   company_name: "",
   company_url: "",
   job_title: "",
@@ -57,6 +58,7 @@ const defaultFormState: WorkFormState = {
   start_date: "",
   end_date: "",
   image_path: "",
+  position: 0,
 };
 
 const WorkLogic = createContext<WorkContextProps | undefined>(undefined);
@@ -65,7 +67,9 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
   const service = useMemo(() => new WorkService(), []);
   const { setLoading } = useLoading();
   const [works, setWorks] = useState<WorkResponse.Data[]>([]);
-  const [selectedWork, setSelectedWork] = useState<WorkResponse.Data | null>(null);
+  const [selectedWork, setSelectedWork] = useState<WorkResponse.Data | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -134,12 +138,14 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
     setIsEditing(true);
     setFormState({
       company_name: item.company_name ?? "",
+      type: item.type ?? "fulltime",
       company_url: item.company_url ?? "",
       job_title: item.job_title ?? "",
       description: item.description ?? "",
       start_date: item.start_date ? String(item.start_date).slice(0, 10) : "",
       end_date: item.end_date ? String(item.end_date).slice(0, 10) : "",
       image_path: item.image_path ?? "",
+      position: item.position ?? 0,
     });
     setIsFormOpen(true);
   }, []);
@@ -149,9 +155,12 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
     setIsDeleteOpen(true);
   }, []);
 
-  const setFormField = useCallback((field: keyof WorkFormState, value: string) => {
-    setFormState((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const setFormField = useCallback(
+    (field: keyof WorkFormState, value: string) => {
+      setFormState((prev) => ({ ...prev, [field]: value }));
+    },
+    [],
+  );
 
   const uploadWorkImage = useCallback(
     async (file: File) => {
@@ -190,16 +199,25 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const payload: CreateWorkRequest = {
         company_name: formState.company_name.trim(),
+        type: formState.type ?? "fulltime",
         company_url: formState.company_url?.trim() || null,
         job_title: formState.job_title.trim(),
         description: formState.description.trim(),
         start_date: formState.start_date.trim(),
         end_date: formState.end_date?.trim() || null,
         image_path: formState.image_path?.trim() || null,
+        position: Number(formState.position ?? 0),
       };
 
-      if (!payload.company_name || !payload.job_title || !payload.description || !payload.start_date) {
-        toast.error("Company, job title, description, and start date are required");
+      if (
+        !payload.company_name ||
+        !payload.job_title ||
+        !payload.description ||
+        !payload.start_date
+      ) {
+        toast.error(
+          "Company, job title, description, and start date are required",
+        );
         return;
       }
 
@@ -224,11 +242,13 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
     closeModal,
     currentPage,
     formState.company_name,
+    formState.type,
     formState.company_url,
     formState.description,
     formState.end_date,
     formState.image_path,
     formState.job_title,
+    formState.position,
     formState.start_date,
     isEditing,
     refreshWorks,
@@ -255,7 +275,14 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
       setIsSubmitting(false);
       setLoading(false);
     }
-  }, [closeModal, currentPage, refreshWorks, selectedWork?.id, service, setLoading]);
+  }, [
+    closeModal,
+    currentPage,
+    refreshWorks,
+    selectedWork?.id,
+    service,
+    setLoading,
+  ]);
 
   const goToPage = useCallback(
     async (page: number) => {

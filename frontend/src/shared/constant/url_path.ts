@@ -18,6 +18,9 @@ export const UrlPath = {
   // general
   GENERAL: "api/general",
 
+  // dashboard
+  DASHBOARD_SUMMARY: "api/dashboard/summary",
+
   // achievement
   ACHIEVEMENT: "api/achievement",
 

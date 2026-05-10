@@ -16,6 +16,9 @@ export class PortofolioEntity extends DefaultEntity {
   @Column({ type: 'text', name: 'thumbnail_path', nullable: true })
   thumbnailPath?: string | null;
 
+  @Column({ name: 'position', type: 'int', default: 0 })
+  position!: number;
+
   @ManyToOne(() => WorkEntity)
   @JoinColumn({
     name: 'work_id',

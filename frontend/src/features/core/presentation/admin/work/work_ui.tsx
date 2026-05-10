@@ -50,10 +50,14 @@ export default function WorkUI() {
       <div className={`rounded-[1.8rem] p-6 ${theme.shellCardClass}`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
+            <p
+              className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}
+            >
               Work records
             </p>
-            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>Work list</h3>
+            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>
+              Work list
+            </h3>
           </div>
           <button
             type="button"
@@ -64,47 +68,75 @@ export default function WorkUI() {
           </button>
         </div>
 
-        <div className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}>
+        <div
+          className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}
+        >
           <table className="min-w-full table-fixed border-separate border-spacing-0">
             <thead>
               <tr className={theme.tableHeaderRowClass}>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Number
                 </th>
-                <th className={`w-32.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-32.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Company
                 </th>
-                <th className={`w-42.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-42.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Company URL
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Job Title
                 </th>
-                <th className={`w-55 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-55 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Description
                 </th>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Start date
                 </th>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   End date
                 </th>
-                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Image path
                 </th>
-                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Image url
                 </th>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Created
                 </th>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Updated
                 </th>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Deleted
                 </th>
-                <th className={`sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableHeaderTextClass}`}
+                >
                   Actions
                 </th>
               </tr>
@@ -112,13 +144,19 @@ export default function WorkUI() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={12} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td
+                    colSpan={12}
+                    className="px-5 py-10 text-center text-sm text-slate-300"
+                  >
                     Loading work data...
                   </td>
                 </tr>
               ) : works.length === 0 ? (
                 <tr>
-                  <td colSpan={12} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td
+                    colSpan={12}
+                    className="px-5 py-10 text-center text-sm text-slate-300"
+                  >
                     No work data found.
                   </td>
                 </tr>
@@ -146,7 +184,10 @@ export default function WorkUI() {
                       </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
-                      <div className="max-w-55 leading-6" style={twoLineClampStyle}>
+                      <div
+                        className="max-w-55 leading-6"
+                        style={twoLineClampStyle}
+                      >
                         {item.description}
                       </div>
                     </td>
@@ -278,15 +319,27 @@ export default function WorkUI() {
                 ["Company URL", selectedWork.company_url],
                 ["Job title", selectedWork.job_title],
                 ["Description", selectedWork.description],
-                ["Start date", selectedWork.start_date ? new Date(selectedWork.start_date).toLocaleDateString() : "-"],
-                ["End date", selectedWork.end_date ? new Date(selectedWork.end_date).toLocaleDateString() : "-"],
+                [
+                  "Start date",
+                  selectedWork.start_date
+                    ? new Date(selectedWork.start_date).toLocaleDateString()
+                    : "-",
+                ],
+                [
+                  "End date",
+                  selectedWork.end_date
+                    ? new Date(selectedWork.end_date).toLocaleDateString()
+                    : "-",
+                ],
                 ["Image path", selectedWork.image_path],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl bg-white/5 px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
                     {label}
                   </p>
-                  <p className="mt-2 break-all text-sm text-white">{value ?? "-"}</p>
+                  <p className="mt-2 break-all text-sm text-white">
+                    {value ?? "-"}
+                  </p>
                 </div>
               ))}
             </div>
@@ -317,57 +370,108 @@ export default function WorkUI() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Company name</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Company name
+                </span>
                 <input
                   value={formState.company_name}
-                  onChange={(event) => setFormField("company_name", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("company_name", event.target.value)
+                  }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter company name"
                 />
               </label>
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Company URL</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Company URL
+                </span>
                 <input
                   type="url"
                   value={formState.company_url ?? ""}
-                  onChange={(event) => setFormField("company_url", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("company_url", event.target.value)
+                  }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter company URL"
                 />
               </label>
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Job title</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Job title
+                </span>
                 <input
                   value={formState.job_title}
-                  onChange={(event) => setFormField("job_title", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("job_title", event.target.value)
+                  }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter job title"
                 />
               </label>
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Start date</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Type
+                </span>
+                <select
+                  value={formState.type ?? "fulltime"}
+                  onChange={(event) => setFormField("type", event.target.value)}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
+                >
+                  <option value="fulltime">Fulltime</option>
+                  <option value="freelance">Freelance</option>
+                </select>
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-200">
+                  Start date
+                </span>
                 <input
                   type="date"
                   value={formState.start_date}
-                  onChange={(event) => setFormField("start_date", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("start_date", event.target.value)
+                  }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                 />
               </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-200">
+                  Position
+                </span>
+                <input
+                  type="number"
+                  value={formState.position ?? 0}
+                  onChange={(event) =>
+                    setFormField("position", event.target.value)
+                  }
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
+                  placeholder="0"
+                />
+              </label>
               <label className="flex flex-col gap-2 md:col-span-2">
-                <span className="text-sm font-semibold text-slate-200">Description</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Description
+                </span>
                 <textarea
                   value={formState.description}
-                  onChange={(event) => setFormField("description", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("description", event.target.value)
+                  }
                   className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter description"
                 />
               </label>
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">End date</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  End date
+                </span>
                 <input
                   type="date"
                   value={formState.end_date ?? ""}
-                  onChange={(event) => setFormField("end_date", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("end_date", event.target.value)
+                  }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                 />
               </label>
@@ -395,7 +499,11 @@ export default function WorkUI() {
                 disabled={isSubmitting || isUploading}
                 className="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}
+                {isSubmitting
+                  ? "Saving..."
+                  : isEditing
+                    ? "Save Changes"
+                    : "Create"}
               </button>
             </div>
           </div>

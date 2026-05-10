@@ -60,6 +60,7 @@ const defaultFormState: FrameworkFormState = {
   image_path: "",
   code_language_ids: [],
   deleted_code_language_ids: [],
+  position: 0,
 };
 
 const FrameworkLogic = createContext<FrameworkContextProps | undefined>(
@@ -207,6 +208,7 @@ export const FrameworkProvider = ({
           image_path: detail.image_path ?? "",
           code_language_ids: mappedCodeLanguageIds,
           deleted_code_language_ids: [],
+          position: detail.position ?? 0,
         });
         setIsFormOpen(true);
       } finally {
@@ -286,6 +288,7 @@ export const FrameworkProvider = ({
         deleted_code_language_ids: initialCodeLanguageIds.filter(
           (id) => !(formState.code_language_ids ?? []).includes(id),
         ),
+        position: Number(formState.position ?? 0),
       };
 
       if (!payload.code_language_id || !payload.title || !payload.description) {
@@ -318,6 +321,7 @@ export const FrameworkProvider = ({
     formState.image_path,
     formState.title,
     formState.code_language_ids,
+    formState.position,
     initialCodeLanguageIds,
     isEditing,
     refreshFrameworks,

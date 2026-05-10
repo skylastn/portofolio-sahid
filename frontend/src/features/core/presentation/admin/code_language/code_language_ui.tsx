@@ -34,7 +34,10 @@ export default function CodeLanguageUI() {
     goToPage,
   } = useCodeLanguageLogic();
 
-  const totalPages = Math.max(1, Math.ceil((total || codeLanguages.length) / perPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil((total || codeLanguages.length) / perPage),
+  );
   const formatDateTime = (value?: string | Date | null) =>
     value ? new Date(value).toLocaleString() : "-";
   const twoLineClampStyle: React.CSSProperties = {
@@ -50,10 +53,14 @@ export default function CodeLanguageUI() {
       <div className={`rounded-[1.8rem] p-6 ${theme.shellCardClass}`}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}>
+            <p
+              className={`text-sm font-semibold uppercase tracking-[0.24em] ${theme.sectionTitleClass}`}
+            >
               Code language records
             </p>
-            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>Code language list</h3>
+            <h3 className={`mt-2 text-2xl font-black ${theme.headingClass}`}>
+              Code language list
+            </h3>
           </div>
           <button
             type="button"
@@ -64,35 +71,55 @@ export default function CodeLanguageUI() {
           </button>
         </div>
 
-        <div className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}>
+        <div
+          className={`mt-6 overflow-x-auto rounded-[1.25rem] ${theme.tableWrapperClass}`}
+        >
           <table className="min-w-full table-fixed border-separate border-spacing-0">
             <thead>
               <tr className={theme.tableHeaderRowClass}>
-                <th className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-27.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Number
                 </th>
-                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Title
                 </th>
-                <th className={`w-55 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-55 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Description
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Updated
                 </th>
-                <th className={`w-35 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-35 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Image path
                 </th>
-                <th className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-37.5 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Image url
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Created
                 </th>
-                <th className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`w-30 whitespace-nowrap border-b px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableHeaderTextClass}`}
+                >
                   Deleted
                 </th>
-                <th className={`sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableHeaderTextClass}`}>
+                <th
+                  className={`sticky right-0 z-30 w-35 whitespace-nowrap border-b border-l px-3 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] ${theme.tableBorderClass} ${theme.tableStickyClass} ${theme.tableHeaderTextClass}`}
+                >
                   Actions
                 </th>
               </tr>
@@ -100,13 +127,19 @@ export default function CodeLanguageUI() {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td
+                    colSpan={8}
+                    className="px-5 py-10 text-center text-sm text-slate-300"
+                  >
                     Loading code language data...
                   </td>
                 </tr>
               ) : codeLanguages.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-sm text-slate-300">
+                  <td
+                    colSpan={8}
+                    className="px-5 py-10 text-center text-sm text-slate-300"
+                  >
                     No code language data found.
                   </td>
                 </tr>
@@ -119,16 +152,24 @@ export default function CodeLanguageUI() {
                       </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{item.title}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.title}
+                      </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{item.description}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.description}
+                      </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.updated_at)}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.updated_at)}
+                      </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{item.image_path ?? "-"}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {item.image_path ?? "-"}
+                      </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
                       {item.image_url ? (
@@ -141,14 +182,20 @@ export default function CodeLanguageUI() {
                           />
                         </div>
                       ) : (
-                        <div className="leading-6" style={twoLineClampStyle}>-</div>
+                        <div className="leading-6" style={twoLineClampStyle}>
+                          -
+                        </div>
                       )}
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.created_at)}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.created_at)}
+                      </div>
                     </td>
                     <td className="align-top border-b border-white/10 px-5 py-4 text-sm text-slate-100">
-                      <div className="leading-6" style={twoLineClampStyle}>{formatDateTime(item.deleted_at)}</div>
+                      <div className="leading-6" style={twoLineClampStyle}>
+                        {formatDateTime(item.deleted_at)}
+                      </div>
                     </td>
                     <td className="sticky right-0 z-20 border-b border-l border-white/10 bg-slate-950/95 px-5 py-4 text-sm text-slate-100 shadow-[-12px_0_24px_rgba(2,6,23,0.35)]">
                       <div className="flex flex-wrap gap-2">
@@ -232,13 +279,20 @@ export default function CodeLanguageUI() {
               {[
                 ["Description", selectedCodeLanguage.description],
                 ["Image path", selectedCodeLanguage.image_path],
-                ["Updated", selectedCodeLanguage.updated_at ? new Date(selectedCodeLanguage.updated_at).toLocaleString() : "-"],
+                [
+                  "Updated",
+                  selectedCodeLanguage.updated_at
+                    ? new Date(selectedCodeLanguage.updated_at).toLocaleString()
+                    : "-",
+                ],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl bg-white/5 px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
                     {label}
                   </p>
-                  <p className="mt-2 break-all text-sm text-white">{value ?? "-"}</p>
+                  <p className="mt-2 break-all text-sm text-white">
+                    {value ?? "-"}
+                  </p>
                 </div>
               ))}
             </div>
@@ -269,12 +323,30 @@ export default function CodeLanguageUI() {
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-200">Title</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Title
+                </span>
                 <input
                   value={formState.title}
-                  onChange={(event) => setFormField("title", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("title", event.target.value)
+                  }
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter title"
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-semibold text-slate-200">
+                  Position
+                </span>
+                <input
+                  type="number"
+                  value={formState.position ?? 0}
+                  onChange={(event) =>
+                    setFormField("position", event.target.value)
+                  }
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
+                  placeholder="0"
                 />
               </label>
               <div className="md:col-span-2">
@@ -286,10 +358,14 @@ export default function CodeLanguageUI() {
                 />
               </div>
               <label className="flex flex-col gap-2 md:col-span-2">
-                <span className="text-sm font-semibold text-slate-200">Description</span>
+                <span className="text-sm font-semibold text-slate-200">
+                  Description
+                </span>
                 <textarea
                   value={formState.description}
-                  onChange={(event) => setFormField("description", event.target.value)}
+                  onChange={(event) =>
+                    setFormField("description", event.target.value)
+                  }
                   className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-hidden focus:border-cyan-300"
                   placeholder="Enter description"
                 />
@@ -310,7 +386,11 @@ export default function CodeLanguageUI() {
                 disabled={isSubmitting || isUploading}
                 className="rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}
+                {isSubmitting
+                  ? "Saving..."
+                  : isEditing
+                    ? "Save Changes"
+                    : "Create"}
               </button>
             </div>
           </div>

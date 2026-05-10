@@ -53,6 +53,7 @@ const defaultFormState: CodeLanguageFormState = {
   title: "",
   description: "",
   image_path: "",
+  position: 0,
 };
 
 const CodeLanguageLogic = createContext<CodeLanguageContextProps | undefined>(
@@ -66,7 +67,9 @@ export const CodeLanguageProvider = ({
 }) => {
   const service = useMemo(() => new CodeLanguageService(), []);
   const { setLoading } = useLoading();
-  const [codeLanguages, setCodeLanguages] = useState<CodeLanguageResponse.Data[]>([]);
+  const [codeLanguages, setCodeLanguages] = useState<
+    CodeLanguageResponse.Data[]
+  >([]);
   const [selectedCodeLanguage, setSelectedCodeLanguage] =
     useState<CodeLanguageResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +79,8 @@ export const CodeLanguageProvider = ({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formState, setFormState] = useState<CodeLanguageFormState>(defaultFormState);
+  const [formState, setFormState] =
+    useState<CodeLanguageFormState>(defaultFormState);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [total, setTotal] = useState(0);
@@ -90,7 +94,8 @@ export const CodeLanguageProvider = ({
         const query: CodeLanguageRequest = { page, perPage };
         const result = await service.fetchCodeLanguages(query);
         result.fold(
-          (err) => toast.error(err.message ?? "Failed to load code language data"),
+          (err) =>
+            toast.error(err.message ?? "Failed to load code language data"),
           (response) => {
             setCodeLanguages(response.data ?? []);
             setTotal(response.total ?? 0);
@@ -139,6 +144,7 @@ export const CodeLanguageProvider = ({
       title: item.title ?? "",
       description: item.description ?? "",
       image_path: item.image_path ?? "",
+      position: item.position ?? 0,
     });
     setIsFormOpen(true);
   }, []);
@@ -194,6 +200,7 @@ export const CodeLanguageProvider = ({
         title: formState.title.trim(),
         description: formState.description.trim(),
         image_path: formState.image_path?.trim() || null,
+        position: Number(formState.position ?? 0),
       };
 
       if (!payload.title || !payload.description) {
@@ -207,9 +214,12 @@ export const CodeLanguageProvider = ({
           : await service.createCodeLanguage(payload);
 
       result.fold(
-        (err) => toast.error(err.message ?? "Failed to save code language data"),
+        (err) =>
+          toast.error(err.message ?? "Failed to save code language data"),
         async () => {
-          toast.success(isEditing ? "Code language updated" : "Code language created");
+          toast.success(
+            isEditing ? "Code language updated" : "Code language created",
+          );
           closeModal();
           await refreshCodeLanguages(currentPage);
         },
@@ -223,6 +233,7 @@ export const CodeLanguageProvider = ({
     currentPage,
     formState.description,
     formState.image_path,
+    formState.position,
     formState.title,
     isEditing,
     refreshCodeLanguages,
@@ -238,7 +249,8 @@ export const CodeLanguageProvider = ({
     try {
       const result = await service.deleteCodeLanguage(selectedCodeLanguage.id);
       result.fold(
-        (err) => toast.error(err.message ?? "Failed to delete code language data"),
+        (err) =>
+          toast.error(err.message ?? "Failed to delete code language data"),
         async () => {
           toast.success("Code language deleted");
           closeModal();
@@ -249,7 +261,14 @@ export const CodeLanguageProvider = ({
       setIsSubmitting(false);
       setLoading(false);
     }
-  }, [closeModal, currentPage, refreshCodeLanguages, selectedCodeLanguage?.id, service, setLoading]);
+  }, [
+    closeModal,
+    currentPage,
+    refreshCodeLanguages,
+    selectedCodeLanguage?.id,
+    service,
+    setLoading,
+  ]);
 
   const goToPage = useCallback(
     async (page: number) => {
@@ -295,7 +314,9 @@ export const CodeLanguageProvider = ({
 export const useCodeLanguageLogic = () => {
   const context = useContext(CodeLanguageLogic);
   if (!context) {
-    throw new Error("useCodeLanguageLogic must be used within CodeLanguageProvider");
+    throw new Error(
+      "useCodeLanguageLogic must be used within CodeLanguageProvider",
+    );
   }
   return context;
 };

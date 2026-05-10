@@ -54,6 +54,7 @@ const defaultFormState: AchievementFormState = {
   description: "",
   date: "",
   image_path: "",
+  position: 0,
 };
 
 const AchievementLogic = createContext<AchievementContextProps | undefined>(
@@ -67,7 +68,9 @@ export const AchievementProvider = ({
 }) => {
   const service = useMemo(() => new AchievementService(), []);
   const { setLoading } = useLoading();
-  const [achievements, setAchievements] = useState<AchievementResponse.Data[]>([]);
+  const [achievements, setAchievements] = useState<AchievementResponse.Data[]>(
+    [],
+  );
   const [selectedAchievement, setSelectedAchievement] =
     useState<AchievementResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +80,8 @@ export const AchievementProvider = ({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formState, setFormState] = useState<AchievementFormState>(defaultFormState);
+  const [formState, setFormState] =
+    useState<AchievementFormState>(defaultFormState);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [total, setTotal] = useState(0);
@@ -143,6 +147,7 @@ export const AchievementProvider = ({
       description: item.description ?? "",
       date: item.date ? String(item.date).slice(0, 10) : "",
       image_path: item.image_path ?? "",
+      position: item.position ?? 0,
     });
     setIsFormOpen(true);
   }, []);
@@ -199,6 +204,7 @@ export const AchievementProvider = ({
         description: formState.description.trim(),
         date: formState.date.trim(),
         image_path: formState.image_path?.trim() || null,
+        position: Number(formState.position ?? 0),
       };
 
       if (!payload.title || !payload.description || !payload.date) {
@@ -216,7 +222,9 @@ export const AchievementProvider = ({
           toast.error(err.message ?? "Failed to save achievement data");
         },
         async () => {
-          toast.success(isEditing ? "Achievement updated" : "Achievement created");
+          toast.success(
+            isEditing ? "Achievement updated" : "Achievement created",
+          );
           closeModal();
           await refreshAchievements(currentPage);
         },
@@ -231,6 +239,7 @@ export const AchievementProvider = ({
     formState.date,
     formState.description,
     formState.image_path,
+    formState.position,
     formState.title,
     isEditing,
     refreshAchievements,
@@ -259,7 +268,14 @@ export const AchievementProvider = ({
       setIsSubmitting(false);
       setLoading(false);
     }
-  }, [closeModal, currentPage, refreshAchievements, selectedAchievement?.id, service, setLoading]);
+  }, [
+    closeModal,
+    currentPage,
+    refreshAchievements,
+    selectedAchievement?.id,
+    service,
+    setLoading,
+  ]);
 
   const goToPage = useCallback(
     async (page: number) => {
@@ -295,13 +311,19 @@ export const AchievementProvider = ({
     goToPage,
   };
 
-  return <AchievementLogic.Provider value={value}>{children}</AchievementLogic.Provider>;
+  return (
+    <AchievementLogic.Provider value={value}>
+      {children}
+    </AchievementLogic.Provider>
+  );
 };
 
 export const useAchievementLogic = () => {
   const context = useContext(AchievementLogic);
   if (!context) {
-    throw new Error("useAchievementLogic must be used within AchievementProvider");
+    throw new Error(
+      "useAchievementLogic must be used within AchievementProvider",
+    );
   }
   return context;
 };

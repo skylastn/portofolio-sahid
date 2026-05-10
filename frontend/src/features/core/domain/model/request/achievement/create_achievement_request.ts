@@ -3,4 +3,5 @@ export interface CreateAchievementRequest {
   description: string;
   date: string;
   image_path?: string | null;
+  position?: number;
 }

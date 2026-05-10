@@ -95,8 +95,8 @@ export default function PortofolioDetailUI() {
         {!isLoading && item && (
           <>
             <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-              <div className="relative overflow-hidden rounded-[2rem] bg-slate-950 shadow-[0_30px_90px_rgba(15,23,42,0.28)]">
-                <div className="relative aspect-[16/11]">
+              <div className="relative overflow-hidden rounded-4xl bg-slate-950 shadow-[0_30px_90px_rgba(15,23,42,0.28)]">
+                <div className="relative aspect-16/11">
                   {item.thumbnail_url ? (
                     <DefaultImage
                       src={item.thumbnail_url}
@@ -247,7 +247,7 @@ export default function PortofolioDetailUI() {
                       key={image.id ?? image.image_url}
                       className={`overflow-hidden rounded-3xl border ${surfaceClass}`}
                     >
-                      <div className="relative aspect-[16/10] bg-slate-100">
+                      <div className="relative aspect-16/10 bg-slate-100">
                         {image.image_url ? (
                           <DefaultImage
                             src={image.image_url}
@@ -374,7 +374,7 @@ function DetailSkeleton({ isDarkMode }: { isDarkMode: boolean }) {
   return (
     <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
       <div
-        className={`aspect-[16/11] animate-pulse rounded-[2rem] ${
+        className={`aspect-16/11 animate-pulse rounded-4xl ${
           isDarkMode ? "bg-white/10" : "bg-slate-200"
         }`}
       />

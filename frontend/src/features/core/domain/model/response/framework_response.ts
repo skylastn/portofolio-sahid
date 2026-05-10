@@ -12,6 +12,7 @@ export namespace FrameworkResponse {
     description?: string;
     image_path?: string | null;
     image_url?: string | null;
+    position?: number;
     code_language_mappings?: FrameworkCodeMappingResponse.Data[];
   }
 

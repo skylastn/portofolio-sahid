@@ -47,6 +47,7 @@ export class PortofolioDatabaseRepositoryImpl
           }),
         },
         relations: this.relations,
+        order: { position: 'ASC', createdAt: 'DESC' },
       },
     );
   }
@@ -54,6 +55,7 @@ export class PortofolioDatabaseRepositoryImpl
     return await this.db.find({
       where: { id: In(ids) },
       relations: this.relations,
+      order: { position: 'ASC', createdAt: 'DESC' },
     });
   }
   async findOneById(id: string): Promise<PortofolioEntity | null> {

@@ -24,6 +24,9 @@ export class FrameworkEntity extends DefaultEntity {
   @Column({ name: 'image_path', type: 'text', nullable: true })
   imagePath?: string | null;
 
+  @Column({ name: 'position', type: 'int', default: 0 })
+  position!: number;
+
   @OneToMany(() => FrameworkCodeMappingEntity, (mapping) => mapping.framework)
   codeLanguageMappings?: FrameworkCodeMappingEntity[];
 }

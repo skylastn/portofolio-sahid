@@ -3,13 +3,18 @@ import {
   IsDate,
   IsEmail,
   IsEnum,
+  IsInt,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { WorkEntity } from '../../entities/work/work_entity';
+import { WorkEntity, WorkType } from '../../entities/work/work_entity';
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
 export class CreateWorkRequest {
+  @IsOptional()
+  @IsEnum(WorkType)
+  type?: WorkType;
+
   @IsString()
   company_name!: string;
 
@@ -48,8 +53,14 @@ export class CreateWorkRequest {
   })
   image_path?: string | null;
 
+  @IsOptional()
+  @IsInt()
+  @Transform(({ value }) => Number(value ?? 0))
+  position?: number;
+
   convertToEntity(): WorkEntity {
     const entity = new WorkEntity();
+    entity.type = this.type ?? WorkType.FULLTIME;
     entity.jobTitle = this.job_title;
     entity.description = this.description;
     entity.startDate = this.start_date;
@@ -63,6 +74,7 @@ export class CreateWorkRequest {
     if (FormatHelper.isPresent(this.image_path)) {
       entity.imagePath = this.image_path;
     }
+    entity.position = this.position ?? 0;
     return entity;
   }
 }

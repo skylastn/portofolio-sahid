@@ -43,6 +43,7 @@ export class WorkDatabaseRepositoryImpl
             companyName: search,
           }),
         },
+        order: { position: 'ASC', createdAt: 'DESC' },
       },
     );
   }

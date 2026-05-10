@@ -14,6 +14,7 @@ export namespace PortofolioResponse {
     description?: string;
     thumbnail_path?: string | null;
     thumbnail_url?: string | null;
+    position?: number;
     work?: WorkResponse.Data | null;
     apps_sources?: PortofolioAppsSourceResponse.Data[];
     images?: PortofolioImageResponse.Data[];

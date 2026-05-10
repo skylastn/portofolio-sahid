@@ -1,11 +1,22 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { useLoading } from "@/shared/component/elements/loading_context";
 import { EitherType } from "@/shared/utils/utility/either";
-import { buildUploadFileName, uploadFileToPresignedUrl } from "@/shared/utils/utility/minio_upload";
+import {
+  buildUploadFileName,
+  uploadFileToPresignedUrl,
+} from "@/shared/utils/utility/minio_upload";
 import { PortofolioService } from "@/features/core/application/portofolio_service";
 import { WorkService } from "@/features/core/application/work_service";
 import { CategoryService } from "@/features/core/application/category_service";
@@ -36,6 +47,7 @@ interface PortofolioFormState {
   work_id: string;
   title: string;
   description: string;
+  position: number;
   thumbnail_path: string;
   apps_sources: PortofolioAppsSourceForm[];
   images: PortofolioFormImage[];
@@ -59,9 +71,16 @@ interface PortofolioFormContextProps {
   frameworks: FrameworkResponse.Data[];
   formState: PortofolioFormState;
   openBack: () => void;
-  setFormField: (field: "work_id" | "title" | "description" | "thumbnail_path", value: string) => void;
+  setFormField: (
+    field: "work_id" | "title" | "description" | "thumbnail_path" | "position",
+    value: string,
+  ) => void;
   addAppsSource: () => void;
-  updateAppsSource: (index: number, field: "url" | "type", value: string) => void;
+  updateAppsSource: (
+    index: number,
+    field: "url" | "type",
+    value: string,
+  ) => void;
   removeAppsSource: (index: number) => void;
   toggleCategory: (categoryId: string) => void;
   toggleFramework: (frameworkId: string) => void;
@@ -81,6 +100,7 @@ const defaultFormState = (): PortofolioFormState => ({
   work_id: "",
   title: "",
   description: "",
+  position: 0,
   thumbnail_path: "",
   apps_sources: [defaultAppsSource()],
   images: [],
@@ -92,7 +112,9 @@ const defaultFormState = (): PortofolioFormState => ({
   deleted_framework_ids: [],
 });
 
-const PortofolioFormContext = createContext<PortofolioFormContextProps | undefined>(undefined);
+const PortofolioFormContext = createContext<
+  PortofolioFormContextProps | undefined
+>(undefined);
 
 export const portofolioAppSourceTypes: PortofolioAppsSourceType[] = [
   "web",
@@ -105,7 +127,8 @@ export const portofolioAppSourceTypes: PortofolioAppsSourceType[] = [
   "other",
 ];
 
-const uniqueStrings = (items: string[]) => Array.from(new Set(items.filter(Boolean)));
+const uniqueStrings = (items: string[]) =>
+  Array.from(new Set(items.filter(Boolean)));
 
 export const PortofolioFormProvider = ({
   children,
@@ -126,11 +149,14 @@ export const PortofolioFormProvider = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [portfolio, setPortfolio] = useState<PortofolioResponse.Data | null>(null);
+  const [portfolio, setPortfolio] = useState<PortofolioResponse.Data | null>(
+    null,
+  );
   const [works, setWorks] = useState<WorkResponse.Data[]>([]);
   const [categories, setCategories] = useState<CategoryResponse.Data[]>([]);
   const [frameworks, setFrameworks] = useState<FrameworkResponse.Data[]>([]);
-  const [formState, setFormState] = useState<PortofolioFormState>(defaultFormState());
+  const [formState, setFormState] =
+    useState<PortofolioFormState>(defaultFormState());
   const categoryMappingIdsRef = useRef<Record<string, string>>({});
   const frameworkMappingIdsRef = useRef<Record<string, string>>({});
   const didLoadRef = useRef(false);
@@ -140,11 +166,13 @@ export const PortofolioFormProvider = ({
   }, [router]);
 
   const loadOptions = useCallback(async () => {
-    const [worksResult, categoriesResult, frameworksResult] = await Promise.all([
-      workService.fetchWorks({ page: 1, perPage: 100 }),
-      categoryService.fetchCategories({ page: 1, perPage: 100 }),
-      frameworkService.fetchFrameworks({ page: 1, perPage: 100 }),
-    ]);
+    const [worksResult, categoriesResult, frameworksResult] = await Promise.all(
+      [
+        workService.fetchWorks({ page: 1, perPage: 100 }),
+        categoryService.fetchCategories({ page: 1, perPage: 100 }),
+        frameworkService.fetchFrameworks({ page: 1, perPage: 100 }),
+      ],
+    );
 
     worksResult.fold(
       (err) => toast.error(err.message ?? "Failed to load works"),
@@ -160,51 +188,71 @@ export const PortofolioFormProvider = ({
     );
   }, [categoryService, frameworkService, workService]);
 
-  const normalizeFromPortfolio = useCallback((item: PortofolioResponse.Data) => {
-    const categoryIds = item.category_mappings?.map((mapping) => mapping.category_id ?? "").filter(Boolean) ?? [];
-    const frameworkIds = item.framework_mappings?.map((mapping) => mapping.framework_id ?? "").filter(Boolean) ?? [];
+  const normalizeFromPortfolio = useCallback(
+    (item: PortofolioResponse.Data) => {
+      const categoryIds =
+        item.category_mappings
+          ?.map((mapping) => mapping.category_id ?? "")
+          .filter(Boolean) ?? [];
+      const frameworkIds =
+        item.framework_mappings
+          ?.map((mapping) => mapping.framework_id ?? "")
+          .filter(Boolean) ?? [];
 
-    categoryMappingIdsRef.current = Object.fromEntries(
-      (item.category_mappings ?? [])
-        .filter((mapping) => Boolean(mapping.category_id) && Boolean(mapping.id))
-        .map((mapping) => [mapping.category_id as string, mapping.id as string]),
-    );
+      categoryMappingIdsRef.current = Object.fromEntries(
+        (item.category_mappings ?? [])
+          .filter(
+            (mapping) => Boolean(mapping.category_id) && Boolean(mapping.id),
+          )
+          .map((mapping) => [
+            mapping.category_id as string,
+            mapping.id as string,
+          ]),
+      );
 
-    frameworkMappingIdsRef.current = Object.fromEntries(
-      (item.framework_mappings ?? [])
-        .filter((mapping) => Boolean(mapping.framework_id) && Boolean(mapping.id))
-        .map((mapping) => [mapping.framework_id as string, mapping.id as string]),
-    );
+      frameworkMappingIdsRef.current = Object.fromEntries(
+        (item.framework_mappings ?? [])
+          .filter(
+            (mapping) => Boolean(mapping.framework_id) && Boolean(mapping.id),
+          )
+          .map((mapping) => [
+            mapping.framework_id as string,
+            mapping.id as string,
+          ]),
+      );
 
-    setFormState({
-      work_id: item.work_id ?? "",
-      title: item.title ?? "",
-      description: item.description ?? "",
-      thumbnail_path: item.thumbnail_path ?? "",
-      apps_sources:
-        (item.apps_sources ?? []).length > 0
-          ? (item.apps_sources ?? []).map((source) => ({
-              id: source.id ?? "",
-              url: source.url ?? "",
-              type: (source.type as PortofolioAppsSourceType) ?? "web",
-            }))
-          : [defaultAppsSource()],
-      images:
-        (item.images ?? []).length > 0
-          ? (item.images ?? []).map((image) => ({
-              id: image.id ?? "",
-              image_path: image.image_path ?? "",
-              image_url: image.image_url ?? null,
-            }))
-          : [],
-      category_ids: uniqueStrings(categoryIds),
-      framework_ids: uniqueStrings(frameworkIds),
-      deleted_apps_source_ids: [],
-      deleted_image_ids: [],
-      deleted_category_ids: [],
-      deleted_framework_ids: [],
-    });
-  }, []);
+      setFormState({
+        work_id: item.work_id ?? "",
+        title: item.title ?? "",
+        description: item.description ?? "",
+        position: item.position ?? 0,
+        thumbnail_path: item.thumbnail_path ?? "",
+        apps_sources:
+          (item.apps_sources ?? []).length > 0
+            ? (item.apps_sources ?? []).map((source) => ({
+                id: source.id ?? "",
+                url: source.url ?? "",
+                type: (source.type as PortofolioAppsSourceType) ?? "web",
+              }))
+            : [defaultAppsSource()],
+        images:
+          (item.images ?? []).length > 0
+            ? (item.images ?? []).map((image) => ({
+                id: image.id ?? "",
+                image_path: image.image_path ?? "",
+                image_url: image.image_url ?? null,
+              }))
+            : [],
+        category_ids: uniqueStrings(categoryIds),
+        framework_ids: uniqueStrings(frameworkIds),
+        deleted_apps_source_ids: [],
+        deleted_image_ids: [],
+        deleted_category_ids: [],
+        deleted_framework_ids: [],
+      });
+    },
+    [],
+  );
 
   const loadPortfolio = useCallback(async () => {
     if (mode !== "edit" || !portofolioId) return;
@@ -241,7 +289,15 @@ export const PortofolioFormProvider = ({
   }, [loadOptions, loadPortfolio, setLoading]);
 
   const setFormField = useCallback(
-    (field: "work_id" | "title" | "description" | "thumbnail_path", value: string) => {
+    (
+      field:
+        | "work_id"
+        | "title"
+        | "description"
+        | "thumbnail_path"
+        | "position",
+      value: string,
+    ) => {
       setFormState((prev) => ({ ...prev, [field]: value }));
     },
     [],
@@ -271,7 +327,9 @@ export const PortofolioFormProvider = ({
       const item = prev.apps_sources[index];
       return {
         ...prev,
-        apps_sources: prev.apps_sources.filter((_, itemIndex) => itemIndex !== index),
+        apps_sources: prev.apps_sources.filter(
+          (_, itemIndex) => itemIndex !== index,
+        ),
         deleted_apps_source_ids: item?.id
           ? uniqueStrings([...prev.deleted_apps_source_ids, item.id])
           : prev.deleted_apps_source_ids,
@@ -343,16 +401,25 @@ export const PortofolioFormProvider = ({
       setIsUploadingThumbnail(true);
       setLoading(true);
       try {
-        const signatureResult = await service.createUploadSignature(buildUploadFileName(file));
+        const signatureResult = await service.createUploadSignature(
+          buildUploadFileName(file),
+        );
         if (signatureResult.tag === EitherType.Left) {
-          toast.error(signatureResult.left.message ?? "Failed to create upload signature");
+          toast.error(
+            signatureResult.left.message ?? "Failed to create upload signature",
+          );
           return;
         }
         await uploadFileToPresignedUrl(signatureResult.right.url, file);
-        setFormState((prev) => ({ ...prev, thumbnail_path: signatureResult.right.key }));
+        setFormState((prev) => ({
+          ...prev,
+          thumbnail_path: signatureResult.right.key,
+        }));
         toast.success("Thumbnail uploaded");
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to upload image");
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
       } finally {
         setIsUploadingThumbnail(false);
         setLoading(false);
@@ -366,9 +433,13 @@ export const PortofolioFormProvider = ({
       setIsUploadingImage(true);
       setLoading(true);
       try {
-        const signatureResult = await service.createImageUploadSignature(buildUploadFileName(file));
+        const signatureResult = await service.createImageUploadSignature(
+          buildUploadFileName(file),
+        );
         if (signatureResult.tag === EitherType.Left) {
-          toast.error(signatureResult.left.message ?? "Failed to create upload signature");
+          toast.error(
+            signatureResult.left.message ?? "Failed to create upload signature",
+          );
           return;
         }
         await uploadFileToPresignedUrl(signatureResult.right.url, file);
@@ -385,7 +456,9 @@ export const PortofolioFormProvider = ({
         }));
         toast.success("Image uploaded");
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to upload image");
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
       } finally {
         setIsUploadingImage(false);
         setLoading(false);
@@ -402,6 +475,7 @@ export const PortofolioFormProvider = ({
         work_id: formState.work_id?.trim() || null,
         title: formState.title.trim(),
         description: formState.description.trim(),
+        position: Number(formState.position ?? 0),
         thumbnail_path: formState.thumbnail_path?.trim() || null,
         apps_sources: formState.apps_sources
           .filter((item) => item.url.trim())
@@ -410,7 +484,9 @@ export const PortofolioFormProvider = ({
             url: item.url.trim(),
             type: item.type,
           })),
-        deleted_apps_source_ids: uniqueStrings(formState.deleted_apps_source_ids),
+        deleted_apps_source_ids: uniqueStrings(
+          formState.deleted_apps_source_ids,
+        ),
         images: formState.images.map((item) => item.image_path).filter(Boolean),
         deleted_image_ids: uniqueStrings(formState.deleted_image_ids),
         category_ids: uniqueStrings(formState.category_ids),
@@ -483,7 +559,9 @@ export const PortofolioFormProvider = ({
 export const usePortofolioFormLogic = () => {
   const context = useContext(PortofolioFormContext);
   if (!context) {
-    throw new Error("usePortofolioFormLogic must be used within PortofolioFormProvider");
+    throw new Error(
+      "usePortofolioFormLogic must be used within PortofolioFormProvider",
+    );
   }
   return context;
 };

@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { FrameworkEntity } from '../../entities/framework_entity';
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
@@ -29,11 +29,17 @@ export class CreateFrameworkRequest {
   @IsOptional()
   deleted_code_language_ids?: string[];
 
+  @IsOptional()
+  @IsInt()
+  @Transform(({ value }) => Number(value ?? 0))
+  position?: number;
+
   convertToEntity(): FrameworkEntity {
     const entity = new FrameworkEntity();
     entity.codeLanguageId = this.code_language_id;
     entity.title = this.title;
     entity.description = this.description;
+    entity.position = this.position ?? 0;
     if (FormatHelper.isPresent(this.image_path)) {
       entity.imagePath = this.image_path;
     }

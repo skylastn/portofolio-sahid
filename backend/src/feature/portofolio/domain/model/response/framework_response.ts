@@ -13,6 +13,7 @@ export class FrameworkResponse {
   description: string;
   imagePath: string | null;
   imageUrl: string | null;
+  position: number;
   codeLanguageMappings: FrameworkCodeMappingResponse[];
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -26,6 +27,7 @@ export class FrameworkResponse {
     description: string,
     imagePath: string | null,
     imageUrl: string | null,
+    position: number,
     codeLanguageMappings: FrameworkCodeMappingResponse[],
     createdAt: Date | null,
     updatedAt: Date | null,
@@ -38,6 +40,7 @@ export class FrameworkResponse {
     this.description = description;
     this.imagePath = imagePath;
     this.imageUrl = imageUrl;
+    this.position = position;
     this.codeLanguageMappings = codeLanguageMappings;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -67,6 +70,7 @@ export class FrameworkResponse {
         FormatHelper.isPresent(content.imagePath)
         ? (await minioService.getPresignedViewUrl(content.imagePath)).url
         : null,
+      content.position ?? 0,
       await FrameworkCodeMappingResponse.convertListFromEntities(
         codeLanguageMappings,
         minioService,
@@ -97,6 +101,7 @@ export class FrameworkResponse {
       description: this.description,
       image_path: this.imagePath,
       image_url: this.imageUrl,
+      position: this.position,
       code_language_mappings: (this.codeLanguageMappings ?? []).map(
         (item) => item.toMap,
       ),
@@ -117,6 +122,7 @@ export class FrameworkResponse {
       content.description,
       content.image_path,
       content.image_url,
+      content.position ?? 0,
       (content.code_language_mappings ?? []).map((item) =>
         FrameworkCodeMappingResponse.fromMap(item),
       ),

@@ -14,4 +14,7 @@ export class AchievementEntity extends DefaultEntity {
 
   @Column({ name: 'image_path', type: 'text', nullable: true })
   imagePath?: string | null;
+
+  @Column({ name: 'position', type: 'int', default: 0 })
+  position!: number;
 }

@@ -1,4 +1,5 @@
 export interface CreateWorkRequest {
+  type?: "freelance" | "fulltime";
   company_name: string;
   company_url?: string | null;
   job_title: string;
@@ -6,4 +7,5 @@ export interface CreateWorkRequest {
   start_date: string;
   end_date?: string | null;
   image_path?: string | null;
+  position?: number;
 }

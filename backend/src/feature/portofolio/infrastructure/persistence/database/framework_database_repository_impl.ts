@@ -51,6 +51,7 @@ export class FrameworkDatabaseRepositoryImpl
           }),
         },
         relations: this.previewRelations,
+        order: { position: 'ASC', createdAt: 'DESC' },
       },
     );
   }
@@ -58,6 +59,7 @@ export class FrameworkDatabaseRepositoryImpl
     return await this.db.find({
       where: { id: In(ids) },
       relations: this.previewRelations,
+      order: { position: 'ASC', createdAt: 'DESC' },
     });
   }
   async findOneById(id: string): Promise<FrameworkEntity | null> {

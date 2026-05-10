@@ -9,6 +9,7 @@ export class AchievementResponse {
   date: Date;
   imagePath: string | null;
   imageUrl: string | null;
+  position: number;
   createdAt: Date | null;
   updatedAt: Date | null;
   deletedAt: Date | null;
@@ -20,6 +21,7 @@ export class AchievementResponse {
     date: Date,
     imagePath: string | null,
     imageUrl: string | null,
+    position: number,
     createdAt: Date | null,
     updatedAt: Date | null,
     deletedAt: Date | null,
@@ -30,6 +32,7 @@ export class AchievementResponse {
     this.date = date;
     this.imagePath = imagePath;
     this.imageUrl = imageUrl;
+    this.position = position;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
@@ -49,6 +52,7 @@ export class AchievementResponse {
         FormatHelper.isPresent(content.imagePath)
         ? (await minioService.getPresignedViewUrl(content.imagePath)).url
         : null,
+      content.position ?? 0,
       content.createdAt,
       content.updatedAt,
       content.deletedAt ?? null,
@@ -74,6 +78,7 @@ export class AchievementResponse {
       date: this.date,
       image_path: this.imagePath,
       image_url: this.imageUrl,
+      position: this.position,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
       deleted_at: this.deletedAt,
@@ -88,6 +93,7 @@ export class AchievementResponse {
       content.date,
       content.image_path,
       content.image_url,
+      content.position ?? 0,
       content.created_at,
       content.updated_at,
       content.deleted_at,

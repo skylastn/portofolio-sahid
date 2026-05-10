@@ -5,6 +5,7 @@ export interface CreatePortofolioRequest {
   title: string;
   description: string;
   thumbnail_path?: string | null;
+  position?: number;
   apps_sources?: CreatePortofolioAppsSourceRequest[];
   deleted_apps_source_ids?: string[];
   images?: string[];

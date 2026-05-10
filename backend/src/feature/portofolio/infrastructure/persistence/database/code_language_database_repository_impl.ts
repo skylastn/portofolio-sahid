@@ -43,11 +43,15 @@ export class CodeLanguageDatabaseRepositoryImpl
             title: search,
           }),
         },
+        order: { position: 'ASC', createdAt: 'DESC' },
       },
     );
   }
   async findAllByListIds(ids: string[]): Promise<CodeLanguageEntity[]> {
-    return await this.db.findBy({ id: In(ids) });
+    return await this.db.find({
+      where: { id: In(ids) },
+      order: { position: 'ASC', createdAt: 'DESC' },
+    });
   }
   async findOneById(id: string): Promise<CodeLanguageEntity | null> {
     return await this.db.findOne({ where: { id: id } });

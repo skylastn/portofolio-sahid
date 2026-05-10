@@ -5,6 +5,7 @@ import {
   IsArray,
   ValidateNested,
   IsUUID,
+  IsInt,
 } from 'class-validator';
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
 import { PortofolioEntity } from '../../entities/portofolio/portofolio_entity';
@@ -67,6 +68,11 @@ export class CreatePortofolioRequest {
   @IsOptional()
   deleted_framework_ids?: string[];
 
+  @IsOptional()
+  @IsInt()
+  @Transform(({ value }) => Number(value ?? 0))
+  position?: number;
+
   convertToEntity(): PortofolioEntity {
     const entity = new PortofolioEntity();
     if (FormatHelper.isPresent(this.work_id)) {
@@ -74,6 +80,7 @@ export class CreatePortofolioRequest {
     }
     entity.title = this.title;
     entity.description = this.description;
+    entity.position = this.position ?? 0;
     if (FormatHelper.isPresent(this.thumbnail_path)) {
       entity.thumbnailPath = this.thumbnail_path;
     }

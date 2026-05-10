@@ -4,6 +4,7 @@ import { ConvertResponse } from "@/shared/domain/model/response/convert_response
 
 export namespace WorkResponse {
   export class Data extends BaseModelResponse {
+    type?: "freelance" | "fulltime";
     company_name?: string;
     company_url?: string | null;
     job_title?: string;
@@ -12,6 +13,7 @@ export namespace WorkResponse {
     end_date?: string | null;
     image_path?: string | null;
     image_url?: string | null;
+    position?: number;
   }
 
   export type ResponseList = BaseResponse<Data[]>;

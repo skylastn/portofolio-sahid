@@ -18,6 +18,7 @@ export class PortofolioResponse {
   description: string;
   thumbnailPath: string | null;
   thumbnailUrl: string | null;
+  position: number;
   work: WorkResponse | null;
   appsSources: PortofolioAppsSourceResponse[];
   images: PortofolioImageResponse[];
@@ -34,13 +35,14 @@ export class PortofolioResponse {
     description: string,
     thumbnailPath: string | null,
     thumbnailUrl: string | null,
+    position: number,
     work: WorkResponse | null,
-      appsSources: PortofolioAppsSourceResponse[],
+    appsSources: PortofolioAppsSourceResponse[],
     images: PortofolioImageResponse[],
     category_mappings: PortofolioCategoryMappingResponse[],
-      framework_mappings: PortofolioFrameworkMappingResponse[],
-      createdAt: Date | null,
-      updatedAt: Date | null,
+    framework_mappings: PortofolioFrameworkMappingResponse[],
+    createdAt: Date | null,
+    updatedAt: Date | null,
     deletedAt: Date | null,
   ) {
     this.id = id;
@@ -49,6 +51,7 @@ export class PortofolioResponse {
     this.description = description;
     this.thumbnailPath = thumbnailPath;
     this.thumbnailUrl = thumbnailUrl;
+    this.position = position;
     this.work = work;
     this.appsSources = appsSources;
     this.images = images;
@@ -77,6 +80,7 @@ export class PortofolioResponse {
         FormatHelper.isPresent(content.thumbnailPath)
         ? (await minioService.getPresignedViewUrl(content.thumbnailPath)).url
         : null,
+      content.position ?? 0,
       !FormatHelper.isPresent(content.work)
         ? null
         : await WorkResponse.convertFromEntity(content.work, minioService),
@@ -117,6 +121,7 @@ export class PortofolioResponse {
       description: this.description,
       thumbnail_path: this.thumbnailPath,
       thumbnail_url: this.thumbnailUrl,
+      position: this.position,
       work: this.work?.toMap ?? null,
       apps_sources: (this.appsSources ?? []).map((item) => item.toMap),
       images: (this.images ?? []).map((item) => item.toMap),
@@ -140,6 +145,7 @@ export class PortofolioResponse {
       content.description,
       content.thumbnail_path,
       content.thumbnail_url,
+      content.position ?? 0,
       WorkResponse.fromMap(content.work),
       (content.apps_sources ?? []).map((item: any) =>
         PortofolioAppsSourceResponse.fromMap(item),
