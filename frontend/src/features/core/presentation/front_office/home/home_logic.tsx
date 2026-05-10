@@ -94,28 +94,24 @@ const defaultHeroStats: HeroStat[] = [
   { title: "Achievements", value: "0 milestones" },
 ];
 
-function formatCount(value?: number) {
-  return String(value ?? 0).padStart(2, "0");
-}
-
 function buildHeroStats(summary?: DashboardSummary): HeroStat[] {
   const totals = summary?.totals;
   return [
     {
       title: "Portfolios",
-      value: `${formatCount(totals?.portofolios)} shipped`,
+      value: `${totals?.portofolios ?? 0} shipped`,
     },
     {
       title: "Works",
-      value: `${formatCount(totals?.works)} experiences`,
+      value: `${totals?.works ?? 0} experiences`,
     },
     {
       title: "Tech Stack",
-      value: `${formatCount((totals?.code_languages ?? 0) + (totals?.frameworks ?? 0))} tools`,
+      value: `${(totals?.code_languages ?? 0) + (totals?.frameworks ?? 0)} tools`,
     },
     {
       title: "Achievements",
-      value: `${formatCount(totals?.achievements)} milestones`,
+      value: `${totals?.achievements ?? 0} milestones`,
     },
   ];
 }

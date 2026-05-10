@@ -1,8 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { MinioService } from '../../../support/application/minio_service';
-import {
-  WORK_DATABASE_REPOSITORY,
-} from '../../domain/repository/database/work/work_database_repository';
+import { WORK_DATABASE_REPOSITORY } from '../../domain/repository/database/work/work_database_repository';
 import type { WorkDatabaseRepository } from '../../domain/repository/database/work/work_database_repository';
 import { PaginationResponse } from '../../../../shared/core/model/response/pagination_response';
 import { WorkEntity } from '../../domain/model/entities/work/work_entity';
@@ -83,7 +81,8 @@ export class WorkService {
     if (
       result &&
       FormatHelper.isPresent(data.image_path) &&
-      FormatHelper.isPresent(oldImagePath)
+      FormatHelper.isPresent(oldImagePath) &&
+      data.image_path !== oldImagePath
     ) {
       this.minioService.removeObject(oldImagePath);
     }
