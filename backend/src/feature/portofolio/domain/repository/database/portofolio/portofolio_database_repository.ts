@@ -9,6 +9,8 @@ export interface PortofolioDatabaseRepository {
   ): Promise<PaginationResponse<PortofolioEntity>>;
   findAllByListIds(ids: string[]): Promise<PortofolioEntity[]>;
   findOneById(id: string): Promise<PortofolioEntity | null>;
+  findAllPositioned(): Promise<PortofolioEntity[]>;
   createOrUpdate(data: PortofolioEntity): Promise<PortofolioEntity | null>;
+  createOrUpdateMany(data: PortofolioEntity[]): Promise<PortofolioEntity[]>;
   removeById(id: string): Promise<void>;
 }

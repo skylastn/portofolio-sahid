@@ -15,6 +15,7 @@ import { CreatePortofolioRequest } from '../../domain/model/request/portofolio/c
 import { FileUtility } from '../../../../shared/utils/utility/file_utility';
 import { MinioResponse } from '../../../support/domain/model/response/minio_response';
 import { WorkService } from '../work/work_service';
+import { syncEntityPosition } from '../sortable_position_service';
 
 @Injectable()
 export class PortofolioService {
@@ -102,7 +103,7 @@ export class PortofolioService {
       }
     }
     const entity = request.convertToEntity();
-    const result = await this.repo.createOrUpdate(entity);
+    const result = await syncEntityPosition(this.repo, entity, request.position);
     if (FormatHelper.isPresent(result)) {
       await this.portofolioAppsSourceService.syncWithPortofolioIdAndListAppsSourceId(
         result.id,
@@ -143,8 +144,15 @@ export class PortofolioService {
       }
     }
     const oldThumbnailPath = find.thumbnailPath;
-    Object.assign(find, request.convertToEntity());
-    const result = await this.repo.createOrUpdate(find);
+    const entity = request.convertToEntity();
+    if (request.position == null) {
+      entity.position = find.position;
+    }
+    Object.assign(find, entity);
+    const result =
+      request.position == null
+        ? await this.repo.createOrUpdate(find)
+        : await syncEntityPosition(this.repo, find, request.position);
     if (result) {
       if (
         FormatHelper.isPresent(request.thumbnail_path) &&

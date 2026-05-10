@@ -8,12 +8,9 @@ export default function AdminUI() {
     useAdminLogic();
 
   return (
-    <AdminShell
-      activeKey="dashboard"
-      title="Dashboard Overview"
-    >
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="grid gap-6">
+    <AdminShell activeKey="dashboard" title="Dashboard Overview">
+      <div className="grid items-start gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="grid items-start gap-6">
           <div className="rounded-[1.8rem] border border-white/10 bg-white/5 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.24)] backdrop-blur">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-cyan-300">
               Admin summary
@@ -28,18 +25,24 @@ export default function AdminUI() {
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid items-start gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {overviewStats.map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-[1.6rem] border border-white/10 bg-white/5 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.18)]"
+                className="self-start rounded-[1.6rem] border border-white/10 bg-white/5 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.18)]"
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
                   {stat.label}
                 </p>
-                <p className="mt-3 text-3xl font-black text-white">{stat.value}</p>
-                <p className="mt-2 text-sm font-semibold text-sky-300">{stat.change}</p>
-                <p className="mt-1 text-sm leading-6 text-slate-300">{stat.note}</p>
+                <p className="mt-3 text-3xl font-black text-white">
+                  {stat.value}
+                </p>
+                <p className="mt-2 text-sm font-semibold text-sky-300">
+                  {stat.change}
+                </p>
+                <p className="mt-1 text-sm leading-6 text-slate-300">
+                  {stat.note}
+                </p>
               </div>
             ))}
           </div>
@@ -62,8 +65,13 @@ export default function AdminUI() {
             </div>
             <div className="mt-4 space-y-3">
               {shortcutItems.map((item) => (
-                <div key={item.title} className="rounded-2xl bg-white/5 px-4 py-4">
-                  <div className="text-sm font-semibold text-white">{item.title}</div>
+                <div
+                  key={item.title}
+                  className="rounded-2xl bg-white/5 px-4 py-4"
+                >
+                  <div className="text-sm font-semibold text-white">
+                    {item.title}
+                  </div>
                   <div className="mt-1 text-sm leading-6 text-slate-300">
                     {item.description}
                   </div>
@@ -81,7 +89,9 @@ export default function AdminUI() {
                   className="flex items-center justify-between rounded-2xl bg-white/5 px-4 py-3"
                 >
                   <div>
-                    <div className="text-sm font-semibold text-white">{member.name}</div>
+                    <div className="text-sm font-semibold text-white">
+                      {member.name}
+                    </div>
                     <div className="text-xs text-slate-300">{member.role}</div>
                   </div>
                   <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
@@ -99,8 +109,12 @@ export default function AdminUI() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-sm font-semibold text-white">{task.title}</div>
-                      <div className="mt-1 text-sm text-slate-300">{task.due}</div>
+                      <div className="text-sm font-semibold text-white">
+                        {task.title}
+                      </div>
+                      <div className="mt-1 text-sm text-slate-300">
+                        {task.due}
+                      </div>
                     </div>
                     <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-200">
                       {task.status}
@@ -115,12 +129,21 @@ export default function AdminUI() {
             <h3 className="text-xl font-black text-white">Recent activity</h3>
             <div className="mt-4 space-y-3">
               {activityFeed.map((item) => (
-                <div key={item.title} className="rounded-2xl bg-white/5 px-4 py-4">
+                <div
+                  key={item.title}
+                  className="rounded-2xl bg-white/5 px-4 py-4"
+                >
                   <div className="flex items-center justify-between gap-3">
-                    <div className="text-sm font-semibold text-white">{item.title}</div>
-                    <div className="text-xs font-semibold text-slate-300">{item.time}</div>
+                    <div className="text-sm font-semibold text-white">
+                      {item.title}
+                    </div>
+                    <div className="text-xs font-semibold text-slate-300">
+                      {item.time}
+                    </div>
                   </div>
-                  <div className="mt-1 text-sm leading-6 text-slate-300">{item.detail}</div>
+                  <div className="mt-1 text-sm leading-6 text-slate-300">
+                    {item.detail}
+                  </div>
                 </div>
               ))}
             </div>

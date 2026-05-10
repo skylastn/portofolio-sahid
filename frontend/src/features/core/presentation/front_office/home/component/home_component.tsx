@@ -181,7 +181,7 @@ function PortofolioCard({
     .slice(0, 3);
   const content = (
     <>
-      <div className="relative aspect-[16/10] bg-slate-800">
+      <div className="relative aspect-16/10 bg-slate-800">
         {item.thumbnail_url ? (
           <DefaultImage
             src={item.thumbnail_url}
@@ -303,7 +303,7 @@ function AchievementCard({
       }`}
       style={{ animationDelay: `${0.1 + index * 0.12}s` }}
     >
-      <div className="relative aspect-[16/9] bg-slate-100">
+      <div className="relative aspect-video bg-slate-100">
         {item.image_url ? (
           <DefaultImage
             src={item.image_url}

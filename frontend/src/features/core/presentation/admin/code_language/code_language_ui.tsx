@@ -145,7 +145,7 @@ export default function CodeLanguageUI() {
                 </tr>
               ) : (
                 codeLanguages.map((item, index) => (
-                  <tr key={item.id} className="odd:bg-white/[0.03]">
+                  <tr key={item.id} className="odd:bg-white/3">
                     <td className="align-top border-b border-white/10 px-3 py-4 text-sm text-slate-100">
                       <div className="leading-6" style={twoLineClampStyle}>
                         {(currentPage - 1) * perPage + index + 1}

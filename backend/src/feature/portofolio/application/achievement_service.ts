@@ -12,6 +12,7 @@ import {
 } from '../domain/repository/database/achievement_database_repository';
 import type { AchievementDatabaseRepository } from '../domain/repository/database/achievement_database_repository';
 import { AchievementResponse } from '../domain/model/response/achievement_response';
+import { syncEntityPosition } from './sortable_position_service';
 
 @Injectable()
 export class AchievementService {
@@ -75,7 +76,11 @@ export class AchievementService {
   async createAchievement(
     data: CreateAchievementRequest,
   ): Promise<AchievementEntity | null> {
-    return await this.createOrUpdate(data.convertToEntity());
+    return await syncEntityPosition(
+      this.repo,
+      data.convertToEntity(),
+      data.position,
+    );
   }
 
   async updateAchievement(
@@ -87,12 +92,19 @@ export class AchievementService {
       throw new Error('Achievement not found');
     }
     const oldImagePath = find.imagePath;
-    Object.assign(find, data.convertToEntity());
-    const result = await this.createOrUpdate(find);
+    const entity = data.convertToEntity();
+    if (data.position == null) {
+      entity.position = find.position;
+    }
+    Object.assign(find, entity);
+    const result =
+      data.position == null
+        ? await this.createOrUpdate(find)
+        : await syncEntityPosition(this.repo, find, data.position);
     if (
       result &&
       FormatHelper.isPresent(data.image_path) &&
-      FormatHelper.isPresent(oldImagePath) && 
+      FormatHelper.isPresent(oldImagePath) &&
       data.image_path !== oldImagePath
     ) {
       this.minioService.removeObject(oldImagePath);

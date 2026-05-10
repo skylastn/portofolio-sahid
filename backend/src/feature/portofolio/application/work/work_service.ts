@@ -10,6 +10,7 @@ import { FormatHelper } from '../../../../shared/utils/utility/format_helper';
 import { FileUtility } from '../../../../shared/utils/utility/file_utility';
 import { MinioResponse } from '../../../support/domain/model/response/minio_response';
 import { CreateWorkRequest } from '../../domain/model/request/work/create_work_request';
+import { syncEntityPosition } from '../sortable_position_service';
 
 @Injectable()
 export class WorkService {
@@ -64,7 +65,11 @@ export class WorkService {
   }
 
   async createWork(data: CreateWorkRequest): Promise<WorkEntity | null> {
-    return await this.repo.createOrUpdate(data.convertToEntity());
+    return await syncEntityPosition(
+      this.repo,
+      data.convertToEntity(),
+      data.position,
+    );
   }
 
   async updateWork(
@@ -76,8 +81,15 @@ export class WorkService {
       throw new Error('Work not found');
     }
     const oldImagePath = find.imagePath;
-    Object.assign(find, data.convertToEntity());
-    const result = await this.createOrUpdate(find);
+    const entity = data.convertToEntity();
+    if (data.position == null) {
+      entity.position = find.position;
+    }
+    Object.assign(find, entity);
+    const result =
+      data.position == null
+        ? await this.createOrUpdate(find)
+        : await syncEntityPosition(this.repo, find, data.position);
     if (
       result &&
       FormatHelper.isPresent(data.image_path) &&

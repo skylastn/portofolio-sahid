@@ -10,6 +10,8 @@ export interface AchievementDatabaseRepository {
   ): Promise<PaginationResponse<AchievementEntity>>;
   findAllByListId(ids: string[]): Promise<AchievementEntity[]>;
   findOneById(id: string): Promise<AchievementEntity | null>;
+  findAllPositioned(): Promise<AchievementEntity[]>;
   createOrUpdate(data: AchievementEntity): Promise<AchievementEntity | null>;
+  createOrUpdateMany(data: AchievementEntity[]): Promise<AchievementEntity[]>;
   removeById(id: string): Promise<void>;
 }

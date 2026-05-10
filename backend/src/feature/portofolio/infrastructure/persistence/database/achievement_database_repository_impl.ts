@@ -55,9 +55,19 @@ export class AchievementDatabaseRepositoryImpl
   async findOneById(id: string): Promise<AchievementEntity | null> {
     return await this.db.findOne({ where: { id: id } });
   }
+  async findAllPositioned(): Promise<AchievementEntity[]> {
+    return await this.db.find({
+      order: { position: 'ASC', createdAt: 'DESC' },
+    });
+  }
   async createOrUpdate(
     data: AchievementEntity,
   ): Promise<AchievementEntity | null> {
+    return await this.db.save(data);
+  }
+  async createOrUpdateMany(
+    data: AchievementEntity[],
+  ): Promise<AchievementEntity[]> {
     return await this.db.save(data);
   }
   async removeById(id: string): Promise<void> {

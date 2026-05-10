@@ -11,6 +11,7 @@ import type { FrameworkDatabaseRepository } from '../domain/repository/database/
 import { FrameworkRequest } from '../domain/model/request/framework/framework_request';
 import { FrameworkResponse } from '../domain/model/response/framework_response';
 import { FrameworkCodeMappingService } from './framework_code_mapping/framework_code_mapping_service';
+import { syncEntityPosition } from './sortable_position_service';
 
 @Injectable()
 export class FrameworkService {
@@ -79,7 +80,11 @@ export class FrameworkService {
   async createFramework(
     data: CreateFrameworkRequest,
   ): Promise<FrameworkEntity | null> {
-    const result = await this.createOrUpdate(data.convertToEntity());
+    const result = await syncEntityPosition(
+      this.repo,
+      data.convertToEntity(),
+      data.position,
+    );
     if (result && FormatHelper.isNotEmpty(data.code_language_ids)) {
       await this.frameworkCodeMappingService.syncWithFrameworkIdAndListCodeLanguageId(
         result.id,
@@ -99,8 +104,15 @@ export class FrameworkService {
       throw new Error('Framework not found');
     }
     const oldImagePath = find.imagePath;
-    Object.assign(find, data.convertToEntity());
-    const result = await this.createOrUpdate(find);
+    const entity = data.convertToEntity();
+    if (data.position == null) {
+      entity.position = find.position;
+    }
+    Object.assign(find, entity);
+    const result =
+      data.position == null
+        ? await this.createOrUpdate(find)
+        : await syncEntityPosition(this.repo, find, data.position);
     if (result) {
       await this.frameworkCodeMappingService.syncWithFrameworkIdAndListCodeLanguageId(
         result.id,

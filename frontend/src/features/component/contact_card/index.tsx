@@ -1,6 +1,10 @@
 "use client";
 
 import { GeneralResponse } from "@/features/core/domain/model/response/general_response";
+import DefaultImage from "@/shared/component/ui/default_image";
+import { useState } from "react";
+
+const profileImageSrc = "/assets/profile.jpeg";
 
 interface ContactCardProps {
   profile: GeneralResponse.Data | null;
@@ -8,6 +12,8 @@ interface ContactCardProps {
 }
 
 export default function ContactCard({ profile, isDarkMode }: ContactCardProps) {
+  const [hasImageError, setHasImageError] = useState(false);
+
   const socialLinks = [
     { key: "github", url: profile?.github_url, label: "GitHub" },
     { key: "linkedin", url: profile?.linkedin_url, label: "LinkedIn" },
@@ -17,6 +23,7 @@ export default function ContactCard({ profile, isDarkMode }: ContactCardProps) {
   ].filter((link) => link.url);
 
   const hasSocialLinks = socialLinks.length > 0 || profile?.email;
+  const profileInitial = (profile?.title || "S").charAt(0).toUpperCase();
 
   return (
     <article
@@ -27,16 +34,26 @@ export default function ContactCard({ profile, isDarkMode }: ContactCardProps) {
       }`}
     >
       <div className="relative aspect-4/3 max-h-56 overflow-hidden rounded-2xl bg-slate-100">
-        <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-sky-500 to-purple-600">
-          <span className="text-6xl font-bold text-white">
-            {(profile?.title || "S").charAt(0).toUpperCase()}
-          </span>
-        </div>
+        {!hasImageError ? (
+          <DefaultImage
+            src={profileImageSrc}
+            alt={profile?.title ?? "Profile photo"}
+            sizes="(max-width: 768px) 100vw, 360px"
+            style={{ objectFit: "cover" }}
+            onError={() => setHasImageError(true)}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-sky-500 to-purple-600">
+            <span className="text-6xl font-bold text-white">
+              {profileInitial}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="p-6">
         <h3 className="text-xl font-bold leading-tight sm:text-2xl">
-          {"Sahid Rahutomo"}
+          Sahid Rahutomo
         </h3>
         <p className="mt-1 text-sm font-medium text-sky-500">
           Software Engineer

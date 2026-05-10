@@ -8,6 +8,8 @@ export interface WorkDatabaseRepository {
     request: WorkRequest,
   ): Promise<PaginationResponse<WorkEntity>>;
   findOneById(id: string): Promise<WorkEntity | null>;
+  findAllPositioned(): Promise<WorkEntity[]>;
   createOrUpdate(data: WorkEntity): Promise<WorkEntity | null>;
+  createOrUpdateMany(data: WorkEntity[]): Promise<WorkEntity[]>;
   removeById(id: string): Promise<void>;
 }

@@ -64,9 +64,19 @@ export class PortofolioDatabaseRepositoryImpl
       relations: this.relations,
     });
   }
+  async findAllPositioned(): Promise<PortofolioEntity[]> {
+    return await this.db.find({
+      order: { position: 'ASC', createdAt: 'DESC' },
+    });
+  }
   async createOrUpdate(
     data: PortofolioEntity,
   ): Promise<PortofolioEntity | null> {
+    return await this.db.save(data);
+  }
+  async createOrUpdateMany(
+    data: PortofolioEntity[],
+  ): Promise<PortofolioEntity[]> {
     return await this.db.save(data);
   }
   async removeById(id: string): Promise<void> {

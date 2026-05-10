@@ -10,6 +10,8 @@ export interface CodeLanguageDatabaseRepository {
   ): Promise<PaginationResponse<CodeLanguageEntity>>;
   findAllByListIds(ids: string[]): Promise<CodeLanguageEntity[]>;
   findOneById(id: string): Promise<CodeLanguageEntity | null>;
+  findAllPositioned(): Promise<CodeLanguageEntity[]>;
   createOrUpdate(data: CodeLanguageEntity): Promise<CodeLanguageEntity | null>;
+  createOrUpdateMany(data: CodeLanguageEntity[]): Promise<CodeLanguageEntity[]>;
   removeById(id: string): Promise<void>;
 }

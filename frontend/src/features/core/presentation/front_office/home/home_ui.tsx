@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useHomeLogic, useHomeData } from "./home_logic";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
-import { PublicHomePreviewSections } from "../component/home_component";
+import { PublicHomePreviewSections } from "./component/home_component";
 import ContactCard from "@/features/component/contact_card";
 
 export default function HomeUI() {

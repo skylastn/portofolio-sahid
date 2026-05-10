@@ -56,9 +56,19 @@ export class CodeLanguageDatabaseRepositoryImpl
   async findOneById(id: string): Promise<CodeLanguageEntity | null> {
     return await this.db.findOne({ where: { id: id } });
   }
+  async findAllPositioned(): Promise<CodeLanguageEntity[]> {
+    return await this.db.find({
+      order: { position: 'ASC', createdAt: 'DESC' },
+    });
+  }
   async createOrUpdate(
     data: CodeLanguageEntity,
   ): Promise<CodeLanguageEntity | null> {
+    return await this.db.save(data);
+  }
+  async createOrUpdateMany(
+    data: CodeLanguageEntity[],
+  ): Promise<CodeLanguageEntity[]> {
     return await this.db.save(data);
   }
   async removeById(id: string): Promise<void> {

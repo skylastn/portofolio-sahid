@@ -9,6 +9,8 @@ export interface FrameworkDatabaseRepository {
   ): Promise<PaginationResponse<FrameworkEntity>>;
   findAllByListIds(ids: string[]): Promise<FrameworkEntity[]>;
   findOneById(id: string): Promise<FrameworkEntity | null>;
+  findAllPositioned(): Promise<FrameworkEntity[]>;
   createOrUpdate(data: FrameworkEntity): Promise<FrameworkEntity | null>;
+  createOrUpdateMany(data: FrameworkEntity[]): Promise<FrameworkEntity[]>;
   removeById(id: string): Promise<void>;
 }

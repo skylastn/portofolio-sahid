@@ -68,7 +68,15 @@ export class FrameworkDatabaseRepositoryImpl
       relations: this.detailRelations,
     });
   }
+  async findAllPositioned(): Promise<FrameworkEntity[]> {
+    return await this.db.find({
+      order: { position: 'ASC', createdAt: 'DESC' },
+    });
+  }
   async createOrUpdate(data: FrameworkEntity): Promise<FrameworkEntity | null> {
+    return await this.db.save(data);
+  }
+  async createOrUpdateMany(data: FrameworkEntity[]): Promise<FrameworkEntity[]> {
     return await this.db.save(data);
   }
   async removeById(id: string): Promise<void> {

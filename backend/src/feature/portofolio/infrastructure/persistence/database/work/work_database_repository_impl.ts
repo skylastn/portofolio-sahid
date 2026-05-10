@@ -50,7 +50,15 @@ export class WorkDatabaseRepositoryImpl
   async findOneById(id: string): Promise<WorkEntity | null> {
     return await this.db.findOne({ where: { id: id } });
   }
+  async findAllPositioned(): Promise<WorkEntity[]> {
+    return await this.db.find({
+      order: { position: 'ASC', createdAt: 'DESC' },
+    });
+  }
   async createOrUpdate(data: WorkEntity): Promise<WorkEntity | null> {
+    return await this.db.save(data);
+  }
+  async createOrUpdateMany(data: WorkEntity[]): Promise<WorkEntity[]> {
     return await this.db.save(data);
   }
   async removeById(id: string): Promise<void> {
