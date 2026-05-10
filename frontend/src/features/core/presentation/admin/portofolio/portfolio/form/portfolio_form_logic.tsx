@@ -21,6 +21,7 @@ import { PortofolioService } from "@/features/core/application/portofolio_servic
 import { WorkService } from "@/features/core/application/work_service";
 import { CategoryService } from "@/features/core/application/category_service";
 import { FrameworkService } from "@/features/core/application/framework_service";
+import { ToolService } from "@/features/core/application/tool_service";
 import { CreatePortofolioRequest } from "@/features/core/domain/model/request/portofolio/create_portofolio_request";
 import {
   CreatePortofolioAppsSourceRequest,
@@ -30,6 +31,7 @@ import { PortofolioResponse } from "@/features/core/domain/model/response/portof
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
 import { CategoryResponse } from "@/features/core/domain/model/response/category_response";
 import { FrameworkResponse } from "@/features/core/domain/model/response/framework_response";
+import { ToolResponse } from "@/features/core/domain/model/response/tool_response";
 
 type PortofolioFormMode = "create" | "edit";
 
@@ -53,10 +55,12 @@ interface PortofolioFormState {
   images: PortofolioFormImage[];
   category_ids: string[];
   framework_ids: string[];
+  tool_ids: string[];
   deleted_apps_source_ids: string[];
   deleted_image_ids: string[];
   deleted_category_ids: string[];
   deleted_framework_ids: string[];
+  deleted_tool_ids: string[];
 }
 
 interface PortofolioFormContextProps {
@@ -69,6 +73,7 @@ interface PortofolioFormContextProps {
   works: WorkResponse.Data[];
   categories: CategoryResponse.Data[];
   frameworks: FrameworkResponse.Data[];
+  tools: ToolResponse.Data[];
   formState: PortofolioFormState;
   openBack: () => void;
   setFormField: (
@@ -84,6 +89,7 @@ interface PortofolioFormContextProps {
   removeAppsSource: (index: number) => void;
   toggleCategory: (categoryId: string) => void;
   toggleFramework: (frameworkId: string) => void;
+  toggleTool: (toolId: string) => void;
   removeImage: (index: number) => void;
   uploadThumbnail: (file: File) => Promise<void>;
   uploadImage: (file: File) => Promise<void>;
@@ -106,10 +112,12 @@ const defaultFormState = (): PortofolioFormState => ({
   images: [],
   category_ids: [],
   framework_ids: [],
+  tool_ids: [],
   deleted_apps_source_ids: [],
   deleted_image_ids: [],
   deleted_category_ids: [],
   deleted_framework_ids: [],
+  deleted_tool_ids: [],
 });
 
 const PortofolioFormContext = createContext<
@@ -145,6 +153,7 @@ export const PortofolioFormProvider = ({
   const workService = useMemo(() => new WorkService(), []);
   const categoryService = useMemo(() => new CategoryService(), []);
   const frameworkService = useMemo(() => new FrameworkService(), []);
+  const toolService = useMemo(() => new ToolService(), []);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
@@ -155,10 +164,12 @@ export const PortofolioFormProvider = ({
   const [works, setWorks] = useState<WorkResponse.Data[]>([]);
   const [categories, setCategories] = useState<CategoryResponse.Data[]>([]);
   const [frameworks, setFrameworks] = useState<FrameworkResponse.Data[]>([]);
+  const [tools, setTools] = useState<ToolResponse.Data[]>([]);
   const [formState, setFormState] =
     useState<PortofolioFormState>(defaultFormState());
   const categoryMappingIdsRef = useRef<Record<string, string>>({});
   const frameworkMappingIdsRef = useRef<Record<string, string>>({});
+  const toolMappingIdsRef = useRef<Record<string, string>>({});
   const didLoadRef = useRef(false);
 
   const openBack = useCallback(() => {
@@ -166,13 +177,13 @@ export const PortofolioFormProvider = ({
   }, [router]);
 
   const loadOptions = useCallback(async () => {
-    const [worksResult, categoriesResult, frameworksResult] = await Promise.all(
-      [
+    const [worksResult, categoriesResult, frameworksResult, toolsResult] =
+      await Promise.all([
         workService.fetchWorks({ page: 1, perPage: 100 }),
         categoryService.fetchCategories({ page: 1, perPage: 100 }),
         frameworkService.fetchFrameworks({ page: 1, perPage: 100 }),
-      ],
-    );
+        toolService.fetchTools({ page: 1, perPage: 100 }),
+      ]);
 
     worksResult.fold(
       (err) => toast.error(err.message ?? "Failed to load works"),
@@ -186,7 +197,11 @@ export const PortofolioFormProvider = ({
       (err) => toast.error(err.message ?? "Failed to load frameworks"),
       (response) => setFrameworks(response.data ?? []),
     );
-  }, [categoryService, frameworkService, workService]);
+    toolsResult.fold(
+      (err) => toast.error(err.message ?? "Failed to load tools"),
+      (response) => setTools(response.data ?? []),
+    );
+  }, [categoryService, frameworkService, toolService, workService]);
 
   const normalizeFromPortfolio = useCallback(
     (item: PortofolioResponse.Data) => {
@@ -197,6 +212,10 @@ export const PortofolioFormProvider = ({
       const frameworkIds =
         item.framework_mappings
           ?.map((mapping) => mapping.framework_id ?? "")
+          .filter(Boolean) ?? [];
+      const toolIds =
+        item.tool_mappings
+          ?.map((mapping) => mapping.tool_id ?? "")
           .filter(Boolean) ?? [];
 
       categoryMappingIdsRef.current = Object.fromEntries(
@@ -219,6 +238,11 @@ export const PortofolioFormProvider = ({
             mapping.framework_id as string,
             mapping.id as string,
           ]),
+      );
+      toolMappingIdsRef.current = Object.fromEntries(
+        (item.tool_mappings ?? [])
+          .filter((mapping) => Boolean(mapping.tool_id) && Boolean(mapping.id))
+          .map((mapping) => [mapping.tool_id as string, mapping.id as string]),
       );
 
       setFormState({
@@ -245,10 +269,12 @@ export const PortofolioFormProvider = ({
             : [],
         category_ids: uniqueStrings(categoryIds),
         framework_ids: uniqueStrings(frameworkIds),
+        tool_ids: uniqueStrings(toolIds),
         deleted_apps_source_ids: [],
         deleted_image_ids: [],
         deleted_category_ids: [],
         deleted_framework_ids: [],
+        deleted_tool_ids: [],
       });
     },
     [],
@@ -383,6 +409,29 @@ export const PortofolioFormProvider = ({
     });
   }, []);
 
+  const toggleTool = useCallback((toolId: string) => {
+    setFormState((prev) => {
+      const exists = prev.tool_ids.includes(toolId);
+      const mappingId = toolMappingIdsRef.current[toolId];
+      if (exists) {
+        return {
+          ...prev,
+          tool_ids: prev.tool_ids.filter((id) => id !== toolId),
+          deleted_tool_ids: mappingId
+            ? uniqueStrings([...prev.deleted_tool_ids, mappingId])
+            : prev.deleted_tool_ids,
+        };
+      }
+      return {
+        ...prev,
+        tool_ids: uniqueStrings([...prev.tool_ids, toolId]),
+        deleted_tool_ids: mappingId
+          ? prev.deleted_tool_ids.filter((id) => id !== mappingId)
+          : prev.deleted_tool_ids,
+      };
+    });
+  }, []);
+
   const removeImage = useCallback((index: number) => {
     setFormState((prev) => {
       const item = prev.images[index];
@@ -493,6 +542,8 @@ export const PortofolioFormProvider = ({
         deleted_category_ids: uniqueStrings(formState.deleted_category_ids),
         framework_ids: uniqueStrings(formState.framework_ids),
         deleted_framework_ids: uniqueStrings(formState.deleted_framework_ids),
+        tool_ids: uniqueStrings(formState.tool_ids),
+        deleted_tool_ids: uniqueStrings(formState.deleted_tool_ids),
       };
 
       if (!payload.title || !payload.description) {
@@ -537,6 +588,7 @@ export const PortofolioFormProvider = ({
         works,
         categories,
         frameworks,
+        tools,
         formState,
         openBack,
         setFormField,
@@ -545,6 +597,7 @@ export const PortofolioFormProvider = ({
         removeAppsSource,
         toggleCategory,
         toggleFramework,
+        toggleTool,
         removeImage,
         uploadThumbnail,
         uploadImage,

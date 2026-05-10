@@ -32,6 +32,7 @@ export default function PortofolioDetailUI() {
   const titleClass = isDarkMode ? "text-white" : "text-slate-950";
   const categories = item?.category_mappings ?? [];
   const frameworks = item?.framework_mappings ?? [];
+  const tools = item?.tool_mappings ?? [];
   const codeLanguages = getFrameworkCodeLanguageLabels(frameworks);
   const sources = item?.apps_sources ?? [];
   const gallery = item?.images ?? [];
@@ -197,6 +198,12 @@ export default function PortofolioDetailUI() {
                   title="Code Languages"
                   values={codeLanguages}
                   emptyLabel="No code languages."
+                  isDarkMode={isDarkMode}
+                />
+                <TagGroup
+                  title="Tools"
+                  values={tools.map((mapping) => mapping.tool?.title ?? mapping.tool_id)}
+                  emptyLabel="No tools."
                   isDarkMode={isDarkMode}
                 />
               </div>

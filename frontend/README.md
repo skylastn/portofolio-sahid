@@ -1,42 +1,102 @@
-NEXTJS with Domain Driven Design Clean Architecture
+# Portfolio Frontend
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+Next.js frontend for the portfolio application. It contains the public portfolio website and the admin console.
 
-## Getting Started
+## Tech Stack
 
-First, run the development server:
+- Next.js Pages Router
+- React
+- TypeScript
+- Tailwind CSS
+- Axios-based API client
+
+## Setup
+
+```bash
+cp .env.example .env
+npm install
+```
+
+Set the backend URL in `.env`:
+
+```env
+NEXT_PUBLIC_ENDPOINT_URL=http://localhost:3005
+```
+
+## Run Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Public Pages
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+- `/` home page
+- `/skills` full skills and technologies page
+- `/portofolio` portfolio list
+- `/portofolio/[id]` portfolio detail
+- `/work` work history
+- `/achievement` achievements
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Admin Pages
 
-## Learn More
+- `/admin` dashboard
+- `/admin/general` general profile content
+- `/admin/work` work records
+- `/admin/achievement` achievement records
+- `/admin/code_language` code language records
+- `/admin/framework` framework records
+- `/admin/portofolio` portfolio records
+- `/admin/portofolio/category` portfolio categories
 
-To learn more about Next.js, take a look at the following resources:
+Portfolio create/edit supports:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+- Work selection
+- Categories
+- Frameworks
+- Tools
+- App/source links
+- Thumbnail upload
+- Gallery images
+- Position ordering
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Architecture
 
-## Deploy on Vercel
+The frontend follows a simple feature-oriented clean architecture style:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```text
+src/features/core/application         service classes
+src/features/core/domain              request/response models and repository interfaces
+src/features/core/infrastructure      API data sources and repository implementations
+src/features/core/presentation        UI and page logic
+src/shared                            shared components, constants, network, utilities
+src/pages                             Next.js routes
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## Useful Commands
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run lint:fix
+npx tsc --noEmit
+```
+
+## Docker
+
+The frontend includes `docker-compose.yaml` and a `Makefile`.
+
+Deploy helper:
+
+```bash
+make deploy
+```
+
+This copies the production env, builds the image, and starts the container.

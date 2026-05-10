@@ -6,6 +6,7 @@ import { PortofolioAppsSourceResponse } from "./portofolio_apps_source_response"
 import { PortofolioImageResponse } from "./portofolio_images_response";
 import { PortofolioCategoryMappingResponse } from "./portofolio_category_mapping_response";
 import { PortofolioFrameworkMappingResponse } from "./portofolio_framework_mapping_response";
+import { PortofolioToolMappingResponse } from "./portofolio_tool_mapping_response";
 
 export namespace PortofolioResponse {
   export class Data extends BaseModelResponse {
@@ -20,6 +21,7 @@ export namespace PortofolioResponse {
     images?: PortofolioImageResponse.Data[];
     category_mappings?: PortofolioCategoryMappingResponse.Data[];
     framework_mappings?: PortofolioFrameworkMappingResponse.Data[];
+    tool_mappings?: PortofolioToolMappingResponse.Data[];
   }
 
   export type ResponseList = BaseResponse<Data[]>;

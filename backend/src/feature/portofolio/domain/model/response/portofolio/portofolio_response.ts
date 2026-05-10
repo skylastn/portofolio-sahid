@@ -5,11 +5,13 @@ import type { PortofolioCategoryMappingEntity } from '../../entities/portofolio/
 import type { PortofolioEntity } from '../../entities/portofolio/portofolio_entity';
 import type { PortofolioFrameworkMappingEntity } from '../../entities/portofolio/portofolio_framework_mapping_entity';
 import type { PortofolioImageEntity } from '../../entities/portofolio/portofolio_image_entity';
+import type { PortofolioToolMappingEntity } from '../../entities/portofolio/portofolio_tool_mapping_entity';
 import { WorkResponse } from '../work/work_response';
 import { PortofolioAppsSourceResponse } from './portofolio_apps_source_response';
 import { PortofolioCategoryMappingResponse } from './portofolio_category_mapping_response';
 import { PortofolioFrameworkMappingResponse } from './portofolio_framework_mapping_response';
 import { PortofolioImageResponse } from './portofolio_image_response';
+import { PortofolioToolMappingResponse } from './portofolio_tool_mapping_response';
 
 export class PortofolioResponse {
   id: string;
@@ -24,6 +26,7 @@ export class PortofolioResponse {
   images: PortofolioImageResponse[];
   category_mappings: PortofolioCategoryMappingResponse[];
   framework_mappings: PortofolioFrameworkMappingResponse[];
+  tool_mappings: PortofolioToolMappingResponse[];
   createdAt: Date | null;
   updatedAt: Date | null;
   deletedAt: Date | null;
@@ -41,6 +44,7 @@ export class PortofolioResponse {
     images: PortofolioImageResponse[],
     category_mappings: PortofolioCategoryMappingResponse[],
     framework_mappings: PortofolioFrameworkMappingResponse[],
+    tool_mappings: PortofolioToolMappingResponse[],
     createdAt: Date | null,
     updatedAt: Date | null,
     deletedAt: Date | null,
@@ -57,6 +61,7 @@ export class PortofolioResponse {
     this.images = images;
     this.category_mappings = category_mappings;
     this.framework_mappings = framework_mappings;
+    this.tool_mappings = tool_mappings;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
@@ -69,6 +74,7 @@ export class PortofolioResponse {
     images: PortofolioImageEntity[] = [],
     category_mappings: PortofolioCategoryMappingEntity[] = [],
     framework_mappings: PortofolioFrameworkMappingEntity[] = [],
+    tool_mappings: PortofolioToolMappingEntity[] = [],
   ): Promise<PortofolioResponse> {
     return new PortofolioResponse(
       content.id,
@@ -96,6 +102,7 @@ export class PortofolioResponse {
         framework_mappings,
         minioService,
       ),
+      PortofolioToolMappingResponse.convertListFromEntities(tool_mappings),
       content.createdAt,
       content.updatedAt,
       content.deletedAt ?? null,
@@ -131,6 +138,7 @@ export class PortofolioResponse {
       framework_mappings: (this.framework_mappings ?? []).map(
         (item) => item.toMap,
       ),
+      tool_mappings: (this.tool_mappings ?? []).map((item) => item.toMap),
       created_at: this.createdAt,
       updated_at: this.updatedAt,
       deleted_at: this.deletedAt,
@@ -158,6 +166,9 @@ export class PortofolioResponse {
       ),
       (content.framework_mappings ?? []).map((item: any) =>
         PortofolioFrameworkMappingResponse.fromMap(item),
+      ),
+      (content.tool_mappings ?? []).map((item: any) =>
+        PortofolioToolMappingResponse.fromMap(item),
       ),
       content.created_at,
       content.updated_at,

@@ -13,6 +13,8 @@ import { PortofolioFrameworkMappingEntity } from '../../feature/portofolio/domai
 import { WorkEntity } from '../../feature/portofolio/domain/model/entities/work/work_entity';
 import { PortofolioImageEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_image_entity';
 import { FrameworkCodeMappingEntity } from '../../feature/portofolio/domain/model/entities/framework_code_mapping_entity';
+import { ToolEntity } from '../../feature/portofolio/domain/model/entities/tool_entity';
+import { PortofolioToolMappingEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_tool_mapping_entity';
 
 export function dbConfiguration(): DataSourceOptions {
   const isProd = process.env.NODE_ENV === 'production';
@@ -35,8 +37,10 @@ export function dbConfiguration(): DataSourceOptions {
       CodeLanguageEntity,
       FrameworkEntity,
       FrameworkCodeMappingEntity,
+      ToolEntity,
       PortofolioCategoryMappingEntity,
       PortofolioFrameworkMappingEntity,
+      PortofolioToolMappingEntity,
       PortofolioImageEntity,
     ],
     migrations: [

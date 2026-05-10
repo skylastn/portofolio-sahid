@@ -417,6 +417,26 @@ export default function PortofolioUI() {
                       </div>
                     </div>
 
+                    <div className="rounded-2xl bg-white/5 px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                        Tools
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {(selectedPortofolio.tool_mappings ?? []).length === 0 ? (
+                          <p className="text-sm text-slate-300">No tools.</p>
+                        ) : (
+                          (selectedPortofolio.tool_mappings ?? []).map((mapping) => (
+                            <span
+                              key={mapping.id}
+                              className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1.5 text-xs font-semibold text-emerald-100"
+                            >
+                              {mapping.tool?.title ?? mapping.tool_id}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
                     <div className="grid gap-3 sm:grid-cols-2">
                       {[
                         ["Created", selectedPortofolio.created_at ? new Date(selectedPortofolio.created_at).toLocaleString() : "-"],

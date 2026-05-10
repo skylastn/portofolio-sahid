@@ -9,6 +9,7 @@ import { PortofolioImageModule } from './portofolio_image_module';
 import { PortofolioAppsSourceModule } from './portofolio_apps_source_module';
 import { PortofolioCategoryMappingModule } from './portofolio_category_mapping_module';
 import { PortofolioFrameworkMappingModule } from './portofolio_framework_mapping_module';
+import { PortofolioToolMappingModule } from './portofolio_tool_mapping_module';
 import { PortofolioController } from '../../controller/portofolio/portofolio_controller';
 import { WorkModule } from '../work_module';
 
@@ -20,6 +21,7 @@ import { WorkModule } from '../work_module';
     PortofolioImageModule,
     PortofolioCategoryMappingModule,
     PortofolioFrameworkMappingModule,
+    PortofolioToolMappingModule,
     WorkModule,
   ],
   providers: [

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useHomeLogic, useHomeData } from "./home_logic";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
@@ -63,6 +64,7 @@ export default function HomeUI() {
   const listItemClass = isDarkMode
     ? "rounded-2xl bg-white/5 px-4 py-3 text-sm font-medium text-slate-200"
     : "rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700";
+  const skillPreviewLimit = 5;
 
   return (
     <div className={pageClass}>
@@ -294,12 +296,24 @@ export default function HomeUI() {
                   {group.title}
                 </h3>
                 <ul className="mt-5 space-y-3">
-                  {group.items.map((item) => (
+                  {group.items.slice(0, skillPreviewLimit).map((item) => (
                     <li key={item} className={listItemClass}>
                       {item}
                     </li>
                   ))}
                 </ul>
+                {group.items.length > skillPreviewLimit && (
+                  <Link
+                    href="/skills"
+                    className={`mt-5 inline-flex rounded-full border px-4 py-2 text-sm font-semibold transition hover:-translate-y-0.5 ${
+                      isDarkMode
+                        ? "border-white/15 bg-white/5 text-white hover:border-cyan-300 hover:text-cyan-200"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700"
+                    }`}
+                  >
+                    Show all
+                  </Link>
+                )}
               </article>
             ))}
           </div>

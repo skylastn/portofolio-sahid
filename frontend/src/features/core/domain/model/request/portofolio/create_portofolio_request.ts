@@ -14,4 +14,6 @@ export interface CreatePortofolioRequest {
   deleted_category_ids?: string[];
   framework_ids?: string[];
   deleted_framework_ids?: string[];
+  tool_ids?: string[];
+  deleted_tool_ids?: string[];
 }

@@ -68,6 +68,14 @@ export class CreatePortofolioRequest {
   @IsOptional()
   deleted_framework_ids?: string[];
 
+  @IsArray()
+  @IsOptional()
+  tool_ids?: string[];
+
+  @IsArray()
+  @IsOptional()
+  deleted_tool_ids?: string[];
+
   @IsOptional()
   @IsInt()
   @Transform(({ value }) => Number(value ?? 0))

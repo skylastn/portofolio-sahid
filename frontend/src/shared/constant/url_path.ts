@@ -33,6 +33,9 @@ export const UrlPath = {
   // framework
   FRAMEWORK: "api/framework",
 
+  // tool
+  TOOL: "api/tool",
+
   // portofolio
   PORTOFOLIO: "api/portofolio",
 

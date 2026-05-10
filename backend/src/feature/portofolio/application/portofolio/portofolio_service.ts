@@ -6,6 +6,7 @@ import { PortofolioImageService } from './portofolio_image_service';
 import { PortofolioFrameworkMappingService } from './portofolio_framework_mapping_service';
 import { PortofolioCategoryMappingService } from './portofolio_category_mapping_service';
 import { PortofolioAppsSourceService } from './portofolio_apps_source_service';
+import { PortofolioToolMappingService } from './portofolio_tool_mapping_service';
 import { PaginationResponse } from '../../../../shared/core/model/response/pagination_response';
 import { PortofolioRequest } from '../../domain/model/request/portofolio/portofolio_request';
 import { PortofolioResponse } from '../../domain/model/response/portofolio/portofolio_response';
@@ -28,6 +29,7 @@ export class PortofolioService {
     private portofolioAppsSourceService: PortofolioAppsSourceService,
     private portofolioFrameworkMappingService: PortofolioFrameworkMappingService,
     private portofolioCategoryMappingService: PortofolioCategoryMappingService,
+    private portofolioToolMappingService: PortofolioToolMappingService,
   ) {}
   folderPath = 'portofolio';
 
@@ -66,6 +68,8 @@ export class PortofolioService {
       await this.portofolioCategoryMappingService.findAllByPortofolioId(id);
     const framework_mappings =
       await this.portofolioFrameworkMappingService.findAllByPortofolioId(id);
+    const tool_mappings =
+      await this.portofolioToolMappingService.findAllByPortofolioId(id);
     return PortofolioResponse.convertFromEntity(
       portofolio,
       this.minioService,
@@ -73,6 +77,7 @@ export class PortofolioService {
       images,
       category_mappings,
       framework_mappings,
+      tool_mappings,
     );
   }
 
@@ -123,6 +128,11 @@ export class PortofolioService {
       await this.portofolioFrameworkMappingService.syncWithPortofolioIdAndListFrameworkId(
         result.id,
         request.framework_ids ?? [],
+        [],
+      );
+      await this.portofolioToolMappingService.syncWithPortofolioIdAndListToolId(
+        result.id,
+        request.tool_ids ?? [],
         [],
       );
     }
@@ -180,6 +190,11 @@ export class PortofolioService {
         result.id,
         request.framework_ids ?? [],
         request.deleted_framework_ids ?? [],
+      );
+      await this.portofolioToolMappingService.syncWithPortofolioIdAndListToolId(
+        result.id,
+        request.tool_ids ?? [],
+        request.deleted_tool_ids ?? [],
       );
     }
     return result;

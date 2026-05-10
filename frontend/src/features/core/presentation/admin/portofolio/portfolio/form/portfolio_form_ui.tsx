@@ -49,6 +49,7 @@ export default function PortofolioFormUI() {
     works,
     categories,
     frameworks,
+    tools,
     formState,
     openBack,
     setFormField,
@@ -57,6 +58,7 @@ export default function PortofolioFormUI() {
     removeAppsSource,
     toggleCategory,
     toggleFramework,
+    toggleTool,
     removeImage,
     uploadThumbnail,
     uploadImage,
@@ -515,6 +517,59 @@ export default function PortofolioFormUI() {
             </SectionCard>
 
             <SectionCard
+              title="Tools"
+              subtitle="Pick the tools used to build, deploy, or manage this portfolio."
+              className={theme.shellCardClass}
+            >
+              <div
+                className={`max-h-105 overflow-auto rounded-2xl p-3 ${theme.panelClass}`}
+              >
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {tools.map((tool) => {
+                    const checked = formState.tool_ids.includes(tool.id ?? "");
+                    return (
+                      <label
+                        key={tool.id}
+                        className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 transition ${
+                          checked
+                            ? "border-cyan-300/40 bg-cyan-400/10 text-cyan-100"
+                            : theme.buttonSurfaceClass
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleTool(tool.id ?? "")}
+                          className="mt-1 h-4 w-4 rounded border-white/20 bg-transparent text-cyan-400 focus:ring-cyan-300/20"
+                        />
+                        <div className="min-w-0">
+                          <p
+                            className={`text-sm font-semibold ${
+                              checked
+                                ? selectedOptionTitleClass
+                                : theme.detailValueClass
+                            }`}
+                          >
+                            {tool.title}
+                          </p>
+                          <p
+                            className={`mt-1 break-all text-xs ${
+                              checked
+                                ? selectedOptionDescriptionClass
+                                : theme.subtleTextClass
+                            }`}
+                          >
+                            {tool.description ?? "-"}
+                          </p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </SectionCard>
+
+            <SectionCard
               title="Summary"
               subtitle="A quick overview of the current payload."
               className={theme.shellCardClass}
@@ -566,6 +621,18 @@ export default function PortofolioFormUI() {
                   </p>
                   <p className={`mt-2 text-sm ${theme.detailValueClass}`}>
                     {formState.framework_ids.length}
+                  </p>
+                </div>
+                <div
+                  className={`rounded-2xl px-4 py-3 ${theme.buttonSurfaceClass}`}
+                >
+                  <p
+                    className={`text-xs font-semibold uppercase tracking-[0.24em] ${theme.subtleTextClass}`}
+                  >
+                    Tools
+                  </p>
+                  <p className={`mt-2 text-sm ${theme.detailValueClass}`}>
+                    {formState.tool_ids.length}
                   </p>
                 </div>
               </div>
