@@ -12,6 +12,7 @@ import { PortofolioEntity } from '../../feature/portofolio/domain/model/entities
 import { PortofolioFrameworkMappingEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_framework_mapping_entity';
 import { WorkEntity } from '../../feature/portofolio/domain/model/entities/work/work_entity';
 import { PortofolioImageEntity } from '../../feature/portofolio/domain/model/entities/portofolio/portofolio_image_entity';
+import { FrameworkCodeMappingEntity } from '../../feature/portofolio/domain/model/entities/framework_code_mapping_entity';
 
 export function dbConfiguration(): DataSourceOptions {
   const isProd = process.env.NODE_ENV === 'production';
@@ -32,6 +33,7 @@ export function dbConfiguration(): DataSourceOptions {
       CategoryEntity,
       CodeLanguageEntity,
       FrameworkEntity,
+      FrameworkCodeMappingEntity,
       PortofolioCategoryMappingEntity,
       PortofolioFrameworkMappingEntity,
       PortofolioImageEntity,

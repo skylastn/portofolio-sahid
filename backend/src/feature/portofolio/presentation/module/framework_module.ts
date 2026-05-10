@@ -6,9 +6,14 @@ import { FRAMEWORK_DATABASE_REPOSITORY } from '../../domain/repository/database/
 import { FrameworkDatabaseRepositoryImpl } from '../../infrastructure/persistence/database/framework_database_repository_impl';
 import { FrameworkController } from '../controller/framework_controller';
 import { Module } from '@nestjs/common';
+import { FrameworkCodeMappingModule } from './framework_code_mapping/framework_code_mapping_module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([FrameworkEntity]), MinioModule],
+  imports: [
+    TypeOrmModule.forFeature([FrameworkEntity]),
+    MinioModule,
+    FrameworkCodeMappingModule,
+  ],
   providers: [
     FrameworkService,
     {

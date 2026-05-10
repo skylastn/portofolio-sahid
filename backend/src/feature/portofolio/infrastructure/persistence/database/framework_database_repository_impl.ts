@@ -15,6 +15,13 @@ export class FrameworkDatabaseRepositoryImpl
   extends BaseQueryRepository<FrameworkEntity>
   implements FrameworkDatabaseRepository
 {
+  previewRelations = ['codeLanguage'];
+  detailRelations = [
+    'codeLanguage',
+    'codeLanguageMappings',
+    'codeLanguageMappings.codeLanguage',
+  ];
+
   constructor(
     @InjectRepository(FrameworkEntity)
     private readonly repo: Repository<FrameworkEntity>,
@@ -43,14 +50,21 @@ export class FrameworkDatabaseRepositoryImpl
             title: search,
           }),
         },
+        relations: this.previewRelations,
       },
     );
   }
   async findAllByListIds(ids: string[]): Promise<FrameworkEntity[]> {
-    return await this.db.findBy({ id: In(ids) });
+    return await this.db.find({
+      where: { id: In(ids) },
+      relations: this.previewRelations,
+    });
   }
   async findOneById(id: string): Promise<FrameworkEntity | null> {
-    return await this.db.findOneBy({ id });
+    return await this.db.findOne({
+      where: { id },
+      relations: this.detailRelations,
+    });
   }
   async createOrUpdate(data: FrameworkEntity): Promise<FrameworkEntity | null> {
     return await this.db.save(data);

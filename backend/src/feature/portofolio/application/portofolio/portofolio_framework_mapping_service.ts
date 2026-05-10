@@ -1,13 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { MinioService } from '../../../support/application/minio_service';
-import {
-  PORTOFOLIO_FRAMEWORK_MAPPING_DATABASE_REPOSITORY,
-} from '../../domain/repository/database/portofolio/portofolio_framework_mapping_database_repository';
+import { PORTOFOLIO_FRAMEWORK_MAPPING_DATABASE_REPOSITORY } from '../../domain/repository/database/portofolio/portofolio_framework_mapping_database_repository';
 import type { PortofolioFrameworkMappingDatabaseRepository } from '../../domain/repository/database/portofolio/portofolio_framework_mapping_database_repository';
 import { PortofolioFrameworkMappingEntity } from '../../domain/model/entities/portofolio/portofolio_framework_mapping_entity';
 import { PortofolioFrameworkMappingResponse } from '../../domain/model/response/portofolio/portofolio_framework_mapping_response';
 import { FormatHelper } from '../../../../shared/utils/utility/format_helper';
 import { FrameworkService } from '../framework_service';
+import { FrameworkCodeMappingService } from '../framework_code_mapping/framework_code_mapping_service';
 
 @Injectable()
 export class PortofolioFrameworkMappingService {
@@ -16,12 +15,21 @@ export class PortofolioFrameworkMappingService {
     private repo: PortofolioFrameworkMappingDatabaseRepository,
     private minioService: MinioService,
     private frameworkService: FrameworkService,
+    private frameworkCodeMappingService: FrameworkCodeMappingService,
   ) {}
 
   async findAllByPortofolioId(
     portofolioId: string,
   ): Promise<PortofolioFrameworkMappingEntity[]> {
-    return await this.repo.findAllByPortofolioId(portofolioId);
+    const mappings = await this.repo.findAllByPortofolioId(portofolioId);
+    for (const mapping of mappings) {
+      if (!FormatHelper.isPresent(mapping.framework)) continue;
+      mapping.framework.codeLanguageMappings =
+        await this.frameworkCodeMappingService.findAllByFrameworkId(
+          mapping.frameworkId,
+        );
+    }
+    return mappings;
   }
 
   async findAllByListIds(

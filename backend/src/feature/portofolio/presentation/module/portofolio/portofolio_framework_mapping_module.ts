@@ -6,11 +6,13 @@ import { PortofolioFrameworkMappingDatabaseRepositoryImpl } from '../../../infra
 import { FrameworkModule } from '../framework_module';
 import { Module } from '@nestjs/common';
 import { MinioModule } from '../../../../support/presentation/module/minio_module';
+import { FrameworkCodeMappingModule } from '../framework_code_mapping/framework_code_mapping_module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PortofolioFrameworkMappingEntity]),
     FrameworkModule,
+    FrameworkCodeMappingModule,
     MinioModule,
   ],
   providers: [

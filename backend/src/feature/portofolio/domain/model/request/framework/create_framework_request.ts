@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { FrameworkEntity } from '../../entities/framework_entity';
 import { FormatHelper } from '../../../../../../shared/utils/utility/format_helper';
@@ -20,6 +20,14 @@ export class CreateFrameworkRequest {
     return String(value);
   })
   image_path?: string | null;
+
+  @IsArray()
+  @IsOptional()
+  code_language_ids?: string[];
+
+  @IsArray()
+  @IsOptional()
+  deleted_code_language_ids?: string[];
 
   convertToEntity(): FrameworkEntity {
     const entity = new FrameworkEntity();

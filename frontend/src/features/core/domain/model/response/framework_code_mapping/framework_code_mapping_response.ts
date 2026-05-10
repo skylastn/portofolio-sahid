@@ -1,18 +1,13 @@
 import { BaseModelResponse } from "@/shared/domain/model/response/base_model_response";
 import { BaseResponse } from "@/shared/domain/model/response/base_response";
 import { ConvertResponse } from "@/shared/domain/model/response/convert_response";
-import { CodeLanguageResponse } from "./code_language_response";
-import { FrameworkCodeMappingResponse } from "./framework_code_mapping/framework_code_mapping_response";
+import { CodeLanguageResponse } from "../code_language_response";
 
-export namespace FrameworkResponse {
+export namespace FrameworkCodeMappingResponse {
   export class Data extends BaseModelResponse {
+    framework_id?: string;
     code_language_id?: string;
-    code_language?: CodeLanguageResponse.Data | null;
-    title?: string;
-    description?: string;
-    image_path?: string | null;
-    image_url?: string | null;
-    code_language_mappings?: FrameworkCodeMappingResponse.Data[];
+    code_language?: CodeLanguageResponse.Data;
   }
 
   export type ResponseList = BaseResponse<Data[]>;

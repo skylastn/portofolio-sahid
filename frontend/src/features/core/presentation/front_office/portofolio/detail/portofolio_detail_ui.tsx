@@ -6,7 +6,10 @@ import { useEffect } from "react";
 import DefaultImage from "@/shared/component/ui/default_image";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
 import { EitherType } from "@/shared/utils/utility/either";
-import { usePortofolioDetail, formatDisplayDate } from "./portofolio_detail_logic";
+import {
+  usePortofolioDetail,
+  formatDisplayDate,
+} from "./portofolio_detail_logic";
 
 export default function PortofolioDetailUI() {
   const router = useRouter();
@@ -29,6 +32,7 @@ export default function PortofolioDetailUI() {
   const titleClass = isDarkMode ? "text-white" : "text-slate-950";
   const categories = item?.category_mappings ?? [];
   const frameworks = item?.framework_mappings ?? [];
+  const codeLanguages = getFrameworkCodeLanguageLabels(frameworks);
   const sources = item?.apps_sources ?? [];
   const gallery = item?.images ?? [];
 
@@ -76,7 +80,9 @@ export default function PortofolioDetailUI() {
 
         {!isLoading && errorMessage && (
           <div className={`rounded-3xl border px-6 py-8 ${surfaceClass}`}>
-            <p className="text-sm font-semibold text-rose-500">{errorMessage}</p>
+            <p className="text-sm font-semibold text-rose-500">
+              {errorMessage}
+            </p>
             <Link
               href="/portofolio"
               className="mt-5 inline-flex rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white"
@@ -115,7 +121,9 @@ export default function PortofolioDetailUI() {
                 >
                   {item.title ?? "Untitled Portofolio"}
                 </h1>
-                <p className={`mt-5 text-base leading-8 sm:text-lg ${mutedClass}`}>
+                <p
+                  className={`mt-5 text-base leading-8 sm:text-lg ${mutedClass}`}
+                >
                   {item.description ?? "No description available."}
                 </p>
 
@@ -170,14 +178,25 @@ export default function PortofolioDetailUI() {
                 </p>
                 <TagGroup
                   title="Categories"
-                  values={categories.map((mapping) => mapping.category?.title ?? mapping.category_id)}
+                  values={categories.map(
+                    (mapping) => mapping.category?.title ?? mapping.category_id,
+                  )}
                   emptyLabel="No categories."
                   isDarkMode={isDarkMode}
                 />
                 <TagGroup
                   title="Frameworks"
-                  values={frameworks.map((mapping) => mapping.framework?.title ?? mapping.framework_id)}
+                  values={frameworks.map(
+                    (mapping) =>
+                      mapping.framework?.title ?? mapping.framework_id,
+                  )}
                   emptyLabel="No frameworks."
+                  isDarkMode={isDarkMode}
+                />
+                <TagGroup
+                  title="Code Languages"
+                  values={codeLanguages}
+                  emptyLabel="No code languages."
                   isDarkMode={isDarkMode}
                 />
               </div>
@@ -187,7 +206,9 @@ export default function PortofolioDetailUI() {
                   Work Context
                 </p>
                 <h2 className={`mt-3 text-2xl font-bold ${titleClass}`}>
-                  {item.work?.job_title ?? item.work?.company_name ?? "Project background"}
+                  {item.work?.job_title ??
+                    item.work?.company_name ??
+                    "Project background"}
                 </h2>
                 <p className={`mt-4 text-base leading-7 ${mutedClass}`}>
                   {item.work?.description ??
@@ -243,7 +264,9 @@ export default function PortofolioDetailUI() {
                   ))}
                 </div>
               ) : (
-                <p className={`mt-7 rounded-3xl border px-5 py-4 text-sm font-semibold ${surfaceClass}`}>
+                <p
+                  className={`mt-7 rounded-3xl border px-5 py-4 text-sm font-semibold ${surfaceClass}`}
+                >
                   No gallery images yet.
                 </p>
               )}
@@ -253,6 +276,38 @@ export default function PortofolioDetailUI() {
       </main>
     </div>
   );
+}
+
+function getFrameworkCodeLanguageLabels(
+  frameworks: {
+    framework_id?: string;
+    framework?: {
+      code_language_id?: string;
+      code_language?: { title?: string } | null;
+      code_language_mappings?: {
+        code_language_id?: string;
+        code_language?: { title?: string };
+      }[];
+    };
+  }[],
+) {
+  const labels = frameworks.flatMap((mapping) => {
+    const codeLanguageMappings =
+      mapping.framework?.code_language_mappings ?? [];
+    if (codeLanguageMappings.length > 0) {
+      return codeLanguageMappings.map(
+        (codeLanguageMapping) =>
+          codeLanguageMapping.code_language?.title ??
+          codeLanguageMapping.code_language_id,
+      );
+    }
+    return [
+      mapping.framework?.code_language?.title ??
+        mapping.framework?.code_language_id,
+    ];
+  });
+
+  return Array.from(new Set(labels.filter(Boolean)));
 }
 
 function InfoBlock({

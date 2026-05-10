@@ -41,11 +41,12 @@ interface FrameworkContextProps {
   perPage: number;
   total: number;
   openCreateForm: () => void;
-  openViewModal: (item: FrameworkResponse.Data) => void;
-  openEditForm: (item: FrameworkResponse.Data) => void;
+  openViewModal: (item: FrameworkResponse.Data) => Promise<void>;
+  openEditForm: (item: FrameworkResponse.Data) => Promise<void>;
   openDeleteDialog: (item: FrameworkResponse.Data) => void;
   closeModal: () => void;
   setFormField: (field: keyof FrameworkFormState, value: string) => void;
+  toggleCodeLanguageMapping: (id: string) => void;
   saveFramework: () => Promise<void>;
   deleteFramework: () => Promise<void>;
   uploadFrameworkImage: (file: File) => Promise<void>;
@@ -57,18 +58,26 @@ const defaultFormState: FrameworkFormState = {
   title: "",
   description: "",
   image_path: "",
+  code_language_ids: [],
+  deleted_code_language_ids: [],
 };
 
 const FrameworkLogic = createContext<FrameworkContextProps | undefined>(
   undefined,
 );
 
-export const FrameworkProvider = ({ children }: { children: React.ReactNode }) => {
+export const FrameworkProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const service = useMemo(() => new FrameworkService(), []);
   const codeLanguageService = useMemo(() => new CodeLanguageService(), []);
   const { setLoading } = useLoading();
   const [frameworks, setFrameworks] = useState<FrameworkResponse.Data[]>([]);
-  const [codeLanguages, setCodeLanguages] = useState<CodeLanguageResponse.Data[]>([]);
+  const [codeLanguages, setCodeLanguages] = useState<
+    CodeLanguageResponse.Data[]
+  >([]);
   const [selectedFramework, setSelectedFramework] =
     useState<FrameworkResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +87,11 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formState, setFormState] = useState<FrameworkFormState>(defaultFormState);
+  const [formState, setFormState] =
+    useState<FrameworkFormState>(defaultFormState);
+  const [initialCodeLanguageIds, setInitialCodeLanguageIds] = useState<
+    string[]
+  >([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [total, setTotal] = useState(0);
@@ -108,7 +121,10 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
   );
 
   const refreshCodeLanguages = useCallback(async () => {
-    const result = await codeLanguageService.fetchCodeLanguages({ page: 1, perPage: 1000 });
+    const result = await codeLanguageService.fetchCodeLanguages({
+      page: 1,
+      perPage: 1000,
+    });
     result.fold(
       () => {},
       (response) => setCodeLanguages(response.data ?? []),
@@ -129,31 +145,76 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
     setSelectedFramework(null);
     setIsEditing(false);
     setFormState(defaultFormState);
+    setInitialCodeLanguageIds([]);
   }, []);
 
   const openCreateForm = useCallback(() => {
     setSelectedFramework(null);
     setIsEditing(false);
     setFormState(defaultFormState);
+    setInitialCodeLanguageIds([]);
     setIsFormOpen(true);
   }, []);
 
-  const openViewModal = useCallback((item: FrameworkResponse.Data) => {
-    setSelectedFramework(item);
-    setIsDetailOpen(true);
-  }, []);
+  const fetchFrameworkDetail = useCallback(
+    async (item: FrameworkResponse.Data) => {
+      if (!item.id) return item;
+      const result = await service.fetchFrameworkById(item.id);
+      if (result.tag === EitherType.Left) {
+        toast.error(result.left.message ?? "Failed to load framework detail");
+        return item;
+      }
+      return result.right;
+    },
+    [service],
+  );
 
-  const openEditForm = useCallback((item: FrameworkResponse.Data) => {
-    setSelectedFramework(item);
-    setIsEditing(true);
-    setFormState({
-      code_language_id: item.code_language_id ?? "",
-      title: item.title ?? "",
-      description: item.description ?? "",
-      image_path: item.image_path ?? "",
-    });
-    setIsFormOpen(true);
-  }, []);
+  const getMappedCodeLanguageIds = useCallback(
+    (item: FrameworkResponse.Data) =>
+      (item.code_language_mappings ?? [])
+        .map((mapping) => mapping.code_language_id)
+        .filter((id): id is string => !!id),
+    [],
+  );
+
+  const openViewModal = useCallback(
+    async (item: FrameworkResponse.Data) => {
+      setLoading(true);
+      try {
+        const detail = await fetchFrameworkDetail(item);
+        setSelectedFramework(detail);
+        setIsDetailOpen(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchFrameworkDetail, setLoading],
+  );
+
+  const openEditForm = useCallback(
+    async (item: FrameworkResponse.Data) => {
+      setLoading(true);
+      try {
+        const detail = await fetchFrameworkDetail(item);
+        const mappedCodeLanguageIds = getMappedCodeLanguageIds(detail);
+        setSelectedFramework(detail);
+        setInitialCodeLanguageIds(mappedCodeLanguageIds);
+        setIsEditing(true);
+        setFormState({
+          code_language_id: detail.code_language_id ?? "",
+          title: detail.title ?? "",
+          description: detail.description ?? "",
+          image_path: detail.image_path ?? "",
+          code_language_ids: mappedCodeLanguageIds,
+          deleted_code_language_ids: [],
+        });
+        setIsFormOpen(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchFrameworkDetail, getMappedCodeLanguageIds, setLoading],
+  );
 
   const openDeleteDialog = useCallback((item: FrameworkResponse.Data) => {
     setSelectedFramework(item);
@@ -166,6 +227,20 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
     },
     [],
   );
+
+  const toggleCodeLanguageMapping = useCallback((id: string) => {
+    setFormState((prev) => {
+      const currentIds = prev.code_language_ids ?? [];
+      const nextIds = currentIds.includes(id)
+        ? currentIds.filter((item) => item !== id)
+        : [...currentIds, id];
+
+      return {
+        ...prev,
+        code_language_ids: nextIds,
+      };
+    });
+  }, []);
 
   const uploadFrameworkImage = useCallback(
     async (file: File) => {
@@ -207,6 +282,10 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
         title: formState.title.trim(),
         description: formState.description.trim(),
         image_path: formState.image_path?.trim() || null,
+        code_language_ids: formState.code_language_ids ?? [],
+        deleted_code_language_ids: initialCodeLanguageIds.filter(
+          (id) => !(formState.code_language_ids ?? []).includes(id),
+        ),
       };
 
       if (!payload.code_language_id || !payload.title || !payload.description) {
@@ -238,6 +317,8 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
     formState.description,
     formState.image_path,
     formState.title,
+    formState.code_language_ids,
+    initialCodeLanguageIds,
     isEditing,
     refreshFrameworks,
     selectedFramework?.id,
@@ -263,7 +344,14 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
       setIsSubmitting(false);
       setLoading(false);
     }
-  }, [closeModal, currentPage, refreshFrameworks, selectedFramework?.id, service, setLoading]);
+  }, [
+    closeModal,
+    currentPage,
+    refreshFrameworks,
+    selectedFramework?.id,
+    service,
+    setLoading,
+  ]);
 
   const goToPage = useCallback(
     async (page: number) => {
@@ -296,6 +384,7 @@ export const FrameworkProvider = ({ children }: { children: React.ReactNode }) =
         openDeleteDialog,
         closeModal,
         setFormField,
+        toggleCodeLanguageMapping,
         saveFramework,
         deleteFramework,
         uploadFrameworkImage,

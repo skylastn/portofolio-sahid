@@ -15,7 +15,7 @@ export class PortofolioFrameworkMappingDatabaseRepositoryImpl
     const manager = getEntityManager(this.repo.manager);
     return manager.getRepository(PortofolioFrameworkMappingEntity);
   }
-  relations = ['framework'];
+  relations = ['framework', 'framework.codeLanguage'];
   constructor(
     @InjectRepository(PortofolioFrameworkMappingEntity)
     private readonly repo: Repository<PortofolioFrameworkMappingEntity>,

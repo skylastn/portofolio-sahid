@@ -78,7 +78,7 @@ export default function HomeUI() {
             href="#"
             className={`text-base font-black tracking-tight sm:text-xl ${brandClass}`}
           >
-            {"<SkyDeveloper />"}
+            {"SkyDeveloper"}
           </a>
 
           <nav className={navClass}>

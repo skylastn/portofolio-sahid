@@ -10,6 +10,7 @@ import { FRAMEWORK_DATABASE_REPOSITORY } from '../domain/repository/database/fra
 import type { FrameworkDatabaseRepository } from '../domain/repository/database/framework_database_repository';
 import { FrameworkRequest } from '../domain/model/request/framework/framework_request';
 import { FrameworkResponse } from '../domain/model/response/framework_response';
+import { FrameworkCodeMappingService } from './framework_code_mapping/framework_code_mapping_service';
 
 @Injectable()
 export class FrameworkService {
@@ -17,6 +18,7 @@ export class FrameworkService {
     @Inject(FRAMEWORK_DATABASE_REPOSITORY)
     private repo: FrameworkDatabaseRepository,
     private minioService: MinioService,
+    private frameworkCodeMappingService: FrameworkCodeMappingService,
   ) {}
   folderPath = 'framework';
 
@@ -44,7 +46,13 @@ export class FrameworkService {
     if (!FormatHelper.isPresent(content)) {
       throw new Error('Framework not found');
     }
-    return FrameworkResponse.convertFromEntity(content, this.minioService);
+    const codeLanguageMappings =
+      await this.frameworkCodeMappingService.findAllByFrameworkId(content.id);
+    return FrameworkResponse.convertFromEntity(
+      content,
+      this.minioService,
+      codeLanguageMappings,
+    );
   }
 
   async createOrUpdate(data: FrameworkEntity): Promise<FrameworkEntity | null> {
@@ -71,7 +79,15 @@ export class FrameworkService {
   async createFramework(
     data: CreateFrameworkRequest,
   ): Promise<FrameworkEntity | null> {
-    return await this.createOrUpdate(data.convertToEntity());
+    const result = await this.createOrUpdate(data.convertToEntity());
+    if (result && FormatHelper.isNotEmpty(data.code_language_ids)) {
+      await this.frameworkCodeMappingService.syncWithFrameworkIdAndListCodeLanguageId(
+        result.id,
+        data.code_language_ids ?? [],
+        [],
+      );
+    }
+    return result;
   }
 
   async updateFramework(
@@ -85,6 +101,13 @@ export class FrameworkService {
     const oldImagePath = find.imagePath;
     Object.assign(find, data.convertToEntity());
     const result = await this.createOrUpdate(find);
+    if (result) {
+      await this.frameworkCodeMappingService.syncWithFrameworkIdAndListCodeLanguageId(
+        result.id,
+        data.code_language_ids ?? [],
+        data.deleted_code_language_ids ?? [],
+      );
+    }
     if (
       result &&
       FormatHelper.isPresent(data.image_path) &&
