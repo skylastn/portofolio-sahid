@@ -17,6 +17,7 @@ export default function HomeUI() {
     portofolios,
     works,
     achievements,
+    tools,
     isLoading,
     errorMessage,
   } = useHomeData();
@@ -324,6 +325,7 @@ export default function HomeUI() {
           portofolios={portofolios}
           works={works}
           achievements={achievements}
+          tools={tools}
           isLoading={isLoading}
           errorMessage={errorMessage}
         />

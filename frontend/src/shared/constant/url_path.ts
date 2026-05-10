@@ -35,6 +35,7 @@ export const UrlPath = {
 
   // tool
   TOOL: "api/tool",
+  UPLOAD_SIGNATURE: "api/tool/upload-signature",
 
   // portofolio
   PORTOFOLIO: "api/portofolio",

@@ -14,12 +14,11 @@ import { WorkService } from "@/features/core/application/work_service";
 import { GeneralService } from "@/features/core/application/general_service";
 import { FrameworkService } from "@/features/core/application/framework_service";
 import { CodeLanguageService } from "@/features/core/application/code_language_service";
+import { ToolService } from "@/features/core/application/tool_service";
 import { AchievementResponse } from "@/features/core/domain/model/response/achievement_response";
 import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
-import { GeneralResponse } from "@/features/core/domain/model/response/general_response";
-import { FrameworkResponse } from "@/features/core/domain/model/response/framework_response";
-import { CodeLanguageResponse } from "@/features/core/domain/model/response/code_language_response";
+import { ToolResponse } from "@/features/core/domain/model/response/tool_response";
 import { EitherType } from "@/shared/utils/utility/either";
 import { ApiClient } from "@/shared/network/api_client";
 import { UrlPath } from "@/shared/constant/url_path";
@@ -75,6 +74,7 @@ interface HomeContentState {
   portofolios: PortofolioResponse.Data[];
   works: WorkResponse.Data[];
   achievements: AchievementResponse.Data[];
+  tools: ToolResponse.Data[];
   isLoading: boolean;
   errorMessage?: string;
 }
@@ -125,6 +125,7 @@ export function useHomeData() {
     portofolios: [],
     works: [],
     achievements: [],
+    tools: [],
     isLoading: true,
     errorMessage: undefined,
   });
@@ -138,6 +139,7 @@ export function useHomeData() {
     const portofolioService = new PortofolioService();
     const workService = new WorkService();
     const achievementService = new AchievementService();
+    const toolService = new ToolService();
     const apiClient = new ApiClient();
 
     const [
@@ -147,6 +149,7 @@ export function useHomeData() {
       portofolioResult,
       workResult,
       achievementResult,
+      toolResult,
       dashboardResult,
     ] = await Promise.all([
       generalService.fetchGenerals(),
@@ -155,6 +158,7 @@ export function useHomeData() {
       portofolioService.fetchPortofolios({ page: 1, perPage: 6 }),
       workService.fetchWorks({ page: 1, perPage: 6 }),
       achievementService.fetchAchievements({ page: 1, perPage: 6 }),
+      toolService.fetchTools({ page: 1, perPage: 12 }),
       apiClient.request<DashboardSummary>({
         path: UrlPath.DASHBOARD_SUMMARY,
         method: HttpMethod.GET,
@@ -225,6 +229,8 @@ export function useHomeData() {
       errors.push(workResult.left.message ?? "");
     if (achievementResult.tag === EitherType.Left)
       errors.push(achievementResult.left.message ?? "");
+    if (toolResult.tag === EitherType.Left)
+      errors.push(toolResult.left.message ?? "");
 
     setState({
       navItems: defaultNavItems,
@@ -245,6 +251,10 @@ export function useHomeData() {
       achievements:
         achievementResult.tag === EitherType.Right
           ? (achievementResult.right.data ?? [])
+          : [],
+      tools:
+        toolResult.tag === EitherType.Right
+          ? (toolResult.right.data ?? [])
           : [],
       isLoading: false,
       errorMessage: errors.length > 0 ? errors.join("; ") : undefined,

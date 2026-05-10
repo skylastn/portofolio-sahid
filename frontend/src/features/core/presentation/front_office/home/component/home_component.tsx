@@ -6,6 +6,7 @@ import DefaultImage from "@/shared/component/ui/default_image";
 import { AchievementResponse } from "@/features/core/domain/model/response/achievement_response";
 import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
+import { ToolResponse } from "@/features/core/domain/model/response/tool_response";
 import { formatDisplayDate } from "@/features/core/presentation/front_office/home/home_logic";
 
 interface ThemeProps {
@@ -16,6 +17,7 @@ interface HomePreviewProps extends ThemeProps {
   portofolios: PortofolioResponse.Data[];
   works: WorkResponse.Data[];
   achievements: AchievementResponse.Data[];
+  tools: ToolResponse.Data[];
   isLoading: boolean;
   errorMessage?: string;
 }
@@ -32,6 +34,10 @@ const sectionMeta = {
   achievement: {
     title: "Achievements",
     href: "/achievement",
+  },
+  tools: {
+    title: "Tools",
+    href: "/tools",
   },
 };
 
@@ -105,6 +111,29 @@ export function PublicHomePreviewSections(props: HomePreviewProps) {
           isDarkMode={props.isDarkMode}
         />
       </PreviewSection>
+
+      <PreviewSection
+        type="tools"
+        isDarkMode={props.isDarkMode}
+        isLoading={props.isLoading}
+        errorMessage={props.errorMessage}
+      >
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {props.tools.map((item, index) => (
+            <ToolCard
+              key={item.id ?? index}
+              item={item}
+              index={index}
+              isDarkMode={props.isDarkMode}
+            />
+          ))}
+        </div>
+        <EmptyState
+          isVisible={!props.isLoading && props.tools.length === 0}
+          label="No tools data yet."
+          isDarkMode={props.isDarkMode}
+        />
+      </PreviewSection>
     </>
   );
 }
@@ -117,7 +146,7 @@ function PreviewSection({
   children,
 }: PropsWithChildren<
   ThemeProps & {
-    type: "portofolio" | "work" | "achievement";
+    type: "portofolio" | "work" | "achievement" | "tools";
     isLoading: boolean;
     errorMessage?: string;
   }
@@ -328,6 +357,49 @@ function AchievementCard({
         >
           {item.description ?? "No description available."}
         </p>
+      </div>
+    </article>
+  );
+}
+
+function ToolCard({
+  item,
+  index = 0,
+  isDarkMode,
+}: ThemeProps & { item: ToolResponse.Data; index?: number }) {
+  return (
+    <article
+      className={`animate-reveal overflow-hidden rounded-3xl p-4 text-center transition duration-300 hover:-translate-y-2 ${
+        isDarkMode
+          ? "border border-white/10 bg-white/5"
+          : "border border-slate-200 bg-white"
+      }`}
+      style={{ animationDelay: `${0.1 + index * 0.12}s` }}
+    >
+      <div className="relative aspect-square bg-slate-100">
+        {item.image_url ? (
+          <DefaultImage
+            src={item.image_url}
+            alt={item.title ?? "Tool"}
+            style={{ objectFit: "contain" }}
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-lg font-black text-sky-700">
+            {(item.title ?? "T").slice(0, 1)}
+          </div>
+        )}
+      </div>
+      <div className="mt-4">
+        <h3 className="text-lg font-bold">{item.title ?? "Untitled Tool"}</h3>
+        {item.description && (
+          <p
+            className={`mt-2 text-sm ${
+              isDarkMode ? "text-slate-300" : "text-slate-600"
+            }`}
+          >
+            {item.description}
+          </p>
+        )}
       </div>
     </article>
   );

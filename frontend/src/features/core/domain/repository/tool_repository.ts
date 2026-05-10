@@ -5,6 +5,9 @@ import { ToolRequest } from "../model/request/tool/tool_request";
 import { ToolResponse } from "../model/response/tool_response";
 
 export interface ToolRepository {
+  createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, { key: string; url: string }>>;
   fetchTools(
     query?: ToolRequest,
   ): Promise<Either<ResponseModel, ResponseModel<ToolResponse.Data[]>>>;

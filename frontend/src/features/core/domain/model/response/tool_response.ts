@@ -6,6 +6,8 @@ export namespace ToolResponse {
   export class Data extends BaseModelResponse {
     title?: string;
     description?: string | null;
+    image_path?: string | null;
+    image_url?: string | null;
     position?: number;
   }
 

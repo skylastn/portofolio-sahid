@@ -14,6 +14,12 @@ export class ToolService {
     this.repo = new ToolRepositoryImpl(new ToolRemoteDataSource());
   }
 
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, { key: string; url: string }>> {
+    return await this.repo.createUploadSignature(imageName);
+  }
+
   async fetchTools(
     query?: ToolRequest,
   ): Promise<Either<ResponseModel, ResponseModel<ToolResponse.Data[]>>> {

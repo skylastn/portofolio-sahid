@@ -29,6 +29,12 @@ export class ToolController {
   }
 
   @UseGuards(AuthGuards)
+  @Post('upload-signature')
+  async createUploadSignature(@Body() body: Record<string, any>) {
+    return await this.service.createUploadSignature(body.image_name);
+  }
+
+  @UseGuards(AuthGuards)
   @Post()
   async create(@Body() request: CreateToolRequest) {
     return await this.service.createTool(request);

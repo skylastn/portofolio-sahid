@@ -112,7 +112,7 @@ export type AdminTabKey =
   | "framework"
   | "general";
 
-export type PortfolioTabKey = "portfolio" | "category";
+export type PortfolioTabKey = "portfolio" | "category" | "tool";
 
 function makeTableView(
   title: string,
@@ -126,27 +126,27 @@ function makeTableView(
 const defaultOverviewStats: OverviewStat[] = [
   {
     label: "Portfolios",
-    value: "0",
-    change: "0 categories",
+    value: "00",
+    change: "00 categories",
     note: "Published portfolio records",
   },
   {
     label: "Works",
-    value: "0",
-    change: "0 freelance / 0 fulltime",
+    value: "00",
+    change: "00 freelance / 00 fulltime",
     note: "Experience records",
   },
   {
     label: "Achievements",
-    value: "0",
+    value: "00",
     change: "Latest activity",
     note: "Achievement records",
   },
   {
     label: "Tech Stack",
-    value: "0",
-    change: "0 languages / 0 frameworks",
-    note: "Code language and framework records",
+    value: "00",
+    change: "00 languages / 00 frameworks / 00 tools",
+    note: "Code language, framework, and tool records",
   },
 ];
 
@@ -502,6 +502,11 @@ export const adminNavigationItems: AdminNavigationItem[] = [
         href: "/admin/portofolio/category",
         key: "category",
       },
+      {
+        label: "Tools",
+        href: "/admin/portofolio/tool",
+        key: "tool",
+      },
     ],
   },
   { label: "Achievement", href: "/admin/achievement", key: "achievement" },
@@ -548,6 +553,8 @@ export function getPortfolioSubsectionFromSlug(
       return "portfolio";
     case "category":
       return "category";
+    case "tool":
+      return "tool";
     default:
       return undefined;
   }

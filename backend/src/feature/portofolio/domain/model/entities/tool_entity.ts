@@ -9,6 +9,9 @@ export class ToolEntity extends DefaultEntity {
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string | null;
 
+  @Column({ name: 'image_path', type: 'text', nullable: true })
+  imagePath?: string | null;
+
   @Column({ name: 'position', type: 'int', default: 0 })
   position!: number;
 }

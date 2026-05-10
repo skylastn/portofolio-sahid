@@ -16,6 +16,14 @@ export class CreateToolRequest {
   description?: string | null;
 
   @IsOptional()
+  @IsString()
+  @Transform(({ value }) => {
+    if (!FormatHelper.isNotEmpty(value)) return null;
+    return String(value);
+  })
+  image_path?: string | null;
+
+  @IsOptional()
   @IsInt()
   @Transform(({ value }) => Number(value ?? 0))
   position?: number;
@@ -24,6 +32,7 @@ export class CreateToolRequest {
     const entity = new ToolEntity();
     entity.title = this.title;
     entity.description = this.description ?? null;
+    entity.imagePath = this.image_path ?? null;
     entity.position = this.position ?? 0;
     return entity;
   }

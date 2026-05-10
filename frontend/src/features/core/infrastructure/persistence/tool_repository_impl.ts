@@ -9,6 +9,12 @@ import { ToolRemoteDataSource } from "../data_source/tool_remote_data_source";
 export class ToolRepositoryImpl implements ToolRepository {
   constructor(private readonly remote: ToolRemoteDataSource) {}
 
+  async createUploadSignature(
+    imageName: string,
+  ): Promise<Either<ResponseModel, { key: string; url: string }>> {
+    return await this.remote.createUploadSignature(imageName);
+  }
+
   async fetchTools(
     query?: ToolRequest,
   ): Promise<Either<ResponseModel, ResponseModel<ToolResponse.Data[]>>> {
