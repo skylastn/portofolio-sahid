@@ -1,3 +1,4 @@
+import { MinioService } from '../../../../../support/application/minio_service';
 import type { PortofolioToolMappingEntity } from '../../entities/portofolio/portofolio_tool_mapping_entity';
 import { ToolResponse } from '../tool_response';
 
@@ -28,24 +29,30 @@ export class PortofolioToolMappingResponse {
     this.deletedAt = deletedAt;
   }
 
-  static convertFromEntity(
+  static async convertFromEntity(
     content: PortofolioToolMappingEntity,
-  ): PortofolioToolMappingResponse {
+    minioService: MinioService | null = null,
+  ): Promise<PortofolioToolMappingResponse> {
     return new PortofolioToolMappingResponse(
       content.id,
       content.portofolioId,
       content.toolId,
-      ToolResponse.convertFromEntity(content.tool),
+      await ToolResponse.convertFromEntity(content.tool, minioService),
       content.createdAt,
       content.updatedAt,
       content.deletedAt ?? null,
     );
   }
 
-  static convertListFromEntities(
+  static async convertListFromEntities(
     contents: PortofolioToolMappingEntity[],
-  ): PortofolioToolMappingResponse[] {
-    return contents.map((content) => this.convertFromEntity(content));
+    minioService: MinioService | null = null,
+  ): Promise<PortofolioToolMappingResponse[]> {
+    return await Promise.all(
+      contents.map(
+        async (content) => await this.convertFromEntity(content, minioService),
+      ),
+    );
   }
 
   get toMap(): Record<string, any> {

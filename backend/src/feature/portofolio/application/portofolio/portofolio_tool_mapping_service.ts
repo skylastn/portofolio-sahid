@@ -49,7 +49,7 @@ export class PortofolioToolMappingService {
     if (!FormatHelper.isPresent(content)) {
       throw new Error('PortofolioToolMapping not found');
     }
-    return PortofolioToolMappingResponse.convertFromEntity(content);
+    return await PortofolioToolMappingResponse.convertFromEntity(content);
   }
 
   async createOrUpdate(

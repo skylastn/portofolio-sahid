@@ -102,7 +102,10 @@ export class PortofolioResponse {
         framework_mappings,
         minioService,
       ),
-      PortofolioToolMappingResponse.convertListFromEntities(tool_mappings),
+      await PortofolioToolMappingResponse.convertListFromEntities(
+        tool_mappings,
+        minioService,
+      ),
       content.createdAt,
       content.updatedAt,
       content.deletedAt ?? null,
