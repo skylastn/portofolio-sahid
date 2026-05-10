@@ -16,6 +16,7 @@ import { FrameworkCodeMappingEntity } from '../../feature/portofolio/domain/mode
 
 export function dbConfiguration(): DataSourceOptions {
   const isProd = process.env.NODE_ENV === 'production';
+  const rootPath = process.cwd();
   return {
     type: 'mysql',
     host: process.env.DATABASE_HOST || 'localhost',
@@ -40,8 +41,8 @@ export function dbConfiguration(): DataSourceOptions {
     ],
     migrations: [
       isProd
-        ? path.join(__dirname, '../dist/migrations/*.{js}') // production: .js di dist
-        : path.join(__dirname, '../../system/migrations/*.{ts,js}'), // development: .ts + .js
+        ? path.join(rootPath, 'dist/system/migrations/*.js')
+        : path.join(rootPath, 'src/system/migrations/*.{ts,js}'),
     ],
     synchronize: false,
   };
