@@ -16,13 +16,11 @@ import { PortofolioService } from "@/features/core/application/portofolio_servic
 import { CreatePortofolioRequest } from "@/features/core/domain/model/request/portofolio/create_portofolio_request";
 import { PortofolioRequest } from "@/features/core/domain/model/request/portofolio/portofolio_request";
 import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
-import { EitherType } from "@/shared/utils/utility/either";
-import {
-  buildUploadFileName,
-  uploadFileToPresignedUrl,
-} from "@/shared/utils/utility/minio_upload";
+import { uploadFileWithSignature } from "@/shared/utils/utility/minio_upload";
 
-interface PortofolioFormState extends Pick<CreatePortofolioRequest, "work_id" | "title" | "description" | "thumbnail_path"> {}
+interface PortofolioFormState extends Pick<CreatePortofolioRequest, "work_id" | "title" | "description" | "thumbnail_path"> {
+  thumbnail_file?: File | null;
+}
 
 interface PortofolioContextProps {
   portofolios: PortofolioResponse.Data[];
@@ -56,6 +54,7 @@ const defaultFormState: PortofolioFormState = {
   title: "",
   description: "",
   thumbnail_path: "",
+  thumbnail_file: null,
 };
 
 const PortofolioLogic = createContext<PortofolioContextProps | undefined>(
@@ -173,44 +172,28 @@ export const PortofolioProvider = ({
 
   const uploadPortofolioThumbnail = useCallback(
     async (file: File) => {
-      setIsUploading(true);
-      setLoading(true);
-      try {
-        const signatureResult = await service.createUploadSignature(
-          buildUploadFileName(file),
-        );
-        if (signatureResult.tag === EitherType.Left) {
-          toast.error(
-            signatureResult.left.message ?? "Failed to create upload signature",
-          );
-          return;
-        }
-        const signature = signatureResult.right;
-
-        await uploadFileToPresignedUrl(signature.url, file);
-        setFormState((prev) => ({ ...prev, thumbnail_path: signature.key }));
-        toast.success("Thumbnail uploaded");
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to upload image",
-        );
-      } finally {
-        setIsUploading(false);
-        setLoading(false);
-      }
+      setFormState((prev) => ({ ...prev, thumbnail_file: file }));
+      toast.success("Thumbnail selected. It will upload when you save.");
     },
-    [service, setLoading],
+    [],
   );
 
   const savePortofolio = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
     try {
+      const thumbnailPath = formState.thumbnail_file
+        ? await uploadFileWithSignature(
+            formState.thumbnail_file,
+            service.createUploadSignature.bind(service),
+          )
+        : formState.thumbnail_path?.trim() || null;
+
       const payload: CreatePortofolioRequest = {
         work_id: formState.work_id?.trim() || null,
         title: formState.title.trim(),
         description: formState.description.trim(),
-        thumbnail_path: formState.thumbnail_path?.trim() || null,
+        thumbnail_path: thumbnailPath,
       };
 
       if (!payload.title || !payload.description) {
@@ -242,6 +225,7 @@ export const PortofolioProvider = ({
     formState.title,
     formState.work_id,
     formState.thumbnail_path,
+    formState.thumbnail_file,
     isEditing,
     refreshPortofolios,
     selectedPortofolio?.id,

@@ -13,10 +13,7 @@ import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { useLoading } from "@/shared/component/elements/loading_context";
 import { EitherType } from "@/shared/utils/utility/either";
-import {
-  buildUploadFileName,
-  uploadFileToPresignedUrl,
-} from "@/shared/utils/utility/minio_upload";
+import { uploadFileWithSignature } from "@/shared/utils/utility/minio_upload";
 import { PortofolioService } from "@/features/core/application/portofolio_service";
 import { WorkService } from "@/features/core/application/work_service";
 import { CategoryService } from "@/features/core/application/category_service";
@@ -39,6 +36,8 @@ interface PortofolioFormImage {
   id: string;
   image_path: string;
   image_url?: string | null;
+  image_file?: File | null;
+  image_preview_url?: string | null;
 }
 
 interface PortofolioAppsSourceForm extends CreatePortofolioAppsSourceRequest {
@@ -51,6 +50,7 @@ interface PortofolioFormState {
   description: string;
   position: number;
   thumbnail_path: string;
+  thumbnail_file?: File | null;
   apps_sources: PortofolioAppsSourceForm[];
   images: PortofolioFormImage[];
   category_ids: string[];
@@ -109,6 +109,7 @@ const defaultFormState = (): PortofolioFormState => ({
   description: "",
   position: 0,
   thumbnail_path: "",
+  thumbnail_file: null,
   apps_sources: [defaultAppsSource()],
   images: [],
   category_ids: [],
@@ -120,9 +121,6 @@ const defaultFormState = (): PortofolioFormState => ({
   deleted_framework_ids: [],
   deleted_tool_ids: [],
 });
-
-const isUnauthorizedMessage = (message?: string | null) =>
-  (message ?? "").toLowerCase().includes("unauthorized");
 
 const PortofolioFormContext = createContext<
   PortofolioFormContextProps | undefined
@@ -174,7 +172,30 @@ export const PortofolioFormProvider = ({
   const categoryMappingIdsRef = useRef<Record<string, string>>({});
   const frameworkMappingIdsRef = useRef<Record<string, string>>({});
   const toolMappingIdsRef = useRef<Record<string, string>>({});
+  const previewUrlsRef = useRef<string[]>([]);
   const didLoadRef = useRef(false);
+
+  const createPreviewUrl = useCallback((file: File) => {
+    const url = URL.createObjectURL(file);
+    previewUrlsRef.current.push(url);
+    return url;
+  }, []);
+
+  const revokePreviewUrl = useCallback((url?: string | null) => {
+    if (!url) return;
+    URL.revokeObjectURL(url);
+    previewUrlsRef.current = previewUrlsRef.current.filter(
+      (item) => item !== url,
+    );
+  }, []);
+
+  useEffect(
+    () => () => {
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      previewUrlsRef.current = [];
+    },
+    [],
+  );
 
   const openBack = useCallback(() => {
     void router.push("/admin/portofolio");
@@ -255,6 +276,7 @@ export const PortofolioFormProvider = ({
         description: item.description ?? "",
         position: item.position ?? 0,
         thumbnail_path: item.thumbnail_path ?? "",
+        thumbnail_file: null,
         apps_sources:
           (item.apps_sources ?? []).length > 0
             ? (item.apps_sources ?? []).map((source) => ({
@@ -269,6 +291,8 @@ export const PortofolioFormProvider = ({
                 id: image.id ?? "",
                 image_path: image.image_path ?? "",
                 image_url: image.image_url ?? null,
+                image_file: null,
+                image_preview_url: null,
               }))
             : [],
         category_ids: uniqueStrings(categoryIds),
@@ -439,6 +463,7 @@ export const PortofolioFormProvider = ({
   const removeImage = useCallback((index: number) => {
     setFormState((prev) => {
       const item = prev.images[index];
+      revokePreviewUrl(item?.image_preview_url);
       return {
         ...prev,
         images: prev.images.filter((_, itemIndex) => itemIndex !== index),
@@ -447,164 +472,90 @@ export const PortofolioFormProvider = ({
           : prev.deleted_image_ids,
       };
     });
-  }, []);
+  }, [revokePreviewUrl]);
 
   const uploadThumbnail = useCallback(
     async (file: File) => {
-      setIsUploadingThumbnail(true);
-      setLoading(true);
-      try {
-        const signatureResult = await service.createUploadSignature(
-          buildUploadFileName(file),
-        );
-        if (signatureResult.tag === EitherType.Left) {
-          toast.error(
-            signatureResult.left.message ?? "Failed to create upload signature",
-          );
-          return;
-        }
-        await uploadFileToPresignedUrl(signatureResult.right.url, file);
-        setFormState((prev) => ({
-          ...prev,
-          thumbnail_path: signatureResult.right.key,
-        }));
-        toast.success("Thumbnail uploaded");
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to upload image",
-        );
-      } finally {
-        setIsUploadingThumbnail(false);
-        setLoading(false);
-      }
+      setFormState((prev) => ({ ...prev, thumbnail_file: file }));
+      toast.success("Thumbnail selected. It will upload when you save.");
     },
-    [service, setLoading],
+    [],
   );
 
   const uploadImage = useCallback(
     async (file: File) => {
-      setIsUploadingImage(true);
-      setLoading(true);
-      try {
-        const signatureResult = await service.createImageUploadSignature(
-          buildUploadFileName(file),
-        );
-        if (signatureResult.tag === EitherType.Left) {
-          toast.error(
-            signatureResult.left.message ?? "Failed to create upload signature",
-          );
-          return;
-        }
-        await uploadFileToPresignedUrl(signatureResult.right.url, file);
-        setFormState((prev) => ({
-          ...prev,
-          images: [
-            ...prev.images,
-            {
-              id: "",
-              image_path: signatureResult.right.key,
-              image_url: null,
-            },
-          ],
-        }));
-        toast.success("Image uploaded");
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to upload image",
-        );
-      } finally {
-        setIsUploadingImage(false);
-        setLoading(false);
-      }
+      setFormState((prev) => ({
+        ...prev,
+        images: [
+          ...prev.images,
+          {
+            id: "",
+            image_path: file.name,
+            image_url: null,
+            image_file: file,
+            image_preview_url: createPreviewUrl(file),
+          },
+        ],
+      }));
+      toast.success("Image selected. It will upload when you save.");
     },
-    [service, setLoading],
+    [createPreviewUrl],
   );
 
   const uploadImages = useCallback(
     async (files: File[]) => {
       if (files.length === 0) return;
-      setIsUploadingImage(true);
-      setLoading(true);
-      try {
-        const uploadedImages: PortofolioFormImage[] = [];
-        let failedCount = 0;
+      const selectedImages = files.map((file) => ({
+        id: "",
+        image_path: file.name,
+        image_url: null,
+        image_file: file,
+        image_preview_url: createPreviewUrl(file),
+      }));
 
-        for (const file of files) {
-          try {
-            const signatureResult = await service.createImageUploadSignature(
-              buildUploadFileName(file),
-            );
-            if (signatureResult.tag === EitherType.Left) {
-              const message =
-                signatureResult.left.message ??
-                "Failed to create upload signature";
-
-              if (isUnauthorizedMessage(message)) {
-                toast.error("Session expired. Please login again before uploading images.");
-                break;
-              }
-
-              failedCount += 1;
-              toast.error(`${file.name}: ${message}`);
-              continue;
-            }
-
-            await uploadFileToPresignedUrl(signatureResult.right.url, file);
-            uploadedImages.push({
-              id: "",
-              image_path: signatureResult.right.key,
-              image_url: null,
-            });
-          } catch (error) {
-            const message =
-              error instanceof Error ? error.message : "Failed to upload image";
-            if (isUnauthorizedMessage(message)) {
-              toast.error("Upload unauthorized. Please login again before uploading images.");
-              break;
-            }
-            failedCount += 1;
-            toast.error(
-              `${file.name}: ${message}`,
-            );
-          }
-        }
-
-        if (uploadedImages.length > 0) {
-          setFormState((prev) => ({
-            ...prev,
-            images: [...prev.images, ...uploadedImages],
-          }));
-          toast.success(
-            uploadedImages.length === 1
-              ? "Image uploaded"
-              : `${uploadedImages.length} images uploaded`,
-          );
-        }
-        if (failedCount > 0) {
-          toast.error(`${failedCount} image${failedCount === 1 ? "" : "s"} failed to upload`);
-        }
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to upload image",
-        );
-      } finally {
-        setIsUploadingImage(false);
-        setLoading(false);
-      }
+      setFormState((prev) => ({
+        ...prev,
+        images: [...prev.images, ...selectedImages],
+      }));
+      toast.success(
+        selectedImages.length === 1
+          ? "Image selected. It will upload when you save."
+          : `${selectedImages.length} images selected.`,
+      );
     },
-    [service, setLoading],
+    [createPreviewUrl],
   );
 
   const savePortofolio = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
     try {
+      const thumbnailPath = formState.thumbnail_file
+        ? await uploadFileWithSignature(
+            formState.thumbnail_file,
+            service.createUploadSignature.bind(service),
+          )
+        : formState.thumbnail_path?.trim() || null;
+      const imagePaths: string[] = [];
+      for (const image of formState.images) {
+        if (image.image_file) {
+          imagePaths.push(
+            await uploadFileWithSignature(
+              image.image_file,
+              service.createImageUploadSignature.bind(service),
+            ),
+          );
+        } else if (image.image_path) {
+          imagePaths.push(image.image_path);
+        }
+      }
+
       const payload: CreatePortofolioRequest = {
         work_id: formState.work_id?.trim() || null,
         title: formState.title.trim(),
         description: formState.description.trim(),
         position: Number(formState.position ?? 0),
-        thumbnail_path: formState.thumbnail_path?.trim() || null,
+        thumbnail_path: thumbnailPath,
         apps_sources: formState.apps_sources
           .filter((item) => item.url.trim())
           .map((item) => ({
@@ -615,7 +566,7 @@ export const PortofolioFormProvider = ({
         deleted_apps_source_ids: uniqueStrings(
           formState.deleted_apps_source_ids,
         ),
-        images: formState.images.map((item) => item.image_path).filter(Boolean),
+        images: imagePaths.filter(Boolean),
         deleted_image_ids: uniqueStrings(formState.deleted_image_ids),
         category_ids: uniqueStrings(formState.category_ids),
         deleted_category_ids: uniqueStrings(formState.deleted_category_ids),

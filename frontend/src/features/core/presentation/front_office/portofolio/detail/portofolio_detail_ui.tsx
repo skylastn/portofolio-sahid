@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DefaultImage from "@/shared/component/ui/default_image";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
 import { EitherType } from "@/shared/utils/utility/either";
@@ -15,6 +15,9 @@ export default function PortofolioDetailUI() {
   const router = useRouter();
   const { isDarkMode, changeDarkMode } = useGlobalLogic();
   const { item, isLoading, errorMessage, fetchDetail } = usePortofolioDetail();
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState<number | null>(
+    null,
+  );
   const id = typeof router.query.id === "string" ? router.query.id : undefined;
 
   useEffect(() => {
@@ -35,6 +38,42 @@ export default function PortofolioDetailUI() {
   const codeLanguages = getFrameworkCodeLanguageLabels(frameworks);
   const sources = item?.apps_sources ?? [];
   const gallery = item?.images ?? [];
+  const activeGalleryImage =
+    activeGalleryIndex !== null ? gallery[activeGalleryIndex] : undefined;
+  const closeGallery = useCallback(() => setActiveGalleryIndex(null), []);
+  const showPreviousGalleryImage = useCallback(() => {
+    setActiveGalleryIndex((current) => {
+      if (current === null || gallery.length === 0) return current;
+      return current === 0 ? gallery.length - 1 : current - 1;
+    });
+  }, [gallery.length]);
+  const showNextGalleryImage = useCallback(() => {
+    setActiveGalleryIndex((current) => {
+      if (current === null || gallery.length === 0) return current;
+      return current === gallery.length - 1 ? 0 : current + 1;
+    });
+  }, [gallery.length]);
+
+  useEffect(() => {
+    if (activeGalleryIndex === null) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeGallery();
+      if (event.key === "ArrowLeft") showPreviousGalleryImage();
+      if (event.key === "ArrowRight") showNextGalleryImage();
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    activeGalleryIndex,
+    closeGallery,
+    showNextGalleryImage,
+    showPreviousGalleryImage,
+  ]);
 
   return (
     <div className={pageClass}>
@@ -129,9 +168,10 @@ export default function PortofolioDetailUI() {
                       href={source.url ?? "#"}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-1 hover:bg-sky-500"
+                      className="inline-flex items-center gap-2 rounded-full bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-1 hover:bg-sky-500"
                     >
-                      {source.type ? `Open ${source.type}` : "Open source"}
+                      <SourceIcon type={source.type} />
+                      {getSourceLabel(source.type)}
                     </a>
                   ))}
                   <Link
@@ -221,10 +261,12 @@ export default function PortofolioDetailUI() {
 
               {gallery.length > 0 ? (
                 <div className="mt-7 grid gap-5 md:grid-cols-2">
-                  {gallery.map((image) => (
-                    <div
+                  {gallery.map((image, index) => (
+                    <button
+                      type="button"
                       key={image.id ?? image.image_url}
-                      className={`overflow-hidden rounded-3xl border ${surfaceClass}`}
+                      onClick={() => setActiveGalleryIndex(index)}
+                      className={`group overflow-hidden rounded-3xl border text-left transition hover:-translate-y-1 ${surfaceClass}`}
                     >
                       <div className="relative aspect-16/10 bg-slate-100">
                         {image.image_url ? (
@@ -238,8 +280,13 @@ export default function PortofolioDetailUI() {
                             {image.image_path ?? "Image"}
                           </div>
                         )}
+                        <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition group-hover:bg-slate-950/35 group-hover:opacity-100">
+                          <span className="rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-950">
+                            View fullscreen
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               ) : (
@@ -253,7 +300,130 @@ export default function PortofolioDetailUI() {
           </>
         )}
       </main>
+
+      {activeGalleryImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 px-4 py-6 backdrop-blur">
+          <button
+            type="button"
+            aria-label="Close gallery"
+            className="absolute inset-0 cursor-default"
+            onClick={closeGallery}
+          />
+          <div className="relative z-10 flex h-full w-full max-w-7xl flex-col gap-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="truncate text-sm font-semibold text-slate-300">
+                {activeGalleryImage.image_path ??
+                  item?.title ??
+                  "Gallery image"}
+              </p>
+              <button
+                type="button"
+                onClick={closeGallery}
+                className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/15"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="relative min-h-0 flex-1 overflow-hidden rounded-3xl bg-black">
+              {activeGalleryImage.image_url ? (
+                <DefaultImage
+                  src={activeGalleryImage.image_url}
+                  alt={
+                    activeGalleryImage.image_path ??
+                    item?.title ??
+                    "Gallery image"
+                  }
+                  style={{ objectFit: "contain" }}
+                  sizes="100vw"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center px-6 text-center text-sm text-slate-400">
+                  {activeGalleryImage.image_path ?? "Image"}
+                </div>
+              )}
+
+              {gallery.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={showPreviousGalleryImage}
+                    aria-label="Previous image"
+                    className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-2xl font-bold text-white transition hover:bg-white/20"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={showNextGalleryImage}
+                    aria-label="Next image"
+                    className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-2xl font-bold text-white transition hover:bg-white/20"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+            </div>
+
+            {gallery.length > 1 && activeGalleryIndex !== null && (
+              <p className="text-center text-sm font-semibold text-slate-400">
+                {activeGalleryIndex + 1} / {gallery.length}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+function getSourceLabel(type?: string) {
+  if (!type) return "Open source";
+  const labels: Record<string, string> = {
+    android: "Android",
+    web: "Web",
+    ios: "iOS",
+    windows: "Windows",
+    mac: "macOS",
+    linux: "Linux",
+    github: "GitHub",
+    other: "Source",
+  };
+  return labels[type.toLowerCase()] ?? type;
+}
+
+function SourceIcon({ type }: { type?: string }) {
+  const normalizedType = type?.toLowerCase();
+  const iconClass = "h-4 w-4 shrink-0";
+
+  if (normalizedType === "android") {
+    return (
+      <svg className={iconClass} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M7.2 8.6h9.6c.9 0 1.7.8 1.7 1.7v5.8c0 .9-.8 1.7-1.7 1.7h-.5v2.1c0 .6-.5 1.1-1.1 1.1s-1.1-.5-1.1-1.1v-2.1H9.9v2.1c0 .6-.5 1.1-1.1 1.1s-1.1-.5-1.1-1.1v-2.1h-.5c-.9 0-1.7-.8-1.7-1.7v-5.8c0-.9.8-1.7 1.7-1.7Zm-4.1 1.7c.6 0 1.1.5 1.1 1.1v4.3c0 .6-.5 1.1-1.1 1.1S2 16.3 2 15.7v-4.3c0-.6.5-1.1 1.1-1.1Zm17.8 0c.6 0 1.1.5 1.1 1.1v4.3c0 .6-.5 1.1-1.1 1.1s-1.1-.5-1.1-1.1v-4.3c0-.6.5-1.1 1.1-1.1ZM8 3.1l1.2 2.1c.8-.3 1.8-.5 2.8-.5s2 .2 2.8.5L16 3.1c.2-.3.5-.4.8-.2.3.2.4.5.2.8l-1.1 2c1.1.6 1.9 1.4 2.3 2.4H5.8c.4-1 1.2-1.8 2.3-2.4L7 3.7c-.2-.3-.1-.6.2-.8.3-.2.6-.1.8.2Zm1.3 3.2c-.4 0-.7.3-.7.7s.3.7.7.7.7-.3.7-.7-.3-.7-.7-.7Zm5.4 0c-.4 0-.7.3-.7.7s.3.7.7.7.7-.3.7-.7-.3-.7-.7-.7Z" />
+      </svg>
+    );
+  }
+
+  if (normalizedType === "ios" || normalizedType === "mac") {
+    return (
+      <svg className={iconClass} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M16.8 12.8c0-2 1.6-3 1.7-3.1-1-1.4-2.4-1.6-2.9-1.6-1.2-.1-2.4.7-3 .7-.7 0-1.7-.7-2.8-.7-1.4 0-2.8.9-3.5 2.2-1.5 2.6-.4 6.4 1.1 8.5.7 1 1.5 2.2 2.7 2.1 1.1 0 1.5-.7 2.8-.7s1.7.7 2.8.7c1.2 0 1.9-1 2.6-2.1.8-1.2 1.1-2.3 1.1-2.4 0-.1-2.6-1-2.6-3.6ZM14.8 6.8c.6-.7 1-1.7.9-2.8-.9 0-1.9.6-2.5 1.3-.6.7-1 1.7-.9 2.7 1 .1 1.9-.5 2.5-1.2Z" />
+      </svg>
+    );
+  }
+
+  if (normalizedType === "github") {
+    return (
+      <svg className={iconClass} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C6.5 2 2 6.6 2 12.2c0 4.5 2.9 8.3 6.8 9.7.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.4-3.4-1.4-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 0 1.6 1.1 1.6 1.1.9 1.6 2.4 1.1 2.9.9.1-.7.4-1.1.7-1.4-2.2-.3-4.5-1.1-4.5-5 0-1.1.4-2 1-2.8-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1.1.8-.2 1.6-.3 2.5-.3s1.7.1 2.5.3c1.9-1.4 2.8-1.1 2.8-1.1.5 1.4.2 2.4.1 2.7.6.7 1 1.7 1 2.8 0 3.9-2.3 4.7-4.5 5 .4.3.7 1 .7 2v3c0 .3.2.6.7.5 4-1.4 6.8-5.2 6.8-9.7C22 6.6 17.5 2 12 2Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 1 0 0-18m0 18a9 9 0 1 1 0-18m0 18c2.5-2.4 3.8-5.4 3.8-9S14.5 5.4 12 3m0 18c-2.5-2.4-3.8-5.4-3.8-9S9.5 5.4 12 3M3.6 9h16.8M3.6 15h16.8" />
+    </svg>
   );
 }
 

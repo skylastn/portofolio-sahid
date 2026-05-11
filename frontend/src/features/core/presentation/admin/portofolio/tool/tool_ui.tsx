@@ -377,7 +377,7 @@ export default function ToolUI() {
               <label className="flex flex-col gap-2">
                 <FileUploadField
                   label="Tool Image"
-                  value={formState.image_path}
+                  value={formState.image_file?.name ?? formState.image_path}
                   isUploading={isUploading}
                   onUpload={uploadToolImage}
                 />

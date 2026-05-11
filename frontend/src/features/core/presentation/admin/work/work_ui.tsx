@@ -478,7 +478,7 @@ export default function WorkUI() {
               <div>
                 <FileUploadField
                   label="Image"
-                  value={formState.image_path}
+                  value={formState.image_file?.name ?? formState.image_path}
                   isUploading={isUploading}
                   onUpload={uploadWorkImage}
                 />

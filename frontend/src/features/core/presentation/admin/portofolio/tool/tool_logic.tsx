@@ -15,16 +15,13 @@ import { ToolService } from "@/features/core/application/tool_service";
 import { CreateToolRequest } from "@/features/core/domain/model/request/tool/create_tool_request";
 import { ToolRequest } from "@/features/core/domain/model/request/tool/tool_request";
 import { ToolResponse } from "@/features/core/domain/model/response/tool_response";
-import { EitherType } from "@/shared/utils/utility/either";
-import {
-  buildUploadFileName,
-  uploadFileToPresignedUrl,
-} from "@/shared/utils/utility/minio_upload";
+import { uploadFileWithSignature } from "@/shared/utils/utility/minio_upload";
 
 interface ToolFormState {
   title: string;
   description: string;
   image_path: string;
+  image_file?: File | null;
   position: string;
 }
 
@@ -58,6 +55,7 @@ const defaultFormState: ToolFormState = {
   title: "",
   description: "",
   image_path: "",
+  image_file: null,
   position: "0",
 };
 
@@ -130,6 +128,7 @@ export const ToolProvider = ({ children }: { children: React.ReactNode }) => {
       title: item.title ?? "",
       description: item.description ?? "",
       image_path: item.image_path ?? "",
+      image_file: null,
       position: String(item.position ?? 0),
     });
     setIsEditing(true);
@@ -167,10 +166,17 @@ export const ToolProvider = ({ children }: { children: React.ReactNode }) => {
     }
     setIsSubmitting(true);
     try {
+      const imagePath = formState.image_file
+        ? await uploadFileWithSignature(
+            formState.image_file,
+            service.createUploadSignature.bind(service),
+          )
+        : formState.image_path || null;
+
       const payload: CreateToolRequest = {
         title: formState.title.trim(),
         description: formState.description?.trim() || null,
-        image_path: formState.image_path || null,
+        image_path: imagePath,
         position: parseInt(formState.position, 10) || 0,
       };
       const result = isEditing && selectedTool
@@ -209,23 +215,9 @@ export const ToolProvider = ({ children }: { children: React.ReactNode }) => {
   }, [selectedTool, service, closeModal, refreshTools, currentPage]);
 
   const uploadToolImage = useCallback(async (file: File) => {
-    setIsUploading(true);
-    try {
-      const signatureResult = await service.createUploadSignature(file.name);
-      if (signatureResult.tag === EitherType.Left) {
-        toast.error(signatureResult.left.message ?? "Failed to create upload signature");
-        return;
-      }
-      const { url, key } = signatureResult.right;
-      await uploadFileToPresignedUrl(url, file);
-      setFormField("image_path", key);
-      toast.success("Image uploaded successfully");
-    } catch {
-      toast.error("Upload failed");
-    } finally {
-      setIsUploading(false);
-    }
-  }, [service, setFormField]);
+    setFormState((prev) => ({ ...prev, image_file: file }));
+    toast.success("Image selected. It will upload when you save.");
+  }, []);
 
   const totalPages = Math.max(1, Math.ceil((total || tools.length) / perPage));
 

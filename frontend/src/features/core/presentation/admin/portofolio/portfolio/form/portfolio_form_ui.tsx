@@ -223,7 +223,10 @@ export default function PortofolioFormUI() {
                 <div className="md:col-span-2">
                   <FileUploadField
                     label="Thumbnail"
-                    value={formState.thumbnail_path}
+                    value={
+                      formState.thumbnail_file?.name ??
+                      formState.thumbnail_path
+                    }
                     isUploading={isUploadingThumbnail}
                     onUpload={uploadThumbnail}
                   />
@@ -374,18 +377,23 @@ export default function PortofolioFormUI() {
                       No gallery images yet.
                     </div>
                   ) : (
-                    formState.images.map((image, index) => (
-                      <div
-                        key={`${image.id || "new"}-${index}`}
-                        className={`overflow-hidden rounded-2xl ${theme.panelClass}`}
-                      >
-                        <div className="flex h-40 items-center justify-center bg-slate-900/50">
-                          {image.image_url ? (
+                    formState.images.map((image, index) => {
+                      const previewUrl =
+                        image.image_preview_url ?? image.image_url ?? "";
+
+                      return (
+                        <div
+                          key={`${image.id || "new"}-${index}`}
+                          className={`overflow-hidden rounded-2xl ${theme.panelClass}`}
+                        >
+                          <div className="relative flex h-40 items-center justify-center bg-slate-900/50">
+                            {previewUrl ? (
                             <DefaultImage
-                              src={image.image_url}
+                              src={previewUrl}
                               alt={`portfolio image ${index + 1}`}
                               className="h-full w-full"
                               sizes="320px"
+                              style={{ objectFit: "cover" }}
                             />
                           ) : (
                             <div
@@ -410,7 +418,8 @@ export default function PortofolioFormUI() {
                           </button>
                         </div>
                       </div>
-                    ))
+                    );
+                    })
                   )}
                 </div>
               </div>

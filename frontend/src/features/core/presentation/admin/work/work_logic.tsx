@@ -15,13 +15,11 @@ import { WorkService } from "@/features/core/application/work_service";
 import { CreateWorkRequest } from "@/features/core/domain/model/request/work/create_work_request";
 import { WorkRequest } from "@/features/core/domain/model/request/work/work_request";
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
-import { EitherType } from "@/shared/utils/utility/either";
-import {
-  buildUploadFileName,
-  uploadFileToPresignedUrl,
-} from "@/shared/utils/utility/minio_upload";
+import { uploadFileWithSignature } from "@/shared/utils/utility/minio_upload";
 
-interface WorkFormState extends CreateWorkRequest {}
+interface WorkFormState extends CreateWorkRequest {
+  image_file?: File | null;
+}
 
 interface WorkContextProps {
   works: WorkResponse.Data[];
@@ -58,6 +56,7 @@ const defaultFormState: WorkFormState = {
   start_date: "",
   end_date: "",
   image_path: "",
+  image_file: null,
   position: 0,
 };
 
@@ -145,6 +144,7 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
       start_date: item.start_date ? String(item.start_date).slice(0, 10) : "",
       end_date: item.end_date ? String(item.end_date).slice(0, 10) : "",
       image_path: item.image_path ?? "",
+      image_file: null,
       position: item.position ?? 0,
     });
     setIsFormOpen(true);
@@ -164,39 +164,23 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
 
   const uploadWorkImage = useCallback(
     async (file: File) => {
-      setIsUploading(true);
-      setLoading(true);
-      try {
-        const signatureResult = await service.createUploadSignature(
-          buildUploadFileName(file),
-        );
-        if (signatureResult.tag === EitherType.Left) {
-          toast.error(
-            signatureResult.left.message ?? "Failed to create upload signature",
-          );
-          return;
-        }
-        const signature = signatureResult.right;
-
-        await uploadFileToPresignedUrl(signature.url, file);
-        setFormState((prev) => ({ ...prev, image_path: signature.key }));
-        toast.success("Image uploaded");
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to upload image",
-        );
-      } finally {
-        setIsUploading(false);
-        setLoading(false);
-      }
+      setFormState((prev) => ({ ...prev, image_file: file }));
+      toast.success("Image selected. It will upload when you save.");
     },
-    [service, setLoading],
+    [],
   );
 
   const saveWork = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
     try {
+      const imagePath = formState.image_file
+        ? await uploadFileWithSignature(
+            formState.image_file,
+            service.createUploadSignature.bind(service),
+          )
+        : formState.image_path?.trim() || null;
+
       const payload: CreateWorkRequest = {
         company_name: formState.company_name.trim(),
         type: formState.type ?? "fulltime",
@@ -205,7 +189,7 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
         description: formState.description.trim(),
         start_date: formState.start_date.trim(),
         end_date: formState.end_date?.trim() || null,
-        image_path: formState.image_path?.trim() || null,
+        image_path: imagePath,
         position: Number(formState.position ?? 0),
       };
 
@@ -247,6 +231,7 @@ export const WorkProvider = ({ children }: { children: React.ReactNode }) => {
     formState.description,
     formState.end_date,
     formState.image_path,
+    formState.image_file,
     formState.job_title,
     formState.position,
     formState.start_date,

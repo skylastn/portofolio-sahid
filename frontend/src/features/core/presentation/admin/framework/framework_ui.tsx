@@ -450,7 +450,7 @@ export default function FrameworkUI() {
               <div className="md:col-span-2">
                 <FileUploadField
                   label="Image"
-                  value={formState.image_path}
+                  value={formState.image_file?.name ?? formState.image_path}
                   isUploading={isUploading}
                   onUpload={uploadFrameworkImage}
                 />

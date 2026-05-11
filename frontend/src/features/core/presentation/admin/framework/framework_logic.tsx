@@ -18,12 +18,11 @@ import { CreateFrameworkRequest } from "@/features/core/domain/model/request/fra
 import { FrameworkRequest } from "@/features/core/domain/model/request/framework/framework_request";
 import { FrameworkResponse } from "@/features/core/domain/model/response/framework_response";
 import { EitherType } from "@/shared/utils/utility/either";
-import {
-  buildUploadFileName,
-  uploadFileToPresignedUrl,
-} from "@/shared/utils/utility/minio_upload";
+import { uploadFileWithSignature } from "@/shared/utils/utility/minio_upload";
 
-interface FrameworkFormState extends CreateFrameworkRequest {}
+interface FrameworkFormState extends CreateFrameworkRequest {
+  image_file?: File | null;
+}
 
 interface FrameworkContextProps {
   frameworks: FrameworkResponse.Data[];
@@ -58,6 +57,7 @@ const defaultFormState: FrameworkFormState = {
   title: "",
   description: "",
   image_path: "",
+  image_file: null,
   code_language_ids: [],
   deleted_code_language_ids: [],
   position: 0,
@@ -206,6 +206,7 @@ export const FrameworkProvider = ({
           title: detail.title ?? "",
           description: detail.description ?? "",
           image_path: detail.image_path ?? "",
+          image_file: null,
           code_language_ids: mappedCodeLanguageIds,
           deleted_code_language_ids: [],
           position: detail.position ?? 0,
@@ -246,44 +247,28 @@ export const FrameworkProvider = ({
 
   const uploadFrameworkImage = useCallback(
     async (file: File) => {
-      setIsUploading(true);
-      setLoading(true);
-      try {
-        const signatureResult = await service.createUploadSignature(
-          buildUploadFileName(file),
-        );
-        if (signatureResult.tag === EitherType.Left) {
-          toast.error(
-            signatureResult.left.message ?? "Failed to create upload signature",
-          );
-          return;
-        }
-        const signature = signatureResult.right;
-
-        await uploadFileToPresignedUrl(signature.url, file);
-        setFormState((prev) => ({ ...prev, image_path: signature.key }));
-        toast.success("Image uploaded");
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to upload image",
-        );
-      } finally {
-        setIsUploading(false);
-        setLoading(false);
-      }
+      setFormState((prev) => ({ ...prev, image_file: file }));
+      toast.success("Image selected. It will upload when you save.");
     },
-    [service, setLoading],
+    [],
   );
 
   const saveFramework = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
     try {
+      const imagePath = formState.image_file
+        ? await uploadFileWithSignature(
+            formState.image_file,
+            service.createUploadSignature.bind(service),
+          )
+        : formState.image_path?.trim() || null;
+
       const payload: CreateFrameworkRequest = {
         code_language_id: formState.code_language_id.trim(),
         title: formState.title.trim(),
         description: formState.description.trim(),
-        image_path: formState.image_path?.trim() || null,
+        image_path: imagePath,
         code_language_ids: formState.code_language_ids ?? [],
         deleted_code_language_ids: initialCodeLanguageIds.filter(
           (id) => !(formState.code_language_ids ?? []).includes(id),
@@ -319,6 +304,7 @@ export const FrameworkProvider = ({
     formState.code_language_id,
     formState.description,
     formState.image_path,
+    formState.image_file,
     formState.title,
     formState.code_language_ids,
     formState.position,

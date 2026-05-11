@@ -564,7 +564,7 @@ function PortofolioCard({
     .slice(0, 3);
   const content = (
     <>
-      <div className="relative aspect-[16/10] overflow-hidden bg-slate-800">
+      <div className="relative aspect-16/10 overflow-hidden bg-slate-800">
         {item.thumbnail_url ? (
           <DefaultImage
             src={item.thumbnail_url}

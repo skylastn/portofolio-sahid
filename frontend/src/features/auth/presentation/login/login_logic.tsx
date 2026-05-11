@@ -26,13 +26,20 @@ export const useLoginLogic = () => {
             router.push("/auth/verify");
           }
         },
-        async () => {
+        async (user) => {
           await delay(1);
           toast.success("Berhasil Login!");
-          if (authLogic.user?.role === UserRole.ADMIN) {
+          if (user?.role === UserRole.ADMIN) {
+            // const redirect = Array.isArray(router.query.redirect)
+            //   ? router.query.redirect[0]
+            //   : router.query.redirect;
+            // router.push(
+            //   redirect && redirect.startsWith("/") ? redirect : "/admin",
+            // );
             router.push("/admin");
             return;
           }
+          toast.error("Only admin accounts can access the admin page.");
           router.push("/");
         },
       );

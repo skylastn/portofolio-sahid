@@ -510,7 +510,7 @@ export default function PortofolioUI() {
               <div className="md:col-span-2">
                 <FileUploadField
                   label="Thumbnail"
-                  value={formState.thumbnail_path}
+                  value={formState.thumbnail_file?.name ?? formState.thumbnail_path}
                   isUploading={isUploading}
                   onUpload={uploadPortofolioThumbnail}
                 />

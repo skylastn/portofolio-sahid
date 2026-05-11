@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useAuthLogic } from "@/shared/logic/auth_logic";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
 import {
   adminNavigationItems,
@@ -21,6 +23,8 @@ export default function AdminShell({
   children,
   portfolioActiveKey,
 }: AdminShellProps) {
+  const router = useRouter();
+  const { logout } = useAuthLogic();
   const { changeDarkMode, isDarkMode } = useGlobalLogic();
 
   const pageClass = isDarkMode
@@ -43,6 +47,9 @@ export default function AdminShell({
     backgroundColor: "#0284c7",
     color: "#ffffff",
   };
+  const logoutButtonClass = isDarkMode
+    ? "rounded-full border border-rose-300/20 bg-rose-400/10 px-5 py-3 text-sm font-semibold text-rose-100 transition hover:border-rose-300/40 hover:bg-rose-400/15"
+    : "rounded-full border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100";
   const shellGridStyle: React.CSSProperties = {
     maxWidth: 1800,
     gridTemplateColumns: "290px minmax(0, 1fr)",
@@ -79,6 +86,11 @@ export default function AdminShell({
         {item.children ? <span className="text-xs">›</span> : null}
       </Link>
     );
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    void router.replace("/auth/login");
   };
 
   return (
@@ -191,13 +203,22 @@ export default function AdminShell({
                   {title}
                 </h2>
               </div>
-              <Link
-                href="/"
-                className={viewSiteButtonClass}
-                style={viewSiteButtonStyle}
-              >
-                View site
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/"
+                  className={viewSiteButtonClass}
+                  style={viewSiteButtonStyle}
+                >
+                  View site
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className={logoutButtonClass}
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
 

@@ -15,13 +15,11 @@ import { AchievementService } from "@/features/core/application/achievement_serv
 import { AchievementRequest } from "@/features/core/domain/model/request/achievement/achievement_request";
 import { CreateAchievementRequest } from "@/features/core/domain/model/request/achievement/create_achievement_request";
 import { AchievementResponse } from "@/features/core/domain/model/response/achievement_response";
-import { EitherType } from "@/shared/utils/utility/either";
-import {
-  buildUploadFileName,
-  uploadFileToPresignedUrl,
-} from "@/shared/utils/utility/minio_upload";
+import { uploadFileWithSignature } from "@/shared/utils/utility/minio_upload";
 
-interface AchievementFormState extends CreateAchievementRequest {}
+interface AchievementFormState extends CreateAchievementRequest {
+  image_file?: File | null;
+}
 
 interface AchievementContextProps {
   achievements: AchievementResponse.Data[];
@@ -54,6 +52,7 @@ const defaultFormState: AchievementFormState = {
   description: "",
   date: "",
   image_path: "",
+  image_file: null,
   position: 0,
 };
 
@@ -147,6 +146,7 @@ export const AchievementProvider = ({
       description: item.description ?? "",
       date: item.date ? String(item.date).slice(0, 10) : "",
       image_path: item.image_path ?? "",
+      image_file: null,
       position: item.position ?? 0,
     });
     setIsFormOpen(true);
@@ -166,44 +166,28 @@ export const AchievementProvider = ({
 
   const uploadAchievementImage = useCallback(
     async (file: File) => {
-      setIsUploading(true);
-      setLoading(true);
-      try {
-        const signatureResult = await service.createUploadSignature(
-          buildUploadFileName(file),
-        );
-        if (signatureResult.tag === EitherType.Left) {
-          toast.error(
-            signatureResult.left.message ?? "Failed to create upload signature",
-          );
-          return;
-        }
-        const signature = signatureResult.right;
-
-        await uploadFileToPresignedUrl(signature.url, file);
-        setFormState((prev) => ({ ...prev, image_path: signature.key }));
-        toast.success("Image uploaded");
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to upload image",
-        );
-      } finally {
-        setIsUploading(false);
-        setLoading(false);
-      }
+      setFormState((prev) => ({ ...prev, image_file: file }));
+      toast.success("Image selected. It will upload when you save.");
     },
-    [service, setLoading],
+    [],
   );
 
   const saveAchievement = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
     try {
+      const imagePath = formState.image_file
+        ? await uploadFileWithSignature(
+            formState.image_file,
+            service.createUploadSignature.bind(service),
+          )
+        : formState.image_path?.trim() || null;
+
       const payload: CreateAchievementRequest = {
         title: formState.title.trim(),
         description: formState.description.trim(),
         date: formState.date.trim(),
-        image_path: formState.image_path?.trim() || null,
+        image_path: imagePath,
         position: Number(formState.position ?? 0),
       };
 
@@ -239,6 +223,7 @@ export const AchievementProvider = ({
     formState.date,
     formState.description,
     formState.image_path,
+    formState.image_file,
     formState.position,
     formState.title,
     isEditing,

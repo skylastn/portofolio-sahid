@@ -6,16 +6,26 @@ type FileUploadFieldProps = {
   label: string;
   value?: string | null;
   accept?: string;
+  multiple?: boolean;
   isUploading?: boolean;
   onUpload: (file: File) => Promise<void>;
+  onUploadMany?: (files: File[]) => Promise<void>;
+  currentLabel?: string;
+  uploadLabel?: string;
+  replaceLabel?: string;
 };
 
 export default function FileUploadField({
   label,
   value,
   accept = "image/*",
+  multiple = false,
   isUploading = false,
   onUpload,
+  onUploadMany,
+  currentLabel = "Selected file",
+  uploadLabel = "Choose file",
+  replaceLabel = "Change file",
 }: FileUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -24,10 +34,16 @@ export default function FileUploadField({
   };
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
     event.target.value = "";
-    if (!file) return;
-    await onUpload(file);
+    if (files.length === 0) return;
+    if (multiple && onUploadMany) {
+      await onUploadMany(files);
+      return;
+    }
+    for (const file of files) {
+      await onUpload(file);
+    }
   };
 
   return (
@@ -37,7 +53,7 @@ export default function FileUploadField({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-              Current path
+              {currentLabel}
             </p>
             <p className="mt-2 break-all text-sm text-slate-100">{value || "-"}</p>
           </div>
@@ -47,13 +63,14 @@ export default function FileUploadField({
             disabled={isUploading}
             className="rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isUploading ? "Uploading..." : value ? "Replace file" : "Upload file"}
+            {isUploading ? "Uploading..." : value ? replaceLabel : uploadLabel}
           </button>
         </div>
         <input
           ref={inputRef}
           type="file"
           accept={accept}
+          multiple={multiple}
           className="hidden"
           onChange={handleChange}
         />

@@ -26,3 +26,24 @@ export function buildUploadFileName(file: File): string {
     : "";
   return `${baseName}${extension}`;
 }
+
+type UploadSignatureResult = {
+  tag: "Left" | "Right";
+  left?: { message?: string | null };
+  right?: { url: string; key: string };
+};
+
+export async function uploadFileWithSignature(
+  file: File,
+  createSignature: (imageName: string) => Promise<UploadSignatureResult>,
+): Promise<string> {
+  const signatureResult = await createSignature(buildUploadFileName(file));
+  if (signatureResult.tag === "Left" || !signatureResult.right) {
+    throw new Error(
+      signatureResult.left?.message ?? "Failed to create upload signature",
+    );
+  }
+
+  await uploadFileToPresignedUrl(signatureResult.right.url, file);
+  return signatureResult.right.key;
+}
