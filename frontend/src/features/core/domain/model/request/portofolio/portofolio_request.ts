@@ -2,5 +2,8 @@ import { PaginationRequest } from "../../../../../../shared/domain/model/request
 
 export interface PortofolioRequest extends PaginationRequest {
   search?: string;
-  work_id?: string | null;
+  work_ids?: string[] | string | null;
+  category_id?: string[] | string | null;
+  framework_id?: string[] | string | null;
+  code_language_id?: string[] | string | null;
 }

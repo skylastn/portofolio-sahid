@@ -28,7 +28,6 @@ export default function PortofolioDetailUI() {
   const surfaceClass = isDarkMode
     ? "border-white/10 bg-white/5 text-slate-200"
     : "border-slate-200 bg-white text-slate-700";
-  const mutedClass = isDarkMode ? "text-slate-300" : "text-slate-600";
   const titleClass = isDarkMode ? "text-white" : "text-slate-950";
   const categories = item?.category_mappings ?? [];
   const frameworks = item?.framework_mappings ?? [];
@@ -95,7 +94,7 @@ export default function PortofolioDetailUI() {
 
         {!isLoading && item && (
           <>
-            <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+            <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
               <div className="relative overflow-hidden rounded-4xl bg-slate-950 shadow-[0_30px_90px_rgba(15,23,42,0.28)]">
                 <div className="relative aspect-16/11">
                   {item.thumbnail_url ? (
@@ -122,11 +121,6 @@ export default function PortofolioDetailUI() {
                 >
                   {item.title ?? "Untitled Portofolio"}
                 </h1>
-                <p
-                  className={`mt-5 text-base leading-8 sm:text-lg ${mutedClass}`}
-                >
-                  {item.description ?? "No description available."}
-                </p>
 
                 <div className="mt-7 flex flex-wrap gap-3">
                   {sources.map((source) => (
@@ -154,25 +148,28 @@ export default function PortofolioDetailUI() {
               </div>
             </section>
 
-            <section className="mt-12 grid gap-5 md:grid-cols-3">
-              <InfoBlock
-                label="Company"
-                value={item.work?.company_name ?? "Independent"}
-                isDarkMode={isDarkMode}
-              />
-              <InfoBlock
-                label="Role"
-                value={item.work?.job_title ?? "Project"}
-                isDarkMode={isDarkMode}
-              />
-              <InfoBlock
-                label="Timeline"
-                value={`${formatDisplayDate(item.work?.start_date)} - ${formatDisplayDate(item.work?.end_date)}`}
+            <section className="mt-12">
+              <InfoSummary
+                detail={item.description ?? "No description available."}
+                items={[
+                  {
+                    label: "Company",
+                    value: item.work?.company_name ?? "Independent",
+                  },
+                  {
+                    label: "Role",
+                    value: item.work?.job_title ?? "Project",
+                  },
+                  {
+                    label: "Timeline",
+                    value: `${formatDisplayDate(item.work?.start_date)} - ${formatDisplayDate(item.work?.end_date)}`,
+                  },
+                ]}
                 isDarkMode={isDarkMode}
               />
             </section>
 
-            <section className="mt-12 grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+            <section className="mt-12">
               <div className={`rounded-3xl border p-6 ${surfaceClass}`}>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
                   Stack and Type
@@ -206,31 +203,6 @@ export default function PortofolioDetailUI() {
                   emptyLabel="No tools."
                   isDarkMode={isDarkMode}
                 />
-              </div>
-
-              <div className={`rounded-3xl border p-6 ${surfaceClass}`}>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
-                  Work Context
-                </p>
-                <h2 className={`mt-3 text-2xl font-bold ${titleClass}`}>
-                  {item.work?.job_title ??
-                    item.work?.company_name ??
-                    "Project background"}
-                </h2>
-                <p className={`mt-4 text-base leading-7 ${mutedClass}`}>
-                  {item.work?.description ??
-                    "This project is part of the selected public portfolio collection."}
-                </p>
-                {item.work?.company_url && (
-                  <a
-                    href={item.work.company_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-6 inline-flex rounded-full border border-sky-300 px-5 py-2.5 text-sm font-semibold text-sky-700"
-                  >
-                    Visit company
-                  </a>
-                )}
               </div>
             </section>
 
@@ -317,13 +289,13 @@ function getFrameworkCodeLanguageLabels(
   return Array.from(new Set(labels.filter(Boolean)));
 }
 
-function InfoBlock({
-  label,
-  value,
+function InfoSummary({
+  detail,
+  items,
   isDarkMode,
 }: {
-  label: string;
-  value: string;
+  detail: string;
+  items: { label: string; value: string }[];
   isDarkMode: boolean;
 }) {
   return (
@@ -332,10 +304,23 @@ function InfoBlock({
         isDarkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
       }`}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
-        {label}
+      <p
+        className={`whitespace-pre-line text-base leading-8 ${
+          isDarkMode ? "text-slate-300" : "text-slate-600"
+        }`}
+      >
+        {detail}
       </p>
-      <p className="mt-3 text-lg font-bold">{value}</p>
+      <div className="mt-6 grid gap-5 border-t border-white/10 pt-5 md:grid-cols-3">
+        {items.map((item) => (
+          <div key={item.label}>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
+              {item.label}
+            </p>
+            <p className="mt-3 text-lg font-bold">{item.value}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

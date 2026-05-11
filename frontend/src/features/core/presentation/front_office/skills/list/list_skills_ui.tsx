@@ -4,14 +4,17 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { CodeLanguageService } from "@/features/core/application/code_language_service";
 import { FrameworkService } from "@/features/core/application/framework_service";
+import { ToolService } from "@/features/core/application/tool_service";
 import { CodeLanguageResponse } from "@/features/core/domain/model/response/code_language_response";
 import { FrameworkResponse } from "@/features/core/domain/model/response/framework_response";
+import { ToolResponse } from "@/features/core/domain/model/response/tool_response";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
 import { EitherType } from "@/shared/utils/utility/either";
 
 interface SkillsState {
   frameworks: FrameworkResponse.Data[];
   languages: CodeLanguageResponse.Data[];
+  tools: ToolResponse.Data[];
   isLoading: boolean;
   errorMessage?: string;
 }
@@ -22,10 +25,11 @@ function isPresentText(value?: string): value is string {
 
 export default function ListSkillsUI() {
   const { isDarkMode, changeDarkMode } = useGlobalLogic();
-  const [{ frameworks, languages, isLoading, errorMessage }, setState] =
+  const [{ frameworks, languages, tools, isLoading, errorMessage }, setState] =
     useState<SkillsState>({
       frameworks: [],
       languages: [],
+      tools: [],
       isLoading: true,
     });
 
@@ -34,9 +38,11 @@ export default function ListSkillsUI() {
 
     const frameworkService = new FrameworkService();
     const codeLanguageService = new CodeLanguageService();
-    const [frameworkResult, codeLanguageResult] = await Promise.all([
+    const toolService = new ToolService();
+    const [frameworkResult, codeLanguageResult, toolResult] = await Promise.all([
       frameworkService.fetchFrameworks({ page: 1, perPage: 100 }),
       codeLanguageService.fetchCodeLanguages({ page: 1, perPage: 100 }),
+      toolService.fetchTools({ page: 1, perPage: 100 }),
     ]);
 
     setState({
@@ -48,13 +54,17 @@ export default function ListSkillsUI() {
         codeLanguageResult.tag === EitherType.Right
           ? (codeLanguageResult.right.data ?? [])
           : [],
+      tools:
+        toolResult.tag === EitherType.Right ? (toolResult.right.data ?? []) : [],
       isLoading: false,
       errorMessage:
         frameworkResult.tag === EitherType.Left
           ? frameworkResult.left.message
           : codeLanguageResult.tag === EitherType.Left
             ? codeLanguageResult.left.message
-            : undefined,
+            : toolResult.tag === EitherType.Left
+              ? toolResult.left.message
+              : undefined,
     });
   }, []);
 
@@ -127,7 +137,7 @@ export default function ListSkillsUI() {
           </p>
         )}
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
           <SkillPanel
             title="Frameworks"
             items={frameworks.map((item) => item.title).filter(isPresentText)}
@@ -138,6 +148,13 @@ export default function ListSkillsUI() {
           <SkillPanel
             title="Languages"
             items={languages.map((item) => item.title).filter(isPresentText)}
+            isLoading={isLoading}
+            panelClass={panelClass}
+            itemClass={itemClass}
+          />
+          <SkillPanel
+            title="Tools"
+            items={tools.map((item) => item.title).filter(isPresentText)}
             isLoading={isLoading}
             panelClass={panelClass}
             itemClass={itemClass}

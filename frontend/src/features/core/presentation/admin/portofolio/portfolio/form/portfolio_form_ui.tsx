@@ -62,6 +62,7 @@ export default function PortofolioFormUI() {
     removeImage,
     uploadThumbnail,
     uploadImage,
+    uploadImages,
     savePortofolio,
   } = usePortofolioFormLogic();
 
@@ -348,10 +349,21 @@ export default function PortofolioFormUI() {
             >
               <div className="flex flex-col gap-4">
                 <FileUploadField
-                  label="Add image"
-                  value={formState.images.at(-1)?.image_path}
+                  label="Add images"
+                  value={
+                    formState.images.length > 0
+                      ? `${formState.images.length} gallery image${
+                          formState.images.length === 1 ? "" : "s"
+                        }`
+                      : ""
+                  }
+                  multiple
+                  currentLabel="Gallery images"
+                  uploadLabel="Choose images"
+                  replaceLabel="Add more images"
                   isUploading={isUploadingImage}
                   onUpload={uploadImage}
+                  onUploadMany={uploadImages}
                 />
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

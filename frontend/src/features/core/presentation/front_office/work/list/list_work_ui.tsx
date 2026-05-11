@@ -137,7 +137,7 @@ function WorkCard({
           {item.company_name ?? "Company"}
         </p>
         <p
-          className={`mt-4 text-base leading-7 ${
+          className={`mt-4 whitespace-pre-line text-base leading-7 ${
             isDarkMode ? "text-slate-300" : "text-slate-600"
           }`}
         >

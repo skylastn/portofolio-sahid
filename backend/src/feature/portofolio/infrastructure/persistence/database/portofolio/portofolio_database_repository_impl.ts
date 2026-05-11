@@ -31,6 +31,14 @@ export class PortofolioDatabaseRepositoryImpl
     request: PortofolioRequest,
   ): Promise<PaginationResponse<PortofolioEntity>> {
     const search = request.search?.trim();
+    const workIds = request.work_ids ?? [];
+    const categoryIds = request.category_id ?? [];
+    const frameworkIds = request.framework_id ?? [];
+    const codeLanguageIds = request.code_language_id ?? [];
+    const hasRelationFilters =
+      FormatHelper.isNotEmpty(categoryIds) ||
+      FormatHelper.isNotEmpty(frameworkIds) ||
+      FormatHelper.isNotEmpty(codeLanguageIds);
     return await paginateRepo(
       this.db,
       {
@@ -42,13 +50,54 @@ export class PortofolioDatabaseRepositoryImpl
           ...(FormatHelper.isPresent(search) && {
             title: search,
           }),
-          ...(FormatHelper.isPresent(request.work_id) && {
-            workId: request.work_id,
+          ...(FormatHelper.isNotEmpty(workIds) && {
+            workId: In(workIds),
           }),
         },
         relations: this.relations,
         order: { position: 'ASC', createdAt: 'DESC' },
       },
+      hasRelationFilters
+        ? (qb) => {
+            const alias = qb.alias;
+            if (FormatHelper.isNotEmpty(categoryIds)) {
+              qb.andWhere(
+                `EXISTS (
+                  SELECT 1 FROM portofolio_category_mapping pcm
+                  WHERE pcm.portofolio_id = ${alias}.id
+                  AND pcm.category_id IN (:...categoryIds)
+                )`,
+                { categoryIds },
+              );
+            }
+            if (FormatHelper.isNotEmpty(frameworkIds)) {
+              qb.andWhere(
+                `EXISTS (
+                  SELECT 1 FROM portofolio_framework_mapping pfm
+                  WHERE pfm.portofolio_id = ${alias}.id
+                  AND pfm.framework_id IN (:...frameworkIds)
+                )`,
+                { frameworkIds },
+              );
+            }
+            if (FormatHelper.isNotEmpty(codeLanguageIds)) {
+              qb.andWhere(
+                `EXISTS (
+                  SELECT 1
+                  FROM portofolio_framework_mapping pfm
+                  LEFT JOIN frameworks f ON f.id = pfm.framework_id
+                  LEFT JOIN framework_code_mapping fcm ON fcm.framework_id = pfm.framework_id
+                  WHERE pfm.portofolio_id = ${alias}.id
+                  AND (
+                    f.code_language_id IN (:...codeLanguageIds)
+                    OR fcm.code_language_id IN (:...codeLanguageIds)
+                  )
+                )`,
+                { codeLanguageIds },
+              );
+            }
+          }
+        : undefined,
     );
   }
   async findAllByListIds(ids: string[]): Promise<PortofolioEntity[]> {

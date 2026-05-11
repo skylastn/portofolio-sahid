@@ -56,7 +56,18 @@ export class PortofolioRemoteDataSource {
           page: query?.page,
           perPage: query?.perPage,
           search: query?.search,
-          work_id: query?.work_id,
+          work_ids: Array.isArray(query?.work_ids)
+            ? query.work_ids.join(",")
+            : query?.work_ids,
+          category_id: Array.isArray(query?.category_id)
+            ? query.category_id.join(",")
+            : query?.category_id,
+          framework_id: Array.isArray(query?.framework_id)
+            ? query.framework_id.join(",")
+            : query?.framework_id,
+          code_language_id: Array.isArray(query?.code_language_id)
+            ? query.code_language_id.join(",")
+            : query?.code_language_id,
         },
       });
       if (response.status == false) return left(response);

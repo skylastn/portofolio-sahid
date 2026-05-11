@@ -6,7 +6,6 @@ import DefaultImage from "@/shared/component/ui/default_image";
 import { AchievementResponse } from "@/features/core/domain/model/response/achievement_response";
 import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
-import { ToolResponse } from "@/features/core/domain/model/response/tool_response";
 import { formatDisplayDate } from "@/features/core/presentation/front_office/home/home_logic";
 
 interface ThemeProps {
@@ -17,7 +16,6 @@ interface HomePreviewProps extends ThemeProps {
   portofolios: PortofolioResponse.Data[];
   works: WorkResponse.Data[];
   achievements: AchievementResponse.Data[];
-  tools: ToolResponse.Data[];
   isLoading: boolean;
   errorMessage?: string;
 }
@@ -35,13 +33,11 @@ const sectionMeta = {
     title: "Achievements",
     href: "/achievement",
   },
-  tools: {
-    title: "Tools",
-    href: "/tools",
-  },
 };
 
 export function PublicHomePreviewSections(props: HomePreviewProps) {
+  const showAchievementSection = props.isLoading || props.achievements.length > 0;
+
   return (
     <>
       <PreviewSection
@@ -73,7 +69,7 @@ export function PublicHomePreviewSections(props: HomePreviewProps) {
         errorMessage={props.errorMessage}
       >
         <div className="mt-10 space-y-5">
-          {props.works.map((item, index) => (
+          {props.works.slice(0, 4).map((item, index) => (
             <WorkCard
               key={item.id ?? `${item.company_name ?? "work"}-${item.job_title ?? index}`}
               item={item}
@@ -89,51 +85,26 @@ export function PublicHomePreviewSections(props: HomePreviewProps) {
         />
       </PreviewSection>
 
-      <PreviewSection
-        type="achievement"
-        isDarkMode={props.isDarkMode}
-        isLoading={props.isLoading}
-        errorMessage={props.errorMessage}
-      >
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {props.achievements.map((item, index) => (
-            <AchievementCard
-              key={item.id ?? item.title ?? index}
-              item={item}
-              index={index}
-              isDarkMode={props.isDarkMode}
-            />
-          ))}
-        </div>
-        <EmptyState
-          isVisible={!props.isLoading && props.achievements.length === 0}
-          label="No achievement data yet."
+      {showAchievementSection && (
+        <PreviewSection
+          type="achievement"
           isDarkMode={props.isDarkMode}
-        />
-      </PreviewSection>
+          isLoading={props.isLoading}
+          errorMessage={props.errorMessage}
+        >
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {props.achievements.map((item, index) => (
+              <AchievementCard
+                key={item.id ?? item.title ?? index}
+                item={item}
+                index={index}
+                isDarkMode={props.isDarkMode}
+              />
+            ))}
+          </div>
+        </PreviewSection>
+      )}
 
-      <PreviewSection
-        type="tools"
-        isDarkMode={props.isDarkMode}
-        isLoading={props.isLoading}
-        errorMessage={props.errorMessage}
-      >
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {props.tools.map((item, index) => (
-            <ToolCard
-              key={item.id ?? index}
-              item={item}
-              index={index}
-              isDarkMode={props.isDarkMode}
-            />
-          ))}
-        </div>
-        <EmptyState
-          isVisible={!props.isLoading && props.tools.length === 0}
-          label="No tools data yet."
-          isDarkMode={props.isDarkMode}
-        />
-      </PreviewSection>
     </>
   );
 }
@@ -146,7 +117,7 @@ function PreviewSection({
   children,
 }: PropsWithChildren<
   ThemeProps & {
-    type: "portofolio" | "work" | "achievement" | "tools";
+    type: "portofolio" | "work" | "achievement";
     isLoading: boolean;
     errorMessage?: string;
   }
@@ -274,6 +245,8 @@ function WorkCard({
   index = 0,
   isDarkMode,
 }: ThemeProps & { item: WorkResponse.Data; index?: number }) {
+  const workTypeLabel = formatWorkType(item.type);
+
   return (
     <article
       className={`animate-reveal grid gap-5 rounded-3xl p-6 shadow-sm transition duration-300 hover:-translate-y-1 lg:grid-cols-[180px_1fr] ${
@@ -302,12 +275,25 @@ function WorkCard({
         </p>
       </div>
       <div>
-        <h3 className="text-2xl font-bold">{item.job_title ?? "Work Role"}</h3>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <h3 className="text-2xl font-bold">{item.job_title ?? "Work Role"}</h3>
+          {workTypeLabel && (
+            <span
+              className={`w-fit rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] ${
+                isDarkMode
+                  ? "border-cyan-300/30 bg-cyan-400/10 text-cyan-100"
+                  : "border-sky-200 bg-sky-50 text-sky-700"
+              }`}
+            >
+              {workTypeLabel}
+            </span>
+          )}
+        </div>
         <p className="mt-1 text-base font-semibold text-slate-500">
           {item.company_name ?? "Company"}
         </p>
         <p
-          className={`mt-4 text-base leading-7 ${
+          className={`mt-4 whitespace-pre-line text-base leading-7 ${
             isDarkMode ? "text-slate-300" : "text-slate-600"
           }`}
         >
@@ -316,6 +302,12 @@ function WorkCard({
       </div>
     </article>
   );
+}
+
+function formatWorkType(type?: WorkResponse.Data["type"]) {
+  if (type === "fulltime") return "Full-time";
+  if (type === "freelance") return "Freelance";
+  return undefined;
 }
 
 function AchievementCard({
@@ -357,49 +349,6 @@ function AchievementCard({
         >
           {item.description ?? "No description available."}
         </p>
-      </div>
-    </article>
-  );
-}
-
-function ToolCard({
-  item,
-  index = 0,
-  isDarkMode,
-}: ThemeProps & { item: ToolResponse.Data; index?: number }) {
-  return (
-    <article
-      className={`animate-reveal overflow-hidden rounded-3xl p-4 text-center transition duration-300 hover:-translate-y-2 ${
-        isDarkMode
-          ? "border border-white/10 bg-white/5"
-          : "border border-slate-200 bg-white"
-      }`}
-      style={{ animationDelay: `${0.1 + index * 0.12}s` }}
-    >
-      <div className="relative aspect-square bg-slate-100">
-        {item.image_url ? (
-          <DefaultImage
-            src={item.image_url}
-            alt={item.title ?? "Tool"}
-            style={{ objectFit: "contain" }}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-lg font-black text-sky-700">
-            {(item.title ?? "T").slice(0, 1)}
-          </div>
-        )}
-      </div>
-      <div className="mt-4">
-        <h3 className="text-lg font-bold">{item.title ?? "Untitled Tool"}</h3>
-        {item.description && (
-          <p
-            className={`mt-2 text-sm ${
-              isDarkMode ? "text-slate-300" : "text-slate-600"
-            }`}
-          >
-            {item.description}
-          </p>
-        )}
       </div>
     </article>
   );

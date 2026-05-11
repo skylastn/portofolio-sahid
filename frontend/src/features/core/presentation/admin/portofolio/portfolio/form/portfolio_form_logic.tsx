@@ -93,6 +93,7 @@ interface PortofolioFormContextProps {
   removeImage: (index: number) => void;
   uploadThumbnail: (file: File) => Promise<void>;
   uploadImage: (file: File) => Promise<void>;
+  uploadImages: (files: File[]) => Promise<void>;
   savePortofolio: () => Promise<void>;
 }
 
@@ -119,6 +120,9 @@ const defaultFormState = (): PortofolioFormState => ({
   deleted_framework_ids: [],
   deleted_tool_ids: [],
 });
+
+const isUnauthorizedMessage = (message?: string | null) =>
+  (message ?? "").toLowerCase().includes("unauthorized");
 
 const PortofolioFormContext = createContext<
   PortofolioFormContextProps | undefined
@@ -516,6 +520,81 @@ export const PortofolioFormProvider = ({
     [service, setLoading],
   );
 
+  const uploadImages = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0) return;
+      setIsUploadingImage(true);
+      setLoading(true);
+      try {
+        const uploadedImages: PortofolioFormImage[] = [];
+        let failedCount = 0;
+
+        for (const file of files) {
+          try {
+            const signatureResult = await service.createImageUploadSignature(
+              buildUploadFileName(file),
+            );
+            if (signatureResult.tag === EitherType.Left) {
+              const message =
+                signatureResult.left.message ??
+                "Failed to create upload signature";
+
+              if (isUnauthorizedMessage(message)) {
+                toast.error("Session expired. Please login again before uploading images.");
+                break;
+              }
+
+              failedCount += 1;
+              toast.error(`${file.name}: ${message}`);
+              continue;
+            }
+
+            await uploadFileToPresignedUrl(signatureResult.right.url, file);
+            uploadedImages.push({
+              id: "",
+              image_path: signatureResult.right.key,
+              image_url: null,
+            });
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : "Failed to upload image";
+            if (isUnauthorizedMessage(message)) {
+              toast.error("Upload unauthorized. Please login again before uploading images.");
+              break;
+            }
+            failedCount += 1;
+            toast.error(
+              `${file.name}: ${message}`,
+            );
+          }
+        }
+
+        if (uploadedImages.length > 0) {
+          setFormState((prev) => ({
+            ...prev,
+            images: [...prev.images, ...uploadedImages],
+          }));
+          toast.success(
+            uploadedImages.length === 1
+              ? "Image uploaded"
+              : `${uploadedImages.length} images uploaded`,
+          );
+        }
+        if (failedCount > 0) {
+          toast.error(`${failedCount} image${failedCount === 1 ? "" : "s"} failed to upload`);
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
+      } finally {
+        setIsUploadingImage(false);
+        setLoading(false);
+      }
+    },
+    [service, setLoading],
+  );
+
   const savePortofolio = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
@@ -601,6 +680,7 @@ export const PortofolioFormProvider = ({
         removeImage,
         uploadThumbnail,
         uploadImage,
+        uploadImages,
         savePortofolio,
       }}
     >

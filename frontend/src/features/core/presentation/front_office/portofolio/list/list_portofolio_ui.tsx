@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import DefaultImage from "@/shared/component/ui/default_image";
 import { useGlobalLogic } from "@/shared/logic/global_logic";
 import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
@@ -16,6 +16,9 @@ export default function ListPortofolioUI() {
   const { 
     portofolios, 
     works,
+    categories,
+    frameworks,
+    codeLanguages,
     isLoading, 
     errorMessage,
     filters,
@@ -23,7 +26,11 @@ export default function ListPortofolioUI() {
     clearFilters
   } = usePortofolioList(100);
   const [searchInput, setSearchInput] = useState(filters.search || "");
-  const [workFilter, setWorkFilter] = useState(filters.work_id || "");
+  const [workFilter, setWorkFilter] = useState<string[]>(filters.work_ids ?? []);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>(filters.category_ids ?? []);
+  const [frameworkFilter, setFrameworkFilter] = useState<string[]>(filters.framework_ids ?? []);
+  const [codeLanguageFilter, setCodeLanguageFilter] = useState<string[]>(filters.code_language_ids ?? []);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const pageClass = isDarkMode
     ? "min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.08),_transparent_32%),linear-gradient(180deg,_#020617_0%,_#0f172a_52%,_#111827_100%)] text-slate-100"
@@ -33,24 +40,143 @@ export default function ListPortofolioUI() {
     ? "w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-100 placeholder-slate-500 transition-all focus:border-cyan-400/50 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
     : "w-full rounded-2xl border border-slate-200 bg-white/80 px-5 py-3 text-sm text-slate-900 placeholder-slate-400 transition-all focus:border-sky-400/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-400/20";
 
-  const selectClass = isDarkMode
-    ? "w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-100 transition-all focus:border-cyan-400/50 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/20"
-    : "w-full rounded-2xl border border-slate-200 bg-white/80 px-5 py-3 text-sm text-slate-900 transition-all focus:border-sky-400/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-400/20";
-
   const handleSearch = () => {
     applyFilters({
       search: searchInput || undefined,
-      work_id: workFilter || undefined,
+      work_ids: workFilter,
+      category_ids: categoryFilter,
+      framework_ids: frameworkFilter,
+      code_language_ids: codeLanguageFilter,
     });
+    setIsFilterOpen(false);
+  };
+
+  const openFilterDialog = () => {
+    setSearchInput(filters.search || "");
+    setWorkFilter(filters.work_ids ?? []);
+    setCategoryFilter(filters.category_ids ?? []);
+    setFrameworkFilter(filters.framework_ids ?? []);
+    setCodeLanguageFilter(filters.code_language_ids ?? []);
+    setIsFilterOpen(true);
   };
 
   const handleClear = () => {
     setSearchInput("");
-    setWorkFilter("");
+    setWorkFilter([]);
+    setCategoryFilter([]);
+    setFrameworkFilter([]);
+    setCodeLanguageFilter([]);
     clearFilters();
   };
 
-  const hasActiveFilters = filters.search || filters.work_id;
+  const hasActiveFilters =
+    filters.search ||
+    !!filters.work_ids?.length ||
+    !!filters.category_ids?.length ||
+    !!filters.framework_ids?.length ||
+    !!filters.code_language_ids?.length;
+  const toggleSelection = (
+    value: string,
+    setter: Dispatch<SetStateAction<string[]>>,
+  ) => {
+    setter((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value],
+    );
+  };
+  const filterOptions = [
+    {
+      label: "Work",
+      values: workFilter,
+      onToggle: (value: string) => toggleSelection(value, setWorkFilter),
+      options: works.map((work) => ({
+        id: work.id ?? "",
+        label: work.company_name || work.job_title || "Unknown",
+      })),
+    },
+    {
+      label: "Category",
+      values: categoryFilter,
+      onToggle: (value: string) => toggleSelection(value, setCategoryFilter),
+      options: categories.map((category) => ({
+        id: category.id ?? "",
+        label: category.title || "Untitled",
+      })),
+    },
+    {
+      label: "Framework",
+      values: frameworkFilter,
+      onToggle: (value: string) => toggleSelection(value, setFrameworkFilter),
+      options: frameworks.map((framework) => ({
+        id: framework.id ?? "",
+        label: framework.title || "Untitled",
+      })),
+    },
+    {
+      label: "Code Language",
+      values: codeLanguageFilter,
+      onToggle: (value: string) => toggleSelection(value, setCodeLanguageFilter),
+      options: codeLanguages.map((codeLanguage) => ({
+        id: codeLanguage.id ?? "",
+        label: codeLanguage.title || "Untitled",
+      })),
+    },
+  ];
+  const activeFilterChips = [
+    filters.search && {
+      key: "search",
+      label: filters.search,
+      onClear: () => {
+        setSearchInput("");
+        applyFilters({ ...filters, search: undefined });
+      },
+    },
+    ...(filters.work_ids ?? []).map((id) => ({
+      key: `work-${id}`,
+      label:
+        works.find((work) => work.id === id)?.company_name ||
+        works.find((work) => work.id === id)?.job_title ||
+        id,
+      onClear: () => {
+        const next = workFilter.filter((item) => item !== id);
+        setWorkFilter(next);
+        applyFilters({ ...filters, work_ids: next });
+      },
+    })),
+    ...(filters.category_ids ?? []).map((id) => ({
+      key: `category-${id}`,
+      label: categories.find((category) => category.id === id)?.title || id,
+      onClear: () => {
+        const next = categoryFilter.filter((item) => item !== id);
+        setCategoryFilter(next);
+        applyFilters({ ...filters, category_ids: next });
+      },
+    })),
+    ...(filters.framework_ids ?? []).map((id) => ({
+      key: `framework-${id}`,
+      label: frameworks.find((framework) => framework.id === id)?.title || id,
+      onClear: () => {
+        const next = frameworkFilter.filter((item) => item !== id);
+        setFrameworkFilter(next);
+        applyFilters({ ...filters, framework_ids: next });
+      },
+    })),
+    ...(filters.code_language_ids ?? []).map((id) => ({
+      key: `code-language-${id}`,
+      label:
+        codeLanguages.find((language) => language.id === id)?.title || id,
+      onClear: () => {
+        const next = codeLanguageFilter.filter((item) => item !== id);
+        setCodeLanguageFilter(next);
+        applyFilters({ ...filters, code_language_ids: next });
+      },
+    })),
+  ].filter(Boolean) as {
+    key: string;
+    label: string;
+    onClear: () => void;
+  }[];
 
   return (
     <div className={pageClass}>
@@ -127,93 +253,44 @@ export default function ListPortofolioUI() {
           <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">
             Portofolio
           </h1>
-          <p className={`mt-4 max-w-xl text-sm sm:text-base ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>
-            Explore my body of work. Use the filters below to find specific projects by search term or associated work experience.
-          </p>
+          {/* <p className={`mt-4 max-w-xl text-sm sm:text-base ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>
+            Explore my body of work. Filter by work, category, framework, or code language.
+          </p> */}
         </div>
 
-        <div className={`animate-reveal mt-8 rounded-3xl border p-5 shadow-lg backdrop-blur-sm transition-all sm:p-6 ${
-          isDarkMode
-            ? "border-white/10 bg-white/5 shadow-[0_20px_60px_rgba(15,23,42,0.3)]"
-            : "border-white/60 bg-white/60 shadow-[0_20px_60px_rgba(148,163,184,0.12)]"
-        }`}>
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-            <div className="flex-1">
-              <label className={`mb-2 block text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
-                Search
-              </label>
-              <div className="relative">
-                <svg
-                  className={`absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search by title or description..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className={`${inputClass} pl-11`}
-                />
-              </div>
-            </div>
-            <div className="w-full sm:w-64">
-              <label className={`mb-2 block text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
-                Filter by Work
-              </label>
-              <div className="relative">
-                <select
-                  value={workFilter}
-                  onChange={(e) => setWorkFilter(e.target.value)}
-                  className={`${selectClass} appearance-none pr-10`}
-                >
-                  <option value="">All Works</option>
-                  {works.map((work) => (
-                    <option key={work.id} value={work.id || ""}>
-                      {work.company_name || work.job_title || "Unknown"}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-            <div className="flex gap-2 pt-4 lg:pt-0 lg:items-end">
-              <button
-                onClick={handleSearch}
-                className={`flex items-center gap-2 rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl ${
-                  isDarkMode
-                    ? "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500"
-                    : "bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500"
-                }`}
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                Search
-              </button>
-              <button
-                onClick={handleClear}
-                className={`rounded-2xl border px-6 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                  isDarkMode
-                    ? "border-white/15 bg-white/5 text-slate-200 hover:border-cyan-400/50 hover:text-cyan-200"
-                    : "border-slate-200 bg-white/80 text-slate-700 hover:border-sky-400/50 hover:text-sky-700"
-                }`}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={openFilterDialog}
+            className={`inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 ${
+              isDarkMode
+                ? "border-cyan-300/30 bg-cyan-400/10 text-cyan-100 hover:bg-cyan-400/15"
+                : "border-sky-200 bg-white text-sky-700 hover:border-sky-300"
+            }`}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18M6 12h12M10 20h4" />
+            </svg>
+            Filter
+            {activeFilterChips.length > 0 && (
+              <span className="rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white">
+                {activeFilterChips.length}
+              </span>
+            )}
+          </button>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className={`rounded-full border px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 ${
+                isDarkMode
+                  ? "border-white/15 bg-white/5 text-slate-200 hover:border-cyan-400/50"
+                  : "border-slate-200 bg-white/80 text-slate-700 hover:border-sky-300"
+              }`}
+            >
+              Clear all
+            </button>
+          )}
         </div>
 
         {hasActiveFilters && (
@@ -221,50 +298,113 @@ export default function ListPortofolioUI() {
             <span className={`text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}>
               Active filters:
             </span>
-            {filters.search && (
-              <span
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium ${
-                  isDarkMode
-                    ? "bg-cyan-900/30 text-cyan-200 border border-cyan-400/20"
-                    : "bg-sky-100 text-sky-700 border border-sky-200"
-                }`}
-              >
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                {filters.search}
+            {activeFilterChips.map((chip) => (
+              <ActiveFilterChip
+                key={chip.key}
+                label={chip.label}
+                isDarkMode={isDarkMode}
+                onClear={chip.onClear}
+              />
+            ))}
+          </div>
+        )}
+
+        {isFilterOpen && (
+          <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/70 px-4 py-8 backdrop-blur-sm">
+            <button
+              type="button"
+              aria-label="Close filter"
+              className="absolute inset-0 cursor-default"
+              onClick={() => setIsFilterOpen(false)}
+            />
+            <div
+              className={`relative w-full max-w-4xl rounded-3xl border p-5 shadow-2xl sm:p-6 ${
+                isDarkMode
+                  ? "border-white/10 bg-slate-950 text-slate-100"
+                  : "border-slate-200 bg-white text-slate-900"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-700">
+                    Filter portfolio
+                  </p>
+                  <h2 className="mt-2 text-2xl font-black">Find projects</h2>
+                </div>
                 <button
-                  onClick={() => applyFilters({ ...filters, search: undefined })}
-                  className="ml-1 rounded-full p-0.5 hover:bg-white/10"
+                  type="button"
+                  onClick={() => setIsFilterOpen(false)}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full border ${
+                    isDarkMode
+                      ? "border-white/15 bg-white/5 text-white"
+                      : "border-slate-200 bg-white text-slate-700"
+                  }`}
+                  aria-label="Close filter"
                 >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  x
                 </button>
-              </span>
-            )}
-            {filters.work_id && (
-              <span
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium ${
-                  isDarkMode
-                    ? "bg-blue-900/30 text-blue-200 border border-blue-400/20"
-                    : "bg-blue-100 text-blue-700 border border-blue-200"
-                }`}
-              >
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                {works.find((w) => w.id === filters.work_id)?.company_name || filters.work_id}
-                <button
-                  onClick={() => applyFilters({ ...filters, work_id: undefined })}
-                  className="ml-1 rounded-full p-0.5 hover:bg-white/10"
-                >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </span>
-            )}
+              </div>
+
+              <div className="mt-6 grid gap-4">
+                <div>
+                  <label className={`mb-2 block text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+                    Search
+                  </label>
+                  <div className="relative">
+                    <svg
+                      className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 ${isDarkMode ? "text-slate-500" : "text-slate-400"}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search by title or description..."
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      className={`${inputClass} pl-11`}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {filterOptions.map((filter) => (
+                    <MultiFilterGroup
+                      key={filter.label}
+                      label={filter.label}
+                      values={filter.values}
+                      options={filter.options}
+                      isDarkMode={isDarkMode}
+                      onToggle={filter.onToggle}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className={`rounded-2xl border px-6 py-3 text-sm font-semibold transition ${
+                      isDarkMode
+                        ? "border-white/15 bg-white/5 text-slate-200"
+                        : "border-slate-200 bg-white text-slate-700"
+                    }`}
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSearch}
+                    className="rounded-2xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-500"
+                  >
+                    Apply filter
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -290,6 +430,122 @@ export default function ListPortofolioUI() {
         />
       </main>
     </div>
+  );
+}
+
+function MultiFilterGroup({
+  label,
+  values,
+  options,
+  isDarkMode,
+  onToggle,
+}: {
+  label: string;
+  values: string[];
+  options: { id: string; label: string }[];
+  isDarkMode: boolean;
+  onToggle: (value: string) => void;
+}) {
+  return (
+    <div>
+      <div
+        className={`mb-2 block text-xs font-semibold uppercase tracking-wider ${
+          isDarkMode ? "text-slate-400" : "text-slate-500"
+        }`}
+      >
+        {label}
+        {values.length > 0 && (
+          <span className="ml-2 rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] text-sky-300">
+            {values.length}
+          </span>
+        )}
+      </div>
+      <div
+        className={`flex max-h-40 flex-wrap gap-2 overflow-auto rounded-2xl border p-3 ${
+          isDarkMode
+            ? "border-white/10 bg-white/5"
+            : "border-slate-200 bg-white/80"
+        }`}
+      >
+        {options.length === 0 ? (
+          <p
+            className={`px-2 py-1 text-xs ${
+              isDarkMode ? "text-slate-500" : "text-slate-400"
+            }`}
+          >
+            No options
+          </p>
+        ) : (
+          options.map((option) => {
+            const checked = values.includes(option.id);
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => onToggle(option.id)}
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition ${
+                  checked
+                    ? isDarkMode
+                      ? "border-cyan-300/40 bg-cyan-400/15 text-cyan-100"
+                      : "border-sky-300 bg-sky-100 text-sky-800"
+                    : isDarkMode
+                      ? "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-300/30 hover:text-cyan-100"
+                      : "border-slate-200 bg-white text-slate-600 hover:border-sky-300 hover:text-sky-700"
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    checked ? "bg-cyan-300" : "bg-slate-400/50"
+                  }`}
+                />
+                {option.label}
+              </button>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
+function ActiveFilterChip({
+  label,
+  isDarkMode,
+  onClear,
+}: {
+  label: string;
+  isDarkMode: boolean;
+  onClear: () => void;
+}) {
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-medium ${
+        isDarkMode
+          ? "border-cyan-400/20 bg-cyan-900/30 text-cyan-200"
+          : "border-sky-200 bg-sky-100 text-sky-700"
+      }`}
+    >
+      {label}
+      <button
+        type="button"
+        onClick={onClear}
+        className="rounded-full p-0.5 hover:bg-white/10"
+        aria-label={`Remove ${label} filter`}
+      >
+        <svg
+          className="h-3 w-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </span>
   );
 }
 

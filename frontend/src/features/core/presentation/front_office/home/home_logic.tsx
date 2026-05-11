@@ -18,7 +18,6 @@ import { ToolService } from "@/features/core/application/tool_service";
 import { AchievementResponse } from "@/features/core/domain/model/response/achievement_response";
 import { PortofolioResponse } from "@/features/core/domain/model/response/portofolio/portofolio_response";
 import { WorkResponse } from "@/features/core/domain/model/response/work_response";
-import { ToolResponse } from "@/features/core/domain/model/response/tool_response";
 import { EitherType } from "@/shared/utils/utility/either";
 import { ApiClient } from "@/shared/network/api_client";
 import { UrlPath } from "@/shared/constant/url_path";
@@ -74,7 +73,6 @@ interface HomeContentState {
   portofolios: PortofolioResponse.Data[];
   works: WorkResponse.Data[];
   achievements: AchievementResponse.Data[];
-  tools: ToolResponse.Data[];
   isLoading: boolean;
   errorMessage?: string;
 }
@@ -125,7 +123,6 @@ export function useHomeData() {
     portofolios: [],
     works: [],
     achievements: [],
-    tools: [],
     isLoading: true,
     errorMessage: undefined,
   });
@@ -156,7 +153,7 @@ export function useHomeData() {
       frameworkService.fetchFrameworks({ page: 1, perPage: 50 }),
       codeLanguageService.fetchCodeLanguages({ page: 1, perPage: 50 }),
       portofolioService.fetchPortofolios({ page: 1, perPage: 6 }),
-      workService.fetchWorks({ page: 1, perPage: 6 }),
+      workService.fetchWorks({ page: 1, perPage: 4 }),
       achievementService.fetchAchievements({ page: 1, perPage: 6 }),
       toolService.fetchTools({ page: 1, perPage: 12 }),
       apiClient.request<DashboardSummary>({
@@ -196,7 +193,7 @@ export function useHomeData() {
       };
     }
 
-    // Build skill groups from frameworks and code languages
+    // Build skill groups from frameworks, code languages, and tools
     const skillGroups: SkillGroup[] = [];
     if (
       frameworkResult.tag === EitherType.Right &&
@@ -218,6 +215,14 @@ export function useHomeData() {
         .filter((t): t is string => !!t);
       if (languages.length > 0) {
         skillGroups.push({ title: "Languages", items: languages });
+      }
+    }
+    if (toolResult.tag === EitherType.Right && toolResult.right.data) {
+      const tools = toolResult.right.data
+        .map((tool) => tool.title)
+        .filter((title): title is string => !!title);
+      if (tools.length > 0) {
+        skillGroups.push({ title: "Tools", items: tools });
       }
     }
 
@@ -251,10 +256,6 @@ export function useHomeData() {
       achievements:
         achievementResult.tag === EitherType.Right
           ? (achievementResult.right.data ?? [])
-          : [],
-      tools:
-        toolResult.tag === EitherType.Right
-          ? (toolResult.right.data ?? [])
           : [],
       isLoading: false,
       errorMessage: errors.length > 0 ? errors.join("; ") : undefined,
