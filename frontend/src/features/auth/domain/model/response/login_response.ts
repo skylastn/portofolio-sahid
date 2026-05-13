@@ -8,18 +8,21 @@ export type LoginResponseListWrapper = BaseResponse<LoginResponse[]>;
 
 export class LoginResponse extends BaseModelResponse {
   access_token: string;
-  refresh_token: string;
+  refresh_token?: string;
+  expires_in_seconds?: number;
   user?: UserResponse.Data;
 
   constructor(
     access_token: string,
-    refresh_token: string,
+    refresh_token?: string,
     user?: UserResponse.Data,
+    expires_in_seconds?: number,
   ) {
     super();
     this.access_token = access_token;
     this.refresh_token = refresh_token;
     this.user = user;
+    this.expires_in_seconds = expires_in_seconds;
   }
 
   static Convert = ConvertResponse<LoginResponseWrapper>();

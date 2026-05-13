@@ -1,6 +1,13 @@
 import { UserResponse } from "@/features/auth/domain/model/response/user_response";
 
 export class SessionData {
+  private static accessToken: string | null = null;
+
+  constructor() {
+    this.removeItem("access_token");
+    this.removeItem("refresh_token");
+  }
+
   private setItem(key: string, value: string) {
     if (typeof window === "undefined") return; // SSR guard
     localStorage.setItem(key, value);
@@ -17,19 +24,19 @@ export class SessionData {
   }
 
   saveToken(token: string): void {
-    this.setItem("access_token", token);
+    SessionData.accessToken = token || null;
+    this.removeItem("access_token");
+    this.removeItem("refresh_token");
   }
 
   get token(): string | null {
-    return this.getItem("access_token");
+    return SessionData.accessToken;
   }
 
-  saveRefreshToken(token: string): void {
-    this.setItem("refresh_token", token);
-  }
-
-  get refreshToken(): string | null {
-    return this.getItem("refresh_token");
+  clearToken(): void {
+    SessionData.accessToken = null;
+    this.removeItem("access_token");
+    this.removeItem("refresh_token");
   }
 
   saveUser(user?: UserResponse.Data): void {
@@ -44,13 +51,12 @@ export class SessionData {
   get user(): UserResponse.Data | null {
     const temp = this.getItem("user");
     if (!temp) return null;
-    return JSON.parse(temp) as UserResponse.Data;
-    // try {
-    //   return JSON.parse(temp) as UserResponse.Data;
-    // } catch {
-    //   this.removeItem("user");
-    //   return null;
-    // }
+    try {
+      return JSON.parse(temp) as UserResponse.Data;
+    } catch {
+      this.removeItem("user");
+      return null;
+    }
   }
 
   saveIsDarkMode(value: boolean): void {

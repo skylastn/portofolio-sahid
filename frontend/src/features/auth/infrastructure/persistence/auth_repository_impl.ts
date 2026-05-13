@@ -18,8 +18,16 @@ export class AuthRepositoryImpl implements AuthRepository {
     const result = await this.remote.login(request);
     result.fold(
       () => undefined,
-      (data) =>
-        this.local.login(data.access_token, data.refresh_token, data.user),
+      (data) => this.local.login(data.access_token, data.user),
+    );
+    return result;
+  }
+
+  async refreshSession(): Promise<Either<ResponseModel, LoginResponse>> {
+    const result = await this.remote.refreshSession();
+    result.fold(
+      () => undefined,
+      (data) => this.local.login(data.access_token, data.user),
     );
     return result;
   }

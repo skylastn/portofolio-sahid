@@ -40,6 +40,23 @@ export class AuthRemoteDataSource {
     }
   }
 
+  async refreshSession(): Promise<Either<ResponseModel, LoginResponse>> {
+    try {
+      const response = await this.api.request({
+        path: UrlPath.REFRESH,
+        method: HttpMethod.POST,
+        data: {},
+      });
+      if (response.status == false) {
+        return left(response);
+      }
+      const result = LoginResponse.Convert.fromJson(JSON.stringify(response));
+      return right(result.data!);
+    } catch (error) {
+      return left(ResponseModel.fromError(error));
+    }
+  }
+
   async loginWithPhone(phone: string): Promise<Either<ResponseModel, boolean>> {
     try {
       const response = await this.api.request({
@@ -94,14 +111,16 @@ export class AuthRemoteDataSource {
 
   async logout(): Promise<Either<string, boolean>> {
     try {
-      // await this.api.request({
-      //   path: UrlPath.LOGOUT,
-      //   method: HttpMethod.POST,
-      // });
-      this.local.logout();
+      await this.api.request({
+        path: UrlPath.LOGOUT,
+        method: HttpMethod.POST,
+        data: {},
+      });
       return right(true);
     } catch (error) {
       return left(error instanceof Error ? error.message : String(error));
+    } finally {
+      this.local.logout();
     }
   }
 }

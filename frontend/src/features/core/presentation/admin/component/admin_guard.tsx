@@ -12,11 +12,15 @@ type AdminGuardProps = {
 
 export default function AdminGuard({ children }: AdminGuardProps) {
   const router = useRouter();
-  const { isLogin, user, logout } = useAuthLogic();
+  const { isLogin, isAuthReady, user, logout } = useAuthLogic();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
+    if (!isAuthReady) {
+      setIsReady(false);
+      return;
+    }
 
     const role = user?.role;
 
@@ -38,7 +42,15 @@ export default function AdminGuard({ children }: AdminGuardProps) {
     }
 
     setIsReady(true);
-  }, [isLogin, logout, router, router.asPath, router.isReady, user?.role]);
+  }, [
+    isAuthReady,
+    isLogin,
+    logout,
+    router,
+    router.asPath,
+    router.isReady,
+    user?.role,
+  ]);
 
   if (!isReady) {
     return null;

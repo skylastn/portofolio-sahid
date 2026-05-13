@@ -17,6 +17,7 @@ export class MinioController {
     return await this.service.getPresignedViewUrl(key);
   }
 
+  @UseGuards(AuthGuards)
   @Delete()
   async remove(@Query('key') key: string) {
     await this.service.removeObject(key);

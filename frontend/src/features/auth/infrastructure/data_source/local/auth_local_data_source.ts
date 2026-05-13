@@ -3,15 +3,13 @@ import { UserResponse } from "../../../domain/model/response/user_response";
 
 export class AuthLocalDataSource {
   constructor(private localDb = new SessionData()) {}
-  login(token: string, refreshToken: string, user?: UserResponse.Data): void {
+  login(token: string, user?: UserResponse.Data): void {
     this.localDb.saveToken(token);
-    this.localDb.saveRefreshToken(refreshToken);
     this.localDb.saveUser(user);
   }
 
   logout(): void {
-    this.localDb.saveToken("");
-    this.localDb.saveRefreshToken("");
+    this.localDb.clearToken();
     this.localDb.saveUser(undefined);
   }
 

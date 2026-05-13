@@ -16,6 +16,7 @@ import { UserResponse } from "../../features/auth/domain/model/response/user_res
 
 interface AuthContextProps {
   isLogin: boolean;
+  isAuthReady: boolean;
   user: UserResponse.Data | null;
   logout: () => Promise<void>;
   login: (
@@ -29,7 +30,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const service = useAuthService();
   const [isLogin, setIsLogin] = useState(service.isLogin);
+  const [isAuthReady, setIsAuthReady] = useState(service.isLogin);
   const [user, setUser] = useState<UserResponse.Data | null>(service.user);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const restoreSession = async () => {
+      if (service.isLogin) {
+        setIsAuthReady(true);
+        return;
+      }
+
+      const res = await service.refreshSession();
+      if (!mounted) return;
+
+      res.fold(
+        () => undefined,
+        (r) => {
+          setIsLogin(true);
+          setUser(r.user ?? service.user);
+        },
+      );
+      setIsAuthReady(true);
+    };
+
+    void restoreSession();
+
+    return () => {
+      mounted = false;
+    };
+  }, [service]);
 
   const login = useCallback(
     async (
@@ -48,6 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           async (r) => {
             loggedInUser = r.user ?? null;
             setIsLogin(true);
+            setIsAuthReady(true);
             setUser(loggedInUser);
           },
         );
@@ -65,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await service.logout();
       setIsLogin(false);
+      setIsAuthReady(true);
       setUser(null);
       toast.success("Berhasil Logout!");
     } catch (error) {
@@ -74,16 +107,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const handleUnauthorized = async () => {
-      if (router.pathname.startsWith("/auth/login")) return;
+      const isProtectedRoute = router.pathname.startsWith("/admin");
 
       await service.logout();
       setIsLogin(false);
+      setIsAuthReady(true);
       setUser(null);
-      toast.error("Session expired. Please login again.");
+
+      if (!isProtectedRoute || router.pathname.startsWith("/auth/login")) {
+        return;
+      }
 
       const redirect = router.asPath.startsWith("/auth")
         ? "/admin"
         : router.asPath;
+      toast.error("Session expired. Please login again.");
       void router.replace(`/auth/login?redirect=${encodeURIComponent(redirect)}`);
     };
 
@@ -96,11 +134,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const value = useMemo(
     () => ({
       isLogin,
+      isAuthReady,
       user,
       logout,
       login,
     }),
-    [isLogin, logout, login],
+    [isLogin, isAuthReady, user, logout, login],
   );
 
   return <AuthLogic.Provider value={value}>{children}</AuthLogic.Provider>;

@@ -4,8 +4,10 @@ import { Env } from "../constant/env";
 import { HttpMethod } from "../domain/model/enum/http_method";
 import { ResponseHttpType } from "../domain/model/enum/response_http_type";
 import { ResponseModel } from "../domain/model/response_model";
+import { UrlPath } from "../constant/url_path";
 
 const UNAUTHORIZED_EVENT = "app:unauthorized";
+let refreshPromise: Promise<string | null> | null = null;
 
 export class ApiClient {
   private axiosInstance: AxiosInstance;
@@ -16,6 +18,7 @@ export class ApiClient {
       baseURL,
       headers: { "Content-Type": "application/json" },
       timeout: 15000,
+      withCredentials: true,
     });
 
     this.axiosInstance.interceptors.request.use((config) => {
@@ -52,15 +55,17 @@ export class ApiClient {
       ? `${url.replace(/\/+$/, "")}/${cleanPath}`
       : `/${cleanPath}`;
 
+    const requestConfig = {
+      url: endpoint,
+      method,
+      params,
+      data,
+      responseType,
+      signal,
+    };
+
     try {
-      const res = await this.axiosInstance.request({
-        url: endpoint,
-        method,
-        params,
-        data,
-        responseType,
-        signal,
-      });
+      const res = await this.axiosInstance.request(requestConfig);
 
       if (Array.isArray(res.data)) {
         const result = new ResponseModel<TResponse>();
@@ -77,11 +82,27 @@ export class ApiClient {
       }>;
       const message =
         err.response?.data?.message ?? err.message ?? "Network error";
+      const shouldTryRefresh =
+        err.response?.status === 401 &&
+        !cleanPath.includes(UrlPath.LOGIN) &&
+        !cleanPath.includes(UrlPath.REFRESH) &&
+        !cleanPath.includes(UrlPath.LOGOUT);
+      const shouldDispatchUnauthorized =
+        shouldTryRefresh &&
+        (err.response?.status === 401 ||
+          message.toLowerCase().includes("unauthorized"));
+
+      if (shouldTryRefresh) {
+        const token = await this.refreshAccessToken();
+        if (token) {
+          const retry = await this.axiosInstance.request(requestConfig);
+          return ResponseModel.from<TResponse>(retry);
+        }
+      }
 
       if (
         typeof window !== "undefined" &&
-        (err.response?.status === 401 ||
-          message.toLowerCase().includes("unauthorized"))
+        shouldDispatchUnauthorized
       ) {
         window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT));
       }
@@ -93,5 +114,26 @@ export class ApiClient {
 
       return result;
     }
+  }
+
+  private async refreshAccessToken(): Promise<string | null> {
+    if (!refreshPromise) {
+      refreshPromise = this.axiosInstance
+        .post(`/${UrlPath.REFRESH}`, {})
+        .then((res) => {
+          const token = res.data?.data?.access_token;
+          if (typeof token === "string" && token) {
+            this.localDb.saveToken(token);
+            return token;
+          }
+          return null;
+        })
+        .catch(() => null)
+        .finally(() => {
+          refreshPromise = null;
+        });
+    }
+
+    return refreshPromise;
   }
 }

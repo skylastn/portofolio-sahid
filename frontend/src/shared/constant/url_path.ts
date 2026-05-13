@@ -5,6 +5,7 @@ export const UrlPath = {
   REGISTER: "api/auth/register",
   REGISTER_WITH_VERIFIED_PHONE: "api/auth/register/phone",
   LOGIN: "api/auth/login",
+  REFRESH: "api/auth/refresh",
   LOGIN_WITH_PHONE: `api/auth/login/phone`,
   LOGOUT: "api/auth/logout",
 

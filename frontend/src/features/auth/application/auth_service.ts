@@ -27,6 +27,10 @@ export class AuthService {
     return await this.repo.login(request);
   }
 
+  async refreshSession(): Promise<Either<ResponseModel, LoginResponse>> {
+    return await this.repo.refreshSession();
+  }
+
   async loginWithPhone(phone: string): Promise<Either<ResponseModel, boolean>> {
     return await this.repo.loginWithPhone(phone);
   }
