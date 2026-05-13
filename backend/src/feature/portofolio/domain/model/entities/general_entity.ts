@@ -26,4 +26,7 @@ export class GeneralEntity extends DefaultEntity {
 
   @Column({ name: 'tiktok_url', type: 'text' })
   tiktokUrl!: string;
+
+  @Column({ name: 'cv_path', type: 'text', nullable: true })
+  cvPath?: string | null;
 }

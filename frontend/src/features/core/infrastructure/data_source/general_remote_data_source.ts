@@ -5,9 +5,27 @@ import { ApiClient } from "@/shared/network/api_client";
 import { Either, left, right } from "@/shared/utils/utility/either";
 import { CreateGeneralRequest } from "../../domain/model/request/general/create_general_request";
 import { GeneralResponse } from "../../domain/model/response/general_response";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export class GeneralRemoteDataSource {
   constructor(private api = new ApiClient()) {}
+
+  async createUploadSignature(
+    fileName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    try {
+      const response = await this.api.request({
+        path: `${UrlPath.GENERAL}/upload-signature`,
+        method: HttpMethod.POST,
+        data: { file_name: fileName },
+      });
+      if (response.status == false) return left(response);
+      const parsed = MinioUploadResponse.Convert.fromJson(JSON.stringify(response));
+      return right(parsed.data!);
+    } catch (error) {
+      return left(ResponseModel.fromError(error));
+    }
+  }
 
   async fetchGenerals(): Promise<Either<ResponseModel, GeneralResponse.Data[]>> {
     try {

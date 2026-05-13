@@ -18,12 +18,18 @@ export class GeneralController {
 
   @Get()
   async findAll() {
-    return await this.service.findAll();
+    return await this.service.findAllResponse();
   }
 
   @Get(':id')
   async findOneById(@Param('id') id: string) {
     return await this.service.findOneByIdResponse(id);
+  }
+
+  @UseGuards(AuthGuards)
+  @Post('upload-signature')
+  async createUploadSignature(@Body() body: Record<string, any>) {
+    return await this.service.createUploadSignature(body.file_name);
   }
 
   @UseGuards(AuthGuards)

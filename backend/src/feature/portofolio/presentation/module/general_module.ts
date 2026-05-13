@@ -5,9 +5,10 @@ import { GENERAL_DATABASE_REPOSITORY } from '../../domain/repository/database/ge
 import { GeneralDatabaseRepositoryImpl } from '../../infrastructure/persistence/database/general_database_repository_impl';
 import { GeneralController } from '../controller/general_controller';
 import { Module } from '@nestjs/common';
+import { MinioModule } from '../../../support/presentation/module/minio_module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([GeneralEntity])],
+  imports: [TypeOrmModule.forFeature([GeneralEntity]), MinioModule],
   providers: [
     GeneralService,
     {

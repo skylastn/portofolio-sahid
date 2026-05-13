@@ -4,6 +4,7 @@ import { CreateGeneralRequest } from "../../domain/model/request/general/create_
 import { GeneralResponse } from "../../domain/model/response/general_response";
 import { GeneralRepository } from "../../domain/repository/general_repository";
 import { GeneralRemoteDataSource } from "../data_source/general_remote_data_source";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export class GeneralRepositoryImpl implements GeneralRepository {
   constructor(private readonly remote: GeneralRemoteDataSource) {}
@@ -16,6 +17,12 @@ export class GeneralRepositoryImpl implements GeneralRepository {
     id: string,
   ): Promise<Either<ResponseModel, GeneralResponse.Data>> {
     return await this.remote.fetchGeneralById(id);
+  }
+
+  async createUploadSignature(
+    fileName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.remote.createUploadSignature(fileName);
   }
 
   async createGeneral(

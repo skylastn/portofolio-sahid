@@ -12,6 +12,8 @@ export namespace GeneralResponse {
     linkedin_url?: string;
     thread_url?: string;
     tiktok_url?: string;
+    cv_path?: string | null;
+    cv_url?: string | null;
   }
 
   export type ResponseList = BaseResponse<Data[]>;

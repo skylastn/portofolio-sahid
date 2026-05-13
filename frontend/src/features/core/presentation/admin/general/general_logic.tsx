@@ -14,14 +14,18 @@ import { useLoading } from "@/shared/component/elements/loading_context";
 import { GeneralService } from "@/features/core/application/general_service";
 import { CreateGeneralRequest } from "@/features/core/domain/model/request/general/create_general_request";
 import { GeneralResponse } from "@/features/core/domain/model/response/general_response";
+import { uploadFileWithSignature } from "@/shared/utils/utility/minio_upload";
 
-interface GeneralFormState extends CreateGeneralRequest {}
+interface GeneralFormState extends CreateGeneralRequest {
+  cv_file?: File | null;
+}
 
 interface GeneralContextProps {
   generals: GeneralResponse.Data[];
   selectedGeneral: GeneralResponse.Data | null;
   isLoading: boolean;
   isSubmitting: boolean;
+  isUploading: boolean;
   isDetailOpen: boolean;
   isFormOpen: boolean;
   isDeleteOpen: boolean;
@@ -33,6 +37,7 @@ interface GeneralContextProps {
   openDeleteDialog: (item: GeneralResponse.Data) => void;
   closeModal: () => void;
   setFormField: (field: keyof GeneralFormState, value: string) => void;
+  uploadCvFile: (file: File) => Promise<void>;
   saveGeneral: () => Promise<void>;
   deleteGeneral: () => Promise<void>;
   refreshGenerals: () => Promise<void>;
@@ -47,6 +52,8 @@ const defaultFormState: GeneralFormState = {
   linkedin_url: "",
   thread_url: "",
   tiktok_url: "",
+  cv_path: "",
+  cv_file: null,
 };
 
 const GeneralLogic = createContext<GeneralContextProps | undefined>(undefined);
@@ -59,6 +66,7 @@ export const GeneralProvider = ({ children }: { children: React.ReactNode }) => 
     useState<GeneralResponse.Data | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -124,6 +132,8 @@ export const GeneralProvider = ({ children }: { children: React.ReactNode }) => 
       linkedin_url: item.linkedin_url ?? "",
       thread_url: item.thread_url ?? "",
       tiktok_url: item.tiktok_url ?? "",
+      cv_path: item.cv_path ?? "",
+      cv_file: null,
     });
     setIsFormOpen(true);
   }, []);
@@ -140,6 +150,15 @@ export const GeneralProvider = ({ children }: { children: React.ReactNode }) => 
     [],
   );
 
+  const uploadCvFile = useCallback(async (file: File) => {
+    if (file.type && file.type !== "application/pdf") {
+      toast.error("CV file must be a PDF");
+      return;
+    }
+    setFormState((prev) => ({ ...prev, cv_file: file }));
+    toast.success("CV selected. It will upload when you save.");
+  }, []);
+
   const saveGeneral = useCallback(async () => {
     setIsSubmitting(true);
     setLoading(true);
@@ -153,12 +172,37 @@ export const GeneralProvider = ({ children }: { children: React.ReactNode }) => 
         linkedin_url: formState.linkedin_url.trim(),
         thread_url: formState.thread_url.trim(),
         tiktok_url: formState.tiktok_url.trim(),
+        cv_path: formState.cv_path?.trim() || null,
       };
 
-      const missingField = Object.entries(payload).find(([, value]) => !value)?.[0];
+      const requiredPayload = {
+        title: payload.title,
+        description: payload.description,
+        email: payload.email,
+        github_url: payload.github_url,
+        gitlab_url: payload.gitlab_url,
+        linkedin_url: payload.linkedin_url,
+        thread_url: payload.thread_url,
+        tiktok_url: payload.tiktok_url,
+      };
+      const missingField = Object.entries(requiredPayload).find(
+        ([, value]) => !value,
+      )?.[0];
       if (missingField) {
         toast.error("All general fields are required");
         return;
+      }
+
+      if (formState.cv_file) {
+        setIsUploading(true);
+        try {
+          payload.cv_path = await uploadFileWithSignature(
+            formState.cv_file,
+            service.createUploadSignature.bind(service),
+          );
+        } finally {
+          setIsUploading(false);
+        }
       }
 
       const result =
@@ -190,6 +234,8 @@ export const GeneralProvider = ({ children }: { children: React.ReactNode }) => 
     formState.thread_url,
     formState.tiktok_url,
     formState.title,
+    formState.cv_file,
+    formState.cv_path,
     isEditing,
     refreshGenerals,
     selectedGeneral?.id,
@@ -224,6 +270,7 @@ export const GeneralProvider = ({ children }: { children: React.ReactNode }) => 
     selectedGeneral,
     isLoading,
     isSubmitting,
+    isUploading,
     isDetailOpen,
     isFormOpen,
     isDeleteOpen,
@@ -235,6 +282,7 @@ export const GeneralProvider = ({ children }: { children: React.ReactNode }) => 
     openDeleteDialog,
     closeModal,
     setFormField,
+    uploadCvFile,
     saveGeneral,
     deleteGeneral,
     refreshGenerals,

@@ -27,6 +27,10 @@ export class CreateGeneralRequest {
   @IsString()
   tiktok_url!: string;
 
+  @IsOptional()
+  @IsString()
+  cv_path?: string | null;
+
   convertToEntity(): GeneralEntity {
     const entity = new GeneralEntity();
     entity.title = this.title;
@@ -37,6 +41,7 @@ export class CreateGeneralRequest {
     entity.linkedinUrl = this.linkedin_url;
     entity.threadUrl = this.thread_url;
     entity.tiktokUrl = this.tiktok_url;
+    entity.cvPath = this.cv_path ?? null;
     return entity;
   }
 }

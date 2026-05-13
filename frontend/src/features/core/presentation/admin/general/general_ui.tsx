@@ -3,9 +3,20 @@
 import AdminShell from "../component/admin_shell";
 import { useAdminTheme } from "../styles/admin_theme";
 import { useGeneralLogic } from "./general_logic";
+import FileUploadField from "@/shared/component/ui/upload/file_upload_field";
+
+type GeneralInputField =
+  | "title"
+  | "description"
+  | "email"
+  | "github_url"
+  | "gitlab_url"
+  | "linkedin_url"
+  | "thread_url"
+  | "tiktok_url";
 
 const fieldLabels: Array<{
-  key: keyof ReturnType<typeof useGeneralLogic>["formState"];
+  key: GeneralInputField;
   label: string;
   type?: string;
 }> = [
@@ -26,6 +37,7 @@ export default function GeneralUI() {
     selectedGeneral,
     isLoading,
     isSubmitting,
+    isUploading,
     isDetailOpen,
     isFormOpen,
     isDeleteOpen,
@@ -37,6 +49,7 @@ export default function GeneralUI() {
     openDeleteDialog,
     closeModal,
     setFormField,
+    uploadCvFile,
     saveGeneral,
     deleteGeneral,
   } = useGeneralLogic();
@@ -173,6 +186,7 @@ export default function GeneralUI() {
                 ["LinkedIn", selectedGeneral.linkedin_url],
                 ["Threads", selectedGeneral.thread_url],
                 ["TikTok", selectedGeneral.tiktok_url],
+                ["CV path", selectedGeneral.cv_path],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl bg-white/5 px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
@@ -181,6 +195,16 @@ export default function GeneralUI() {
                   <p className="mt-2 break-all text-sm text-white">{value ?? "-"}</p>
                 </div>
               ))}
+              {selectedGeneral.cv_url ? (
+                <a
+                  href={selectedGeneral.cv_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-2xl bg-sky-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-sky-500"
+                >
+                  Open CV
+                </a>
+              ) : null}
             </div>
           </div>
         </div>
@@ -229,6 +253,18 @@ export default function GeneralUI() {
                   )}
                 </label>
               ))}
+              <div className="md:col-span-2">
+                <FileUploadField
+                  label="CV file"
+                  value={formState.cv_file?.name ?? formState.cv_path}
+                  accept="application/pdf,.pdf"
+                  isUploading={isUploading}
+                  onUpload={uploadCvFile}
+                  currentLabel="Selected CV"
+                  uploadLabel="Choose CV"
+                  replaceLabel="Change CV"
+                />
+              </div>
             </div>
 
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

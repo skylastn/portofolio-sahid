@@ -5,6 +5,7 @@ import { GeneralResponse } from "../domain/model/response/general_response";
 import { GeneralRepository } from "../domain/repository/general_repository";
 import { GeneralRemoteDataSource } from "../infrastructure/data_source/general_remote_data_source";
 import { GeneralRepositoryImpl } from "../infrastructure/persistence/general_repository_impl";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export class GeneralService {
   private repo: GeneralRepository;
@@ -21,6 +22,12 @@ export class GeneralService {
     id: string,
   ): Promise<Either<ResponseModel, GeneralResponse.Data>> {
     return await this.repo.fetchGeneralById(id);
+  }
+
+  async createUploadSignature(
+    fileName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>> {
+    return await this.repo.createUploadSignature(fileName);
   }
 
   async createGeneral(

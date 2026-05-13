@@ -62,6 +62,7 @@ interface HomeProfile {
   subtitle: string;
   description: string;
   email: string;
+  cvUrl?: string | null;
   socialLinks: SocialLink[];
 }
 
@@ -189,6 +190,7 @@ export function useHomeData() {
         subtitle: "Building digital experiences",
         description: general.description || "",
         email: general.email || "",
+        cvUrl: general.cv_url ?? null,
         socialLinks,
       };
     }

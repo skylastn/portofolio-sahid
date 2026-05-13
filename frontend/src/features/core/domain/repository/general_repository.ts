@@ -2,10 +2,14 @@ import { ResponseModel } from "@/shared/domain/model/response_model";
 import { Either } from "@/shared/utils/utility/either";
 import { CreateGeneralRequest } from "../model/request/general/create_general_request";
 import { GeneralResponse } from "../model/response/general_response";
+import { MinioUploadResponse } from "@/shared/domain/model/response/minio_upload_response";
 
 export interface GeneralRepository {
   fetchGenerals(): Promise<Either<ResponseModel, GeneralResponse.Data[]>>;
   fetchGeneralById(id: string): Promise<Either<ResponseModel, GeneralResponse.Data>>;
+  createUploadSignature(
+    fileName: string,
+  ): Promise<Either<ResponseModel, MinioUploadResponse.Data>>;
   createGeneral(
     request: CreateGeneralRequest,
   ): Promise<Either<ResponseModel, GeneralResponse.Data>>;

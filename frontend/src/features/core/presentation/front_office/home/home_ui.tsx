@@ -221,6 +221,16 @@ export default function HomeUI() {
               >
                 Get In Touch
               </a>
+              {profile?.cvUrl ? (
+                <a
+                  href={profile.cvUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`${secondaryButtonClass} text-center`}
+                >
+                  Download CV
+                </a>
+              ) : null}
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
