@@ -21,7 +21,10 @@ Set the backend URL in `.env`:
 
 ```env
 NEXT_PUBLIC_ENDPOINT_URL=http://localhost:3005
+NEXT_PUBLIC_GA_ID=
 ```
+
+Set `NEXT_PUBLIC_GA_ID` to your Google Analytics measurement ID, for example `G-XXXXXXXXXX`, to enable visitor tracking. Public portfolio pages are tracked; `/admin` and `/auth` routes are excluded.
 
 ## Run Locally
 

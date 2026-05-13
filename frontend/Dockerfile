@@ -13,10 +13,12 @@ WORKDIR /app
 # Build-time args (di-inject dari docker-compose)
 ARG APP_ENV
 ARG NEXT_PUBLIC_ENDPOINT_URL
+ARG NEXT_PUBLIC_GA_ID
 
 # Set jadi ENV supaya kebaca saat `npm run build`
 ENV APP_ENV=$APP_ENV
 ENV NEXT_PUBLIC_ENDPOINT_URL=$NEXT_PUBLIC_ENDPOINT_URL
+ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -32,10 +34,12 @@ WORKDIR /app
 # Runtime args (opsional, tapi kita set lagi biar aman)
 ARG APP_ENV
 ARG NEXT_PUBLIC_ENDPOINT_URL
+ARG NEXT_PUBLIC_GA_ID
 ENV NODE_ENV=production
 
 ENV APP_ENV=$APP_ENV
 ENV NEXT_PUBLIC_ENDPOINT_URL=$NEXT_PUBLIC_ENDPOINT_URL
+ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules

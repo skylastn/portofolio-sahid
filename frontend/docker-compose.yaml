@@ -6,6 +6,7 @@ services:
       args:
         APP_ENV: ${APP_ENV}
         NEXT_PUBLIC_ENDPOINT_URL: ${NEXT_PUBLIC_ENDPOINT_URL}
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID}
     container_name: fe-portofolio
     env_file:
       - .env

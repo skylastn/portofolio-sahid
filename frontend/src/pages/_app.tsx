@@ -1,6 +1,8 @@
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import type { CSSProperties } from "react";
+import { useEffect } from "react";
+import Script from "next/script";
 import "@/shared/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 
@@ -13,6 +15,11 @@ import { GlobalContainerProvider } from "@/shared/dependency_injection/global_co
 import LoadingComponent from "@/shared/component/ui/loading/loading_component";
 import { GlobalProvider, useGlobalLogic } from "@/shared/logic/global_logic";
 import { AuthProvider } from "@/shared/logic/auth_logic";
+import {
+  GA_MEASUREMENT_ID,
+  shouldTrackPageView,
+  trackPageView,
+} from "@/shared/utils/analytics/google_analytics";
 
 function GlobalLoader() {
   const { loading } = useLoading();
@@ -48,6 +55,19 @@ function GlobalLoader() {
 }
 
 function AppProviders({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      trackPageView(url);
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
+
   return (
     <GlobalContainerProvider>
       <LoadingProvider>
@@ -62,9 +82,33 @@ function AppProviders({ children }: { children: React.ReactNode }) {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  const shouldLoadAnalytics =
+    Boolean(GA_MEASUREMENT_ID) && shouldTrackPageView(router.asPath);
+
   return (
-    <AppProviders>
-      <Component {...pageProps} />
-    </AppProviders>
+    <>
+      {shouldLoadAnalytics ? (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}', {
+                page_path: window.location.pathname + window.location.search
+              });
+            `}
+          </Script>
+        </>
+      ) : null}
+      <AppProviders>
+        <Component {...pageProps} />
+      </AppProviders>
+    </>
   );
 }
