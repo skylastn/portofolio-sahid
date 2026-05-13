@@ -10,7 +10,7 @@ NestJS API for the portfolio application. This backend manages public portfolio 
 - MySQL
 - Redis
 - JWT access tokens and HttpOnly-cookie refresh tokens
-- MinIO presigned upload/view URLs
+- MinIO object storage integration
 - Jest
 - Docker
 
@@ -20,7 +20,7 @@ NestJS API for the portfolio application. This backend manages public portfolio 
 - Admin API for creating, updating, and deleting content with a `Bearer` access token.
 - Redis-backed login brute-force protection.
 - Refresh token rotation. Active refresh tokens are stored in Redis, sent to the browser as an HttpOnly cookie, and old tokens are deleted when a refresh happens.
-- MinIO presigned upload URLs so clients can upload files without exposing MinIO credentials.
+- MinIO integration for portfolio media uploads and private object operations.
 - Position-based sorting for several resources.
 - Database migrations and seeders.
 
@@ -101,30 +101,18 @@ http://localhost:3005
 
 ## Redis
 
-Redis is used by:
+Redis is required for authentication support:
 
-- `RedisService`: Redis connection wrapper.
-- `BruteForceService`: stores failed login counters.
-- `AuthService`: stores active refresh tokens by user and `tokenId`.
+- Login brute-force protection.
+- Refresh token session storage and revocation.
 
-Redis key patterns:
+Keep Redis private in production. Do not expose it to the public internet, and use a strong password.
 
-```text
-bf:login:ip:{ip}
-bf:login:user:{username}
-bf:login:combo:{ip}:{username}
-bf:block:ip:{ip}
-bf:block:combo:{ip}:{username}
-refresh_token:{userId}:{tokenId}
-```
+## MinIO
 
-Important TTL values:
+MinIO is used for portfolio media storage. The backend issues short-lived upload/view URLs and keeps MinIO credentials on the server side.
 
-- Failed login counters: 15 minutes.
-- Login blocks: 30 minutes.
-- Refresh tokens: 7 days.
-
-If Redis is down, login and refresh token flows can fail because authentication depends on Redis. In production, Redis should run on a private network, use a strong password, use persistence if needed, and never expose its port publicly.
+In production, keep MinIO and its admin console private, rotate access keys regularly, and review bucket policy before making repository or deployment details public.
 
 ## API Areas
 
@@ -220,42 +208,6 @@ Deployment notes:
 - `docker-compose.yaml` uses `network_mode: "host"`, so make sure only the API port that must be public is opened in the firewall.
 - MySQL, Redis, and MinIO should not be exposed to the internet.
 - Do not copy `.env` into the image. Use a secret manager, server environment variables, or a local `env_file` that is not committed.
-
-## Security Review For Public Repository
-
-What is already in good shape:
-
-- `.env` and `.env.local` were not tracked in git when this README was updated.
-- Global `ValidationPipe` uses `whitelist: true`, so extra request body fields are stripped.
-- User passwords are hashed with bcrypt.
-- Login uses a generic `Invalid credentials` message.
-- Refresh tokens use rotation, can be revoked through Redis, and are stored in HttpOnly cookies instead of browser `localStorage`.
-- CORS uses an origin whitelist instead of a wildcard.
-- `DELETE /api/minio` is protected with `AuthGuards`.
-
-Issues and recommendations:
-
-- `backend/.env.example` contains weak sample values such as `@Coba123`, `test`, `localSecret`, and `localRefreshSecret`. Example values are acceptable for documentation, but never reuse them in production.
-- Rotate every secret if `.env`, screenshots, deployment logs, or real credentials were ever pushed or shared publicly.
-- MinIO endpoints need strict controls. `presign-upload` and object deletion must stay auth-only; object keys should also be validated to prevent paths such as `../` or deletion outside the expected prefix.
-- `presign-view` is currently public. That is acceptable only if portfolio files are intended to be publicly readable.
-- Add security headers, for example with Helmet, before public production deployment.
-- Add global request rate limiting for public endpoints. Login brute-force protection exists, but other endpoints are not globally rate-limited.
-- Refresh-token cookies default to `SameSite=Lax`. If the frontend and backend are deployed on completely different sites and require `SameSite=None`, also set `REFRESH_COOKIE_SECURE=true` and add CSRF protection before allowing cross-site credentialed requests.
-- If the app runs behind a reverse proxy, configure trust proxy correctly so brute-force protection reads the real client IP instead of the proxy IP.
-- Do not expose Redis, MySQL, or the MinIO admin console publicly. Restrict them with a private network and firewall rules.
-- Use a production database user with minimum privileges instead of `root`.
-- Consider shortening the 1-day access token lifetime if the admin panel may be used on shared or public devices.
-- Make sure request logs never print tokens, passwords, presigned URLs, or secrets.
-
-`npm audit --audit-level=moderate` result on 2026-05-13:
-
-- Total: 22 vulnerabilities.
-- Severity: 1 critical, 9 high, 12 moderate.
-- Critical: `handlebars`, from transitive tooling/dev dependencies.
-- High-priority packages: `@nestjs/core`, `@nestjs/platform-express`, `axios`, `fast-uri`, `fast-xml-builder`, `lodash`, `path-to-regexp`, `picomatch`.
-- Moderate packages: `ajv`, `brace-expansion`, `fast-xml-parser`, `follow-redirects`, `ip-address`, `uuid`.
-- Recommended first step: run `npm audit fix`, review `package-lock.json`, then run unit tests and auth/admin smoke tests.
 
 Public deployment checklist:
 
